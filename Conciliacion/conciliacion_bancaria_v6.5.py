@@ -31,6 +31,8 @@ MOTOR DEFINITIVO = v6.0 (completo) + v6.1 (estrategias 1.6 y 7) + OPTIMIZACIONES
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
+import os
+from pathlib import Path
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
@@ -45,9 +47,7 @@ warnings.filterwarnings('ignore')
 # ⚙️ CONFIGURACIÓN DE RUTAS
 # ============================================================================
 
-RUTA_BANCO = r"C:\Users\Melvin Ortiz\Desktop\Santa Cruz\BANCO.xlsx"
-RUTA_CONTABLE = r"C:\Users\Melvin Ortiz\Desktop\Santa Cruz\CONTABLE.xlsx"
-RUTA_SALIDA = r"C:\Users\Melvin Ortiz\Desktop\Santa Cruz\conciliacion_v6.5.xlsx"
+RUTA_SALIDA = r"...\Consiliacion\Conciliacion_Resultados.xlsx"
 
 # ============================================================================
 # ⚙️ PARÁMETROS AJUSTABLES
@@ -244,110 +244,78 @@ def es_patron_transferencia(texto):
 # 📂 CARGA DE DATOS OPTIMIZADA (SOLO FILAS VÁLIDAS)
 # ============================================================================
 
-def cargar_datos(ruta, nombre=""):
-    """Carga datos - OPTIMIZACIÓN: solo lee filas con Fecha Y Valor válidos"""
-    print(f"\n  📂 Cargando: {nombre.upper() if nombre else ruta}")
-    
-    try:
-        # Leer Excel
-        df = pd.read_excel(ruta)
-        
-        # ⚡ OPTIMIZACIÓN 1: Eliminar filas completamente vacías PRIMERO
-        df = df.dropna(how='all')
-        
-    except Exception as e:
-        raise ValueError(f"❌ Error al cargar: {e}")
-    
-    print(f"  📋 Columnas encontradas: {list(df.columns)}")
-    
-    # Mapeo automático de columnas
-    columnas_map = {}
-    for col in df.columns:
-        col_upper = str(col).upper().strip()
-        if 'FECHA' in col_upper and 'Fecha' not in columnas_map:
-            columnas_map['Fecha'] = col
-        elif 'CONCEPTO' in col_upper and 'Concepto' not in columnas_map:
-            columnas_map['Concepto'] = col
-        elif any(x in col_upper for x in ['VALOR', 'MONTO', 'IMPORTE']) and 'Valor' not in columnas_map:
-            columnas_map['Valor'] = col
-        elif any(x in col_upper for x in ['DESCRIP', 'DETALLE', 'OBSERV', 'REFERENCIA']) and 'Descripción' not in columnas_map:
-            columnas_map['Descripción'] = col
-    
-    # Si no hay Descripción, crearla vacía
-    if 'Descripción' not in columnas_map:
-        df['Descripción'] = ''
-        columnas_map['Descripción'] = 'Descripción'
-        print("  ⚠️ Columna 'Descripción' no encontrada - creada vacía")
-    
-    # Verificar columnas requeridas
-    requeridas = ['Fecha', 'Concepto', 'Valor']
-    faltantes = [r for r in requeridas if r not in columnas_map]
-    if faltantes:
-        raise ValueError(f"❌ Faltan columnas requeridas: {faltantes}")
-    
-    # Renombrar columnas
-    df = df.rename(columns={v: k for k, v in columnas_map.items()})
-    
-    # Convertir tipos
-    df['Fecha'] = pd.to_datetime(df['Fecha'], errors='coerce')
-    df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce')
-    df['Concepto'] = df['Concepto'].fillna('').astype(str)
-    df['Descripción'] = df['Descripción'].fillna('').astype(str)
-    
-    # ⚡ OPTIMIZACIÓN 2: Filtrar SOLO filas con Fecha Y Valor válidos
-    registros_antes = len(df)
-    df = df.dropna(subset=['Fecha', 'Valor'])
-    df = df[df['Valor'] != 0]  # Eliminar valores $0
-    registros_despues = len(df)
-    
-    if registros_antes != registros_despues:
-        print(f"  ⚠️ Filtradas {registros_antes - registros_despues} filas sin Fecha/Valor válidos")
-    
-    # Campos de búsqueda
-    df['Texto_Busqueda'] = (df['Concepto'].astype(str) + ' ' + df['Descripción'].astype(str)).apply(normalizar_texto)
-    df['Concepto_Norm'] = df['Concepto'].apply(normalizar_texto)  # ← RESTAURADO del v5
-    df['Proveedor_ID'] = df['Descripción'].apply(extraer_identificador_proveedor)
-    df['Empresa_Norm'] = df['Texto_Busqueda'].apply(normalizar_nombre_empresa)
-    df['Es_Impuesto'] = df['Texto_Busqueda'].apply(es_patron_impuesto)
-    df['Es_Comision'] = df['Texto_Busqueda'].apply(es_patron_comision)
-    df['Es_TC'] = df['Texto_Busqueda'].apply(es_patron_tc)  # ← NUEVO v6.5
-    
-    # Control
-    df['ID_Original'] = range(len(df))
-    df['Conciliado'] = False
-    
-    print(f"  ✅ Cargados: {len(df)} registros válidos")
-    return df
-
 # Carga de Archivos BANRESERVAS
 def cargar_banreservas(ruta, nombre=""):
     """Carga datos - OPTIMIZACIÓN: solo lee filas con Fecha Y Valor válidos"""
     print(f"\n  📂 Cargando: {nombre.upper() if nombre else ruta}")
-    
+
+    # Resolver ruta relativa: si el usuario pasa solo el nombre de archivo,
+    # buscarlo en el mismo directorio del script y en el cwd.
+    try:
+        ruta_path = Path(ruta)
+    except Exception:
+        ruta_path = Path(str(ruta))
+
+    if not ruta_path.is_absolute():
+        script_dir = Path(__file__).resolve().parent
+        candidates = [script_dir / ruta_path, Path.cwd() / ruta_path]
+
+        # If no suffix provided, try common extensions too
+        if not ruta_path.suffix:
+            exts = ['.xlsx', '.xls', '.csv']
+        else:
+            exts = [ruta_path.suffix]
+
+        found = None
+        for base in candidates:
+            for ext in exts:
+                cand = base.with_suffix(ext) if not ruta_path.suffix else base
+                if cand.exists():
+                    found = cand
+                    break
+            if found:
+                break
+
+        if found:
+            ruta = str(found)
+        else:
+            # if the literal provided (e.g., 'BANRESERVAS.xlsx') exists in script_dir
+            alt = script_dir / ruta_path.name
+            if alt.exists():
+                ruta = str(alt)
+
     try:
         # Leer Excel
         df = pd.read_excel(ruta)
-        
+
         # ⚡ OPTIMIZACIÓN 1: Eliminar filas completamente vacías PRIMERO
         df = df.dropna(how='all')
-        
+
     except Exception as e:
-        raise ValueError(f"❌ Error al cargar: {e}")
+        raise ValueError(f"❌ Error al cargar '{ruta}': {e}")
     
     print(f"  📋 Columnas encontradas: {list(df.columns)}")
     
     # Mapeo automático de columnas
     columnas_map = {}
+    tiene_debito_credito = False
     for col in df.columns:
         col_upper = str(col).upper().strip()
         if 'FECHA' in col_upper and 'Fecha' not in columnas_map:
             columnas_map['Fecha'] = col
         elif 'CONCEPTO' in col_upper and 'Concepto' not in columnas_map:
             columnas_map['Concepto'] = col
+        elif 'DEBITO' in col_upper and 'Debito' not in columnas_map:
+            columnas_map['Debito'] = col
+        elif 'CREDITO' in col_upper and 'Credito' not in columnas_map:
+            columnas_map['Credito'] = col
         elif any(x in col_upper for x in ['VALOR', 'MONTO', 'IMPORTE']) and 'Valor' not in columnas_map:
             columnas_map['Valor'] = col
         elif any(x in col_upper for x in ['DESCRIP', 'DETALLE', 'OBSERV', 'REFERENCIA']) and 'Descripción' not in columnas_map:
             columnas_map['Descripción'] = col
+    
+    # Detectar si hay Debito y Credito
+    tiene_debito_credito = 'Debito' in columnas_map and 'Credito' in columnas_map
     
     # Si no hay Descripción, crearla vacía
     if 'Descripción' not in columnas_map:
@@ -356,7 +324,11 @@ def cargar_banreservas(ruta, nombre=""):
         print("  ⚠️ Columna 'Descripción' no encontrada - creada vacía")
     
     # Verificar columnas requeridas
-    requeridas = ['Fecha', 'Concepto', 'Valor']
+    if tiene_debito_credito:
+        requeridas = ['Fecha', 'Concepto', 'Debito', 'Credito']
+    else:
+        requeridas = ['Fecha', 'Concepto', 'Valor']
+    
     faltantes = [r for r in requeridas if r not in columnas_map]
     if faltantes:
         raise ValueError(f"❌ Faltan columnas requeridas: {faltantes}")
@@ -364,11 +336,21 @@ def cargar_banreservas(ruta, nombre=""):
     # Renombrar columnas
     df = df.rename(columns={v: k for k, v in columnas_map.items()})
     
-    # Convertir tipos
+    # Convertir tipos y combinar Debito/Credito si es necesario
     df['Fecha'] = pd.to_datetime(df['Fecha'], errors='coerce')
-    df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce')
     df['Concepto'] = df['Concepto'].fillna('').astype(str)
     df['Descripción'] = df['Descripción'].fillna('').astype(str)
+    
+    if tiene_debito_credito:
+        # Convertir Debito y Credito a numéricos
+        df['Debito'] = pd.to_numeric(df['Debito'], errors='coerce').fillna(0)
+        df['Credito'] = pd.to_numeric(df['Credito'], errors='coerce').fillna(0)
+        # Crear Valor: Credito positivo, Debito negativo
+        df['Valor'] = df['Credito'] - df['Debito']
+        # Eliminar columnas originales
+        df = df.drop(columns=['Debito', 'Credito'])
+    else:
+        df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce')
     
     # ⚡ OPTIMIZACIÓN 2: Filtrar SOLO filas con Fecha Y Valor válidos
     registros_antes = len(df)
@@ -395,14 +377,138 @@ def cargar_banreservas(ruta, nombre=""):
     print(f"  ✅ Cargados: {len(df)} registros válidos")
     return df
 
-
-
-
-
-
-
 # Cargas de Archivos CONTABLE
+def cargar_contable(ruta, nombre=""):
+    """Carga datos - OPTIMIZACIÓN: solo lee filas con Fecha Y Valor válidos"""
+    print(f"\n  📂 Cargando: {nombre.upper() if nombre else ruta}")
 
+    # Resolver ruta relativa: si el usuario pasa solo el nombre de archivo,
+    # buscarlo en el mismo directorio del script y en el cwd.
+    try:
+        ruta_path = Path(ruta)
+    except Exception:
+        ruta_path = Path(str(ruta))
+
+    if not ruta_path.is_absolute():
+        script_dir = Path(__file__).resolve().parent
+        candidates = [script_dir / ruta_path, Path.cwd() / ruta_path]
+
+        # If no suffix provided, try common extensions too
+        if not ruta_path.suffix:
+            exts = ['.xlsx', '.xls', '.csv']
+        else:
+            exts = [ruta_path.suffix]
+
+        found = None
+        for base in candidates:
+            for ext in exts:
+                cand = base.with_suffix(ext) if not ruta_path.suffix else base
+                if cand.exists():
+                    found = cand
+                    break
+            if found:
+                break
+
+        if found:
+            ruta = str(found)
+        else:
+            # if the literal provided (e.g., 'BANRESERVAS.xlsx') exists in script_dir
+            alt = script_dir / ruta_path.name
+            if alt.exists():
+                ruta = str(alt)
+
+    try:
+        # Leer Excel
+        df = pd.read_excel(ruta)
+
+        # ⚡ OPTIMIZACIÓN 1: Eliminar filas completamente vacías PRIMERO
+        df = df.dropna(how='all')
+
+    except Exception as e:
+        raise ValueError(f"❌ Error al cargar '{ruta}': {e}")
+    
+    print(f"  📋 Columnas encontradas: {list(df.columns)}")
+    
+    # Mapeo automático de columnas
+    columnas_map = {}
+    tiene_debito_credito = False
+    for col in df.columns:
+        col_upper = str(col).upper().strip()
+        if 'FECHA' in col_upper and 'Fecha' not in columnas_map:
+            columnas_map['Fecha'] = col
+        elif 'CONCEPTO' in col_upper and 'Concepto' not in columnas_map:
+            columnas_map['Concepto'] = col
+        elif 'DEBITO' in col_upper and 'Debito' not in columnas_map:
+            columnas_map['Debito'] = col
+        elif 'CREDITO' in col_upper and 'Credito' not in columnas_map:
+            columnas_map['Credito'] = col
+        elif any(x in col_upper for x in ['VALOR', 'MONTO', 'IMPORTE']) and 'Valor' not in columnas_map:
+            columnas_map['Valor'] = col
+        elif any(x in col_upper for x in ['DESCRIP', 'DETALLE', 'OBSERV', 'REFERENCIA']) and 'Descripción' not in columnas_map:
+            columnas_map['Descripción'] = col
+    
+    # Detectar si hay Debito y Credito
+    tiene_debito_credito = 'Debito' in columnas_map and 'Credito' in columnas_map
+    
+    # Si no hay Descripción, crearla vacía
+    if 'Descripción' not in columnas_map:
+        df['Descripción'] = ''
+        columnas_map['Descripción'] = 'Descripción'
+        print("  ⚠️ Columna 'Descripción' no encontrada - creada vacía")
+    
+    # Verificar columnas requeridas
+    if tiene_debito_credito:
+        requeridas = ['Fecha', 'Concepto', 'Debito', 'Credito']
+    else:
+        requeridas = ['Fecha', 'Concepto', 'Valor']
+    
+    faltantes = [r for r in requeridas if r not in columnas_map]
+    if faltantes:
+        raise ValueError(f"❌ Faltan columnas requeridas: {faltantes}")
+    
+    # Renombrar columnas
+    df = df.rename(columns={v: k for k, v in columnas_map.items()})
+    
+    # Convertir tipos y combinar Debito/Credito si es necesario
+    df['Fecha'] = pd.to_datetime(df['Fecha'], errors='coerce')
+    df['Concepto'] = df['Concepto'].fillna('').astype(str)
+    df['Descripción'] = df['Descripción'].fillna('').astype(str)
+    
+    if tiene_debito_credito:
+        # Convertir Debito y Credito a numéricos
+        df['Debito'] = pd.to_numeric(df['Debito'], errors='coerce').fillna(0)
+        df['Credito'] = pd.to_numeric(df['Credito'], errors='coerce').fillna(0)
+        # Crear Valor: Credito positivo, Debito negativo
+        df['Valor'] = df['Credito'] - df['Debito']
+        # Eliminar columnas originales
+        df = df.drop(columns=['Debito', 'Credito'])
+    else:
+        df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce')
+    
+    # ⚡ OPTIMIZACIÓN 2: Filtrar SOLO filas con Fecha Y Valor válidos
+    registros_antes = len(df)
+    df = df.dropna(subset=['Fecha', 'Valor'])
+    df = df[df['Valor'] != 0]  # Eliminar valores $0
+    registros_despues = len(df)
+    
+    if registros_antes != registros_despues:
+        print(f"  ⚠️ Filtradas {registros_antes - registros_despues} filas sin Fecha/Valor válidos")
+    
+    # Campos de búsqueda
+    df['Texto_Busqueda'] = (df['Concepto'].astype(str) + ' ' + df['Descripción'].astype(str)).apply(normalizar_texto)
+    df['Concepto_Norm'] = df['Concepto'].apply(normalizar_texto)  # ← RESTAURADO del v5
+    df['Proveedor_ID'] = df['Descripción'].apply(extraer_identificador_proveedor)
+    df['Empresa_Norm'] = df['Texto_Busqueda'].apply(normalizar_nombre_empresa)
+    df['Es_Impuesto'] = df['Texto_Busqueda'].apply(es_patron_impuesto)
+    df['Es_Comision'] = df['Texto_Busqueda'].apply(es_patron_comision)
+    df['Es_TC'] = df['Texto_Busqueda'].apply(es_patron_tc)  # ← NUEVO v6.5
+    
+    # Control
+    df['ID_Original'] = range(len(df))
+    df['Conciliado'] = False
+    
+    print(f"  ✅ Cargados: {len(df)} registros válidos")
+    return df
 
 # ============================================================================
 # 🎯 ESTRATEGIA 1: MONTO EXACTO (1:1) - CON SCORE COMBINADO
@@ -1746,14 +1852,40 @@ def main():
     # Carga de Banco
     if tipoBanco == 1:
         try:
-            banco = cargar_datos(RUTA_BANCO, "BANCO")
+            ARCHIVO_BANCO = r"BANRESERVAS.xlsx"
+            banco = cargar_banreservas(ARCHIVO_BANCO, "BANCO")
+        except Exception as e:
+            print(f"❌ Error al cargar banco: {e}")
+            return
+        
+    if tipoBanco == 2:
+        try:
+            ARCHIVO_BANCO = r"POPULAR.xlsx"
+            banco = cargar_popular(ARCHIVO_BANCO, "BANCO")
+        except Exception as e:
+            print(f"❌ Error al cargar banco: {e}")
+            return
+        
+    if tipoBanco == 3:
+        try:
+            ARCHIVO_BANCO = r"BHD.xlsx"
+            banco = cargar_bhd(ARCHIVO_BANCO, "BANCO")
+        except Exception as e:
+            print(f"❌ Error al cargar banco: {e}")
+            return
+
+    if tipoBanco == 4:
+        try:
+            ARCHIVO_BANCO = r"SANTACRUZ.xlsx"
+            banco = cargar_santaCruz(ARCHIVO_BANCO, "BANCO")
         except Exception as e:
             print(f"❌ Error al cargar banco: {e}")
             return
         
     # Carga de Contable
     try:
-        contable = cargar_datos(RUTA_CONTABLE, "CONTABLE")
+        ARCHIVO_CONTABLE = r"LIBRO_CONTABLE.xlsx"
+        contable = cargar_contable(ARCHIVO_CONTABLE, "CONTABLE")
     except Exception as e:
         print(f"❌ Error al cargar contable: {e}")
         return
