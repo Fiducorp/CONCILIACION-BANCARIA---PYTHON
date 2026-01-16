@@ -319,6 +319,91 @@ def cargar_datos(ruta, nombre=""):
     print(f"  ✅ Cargados: {len(df)} registros válidos")
     return df
 
+# Carga de Archivos BANRESERVAS
+def cargar_banreservas(ruta, nombre=""):
+    """Carga datos - OPTIMIZACIÓN: solo lee filas con Fecha Y Valor válidos"""
+    print(f"\n  📂 Cargando: {nombre.upper() if nombre else ruta}")
+    
+    try:
+        # Leer Excel
+        df = pd.read_excel(ruta)
+        
+        # ⚡ OPTIMIZACIÓN 1: Eliminar filas completamente vacías PRIMERO
+        df = df.dropna(how='all')
+        
+    except Exception as e:
+        raise ValueError(f"❌ Error al cargar: {e}")
+    
+    print(f"  📋 Columnas encontradas: {list(df.columns)}")
+    
+    # Mapeo automático de columnas
+    columnas_map = {}
+    for col in df.columns:
+        col_upper = str(col).upper().strip()
+        if 'FECHA' in col_upper and 'Fecha' not in columnas_map:
+            columnas_map['Fecha'] = col
+        elif 'CONCEPTO' in col_upper and 'Concepto' not in columnas_map:
+            columnas_map['Concepto'] = col
+        elif any(x in col_upper for x in ['VALOR', 'MONTO', 'IMPORTE']) and 'Valor' not in columnas_map:
+            columnas_map['Valor'] = col
+        elif any(x in col_upper for x in ['DESCRIP', 'DETALLE', 'OBSERV', 'REFERENCIA']) and 'Descripción' not in columnas_map:
+            columnas_map['Descripción'] = col
+    
+    # Si no hay Descripción, crearla vacía
+    if 'Descripción' not in columnas_map:
+        df['Descripción'] = ''
+        columnas_map['Descripción'] = 'Descripción'
+        print("  ⚠️ Columna 'Descripción' no encontrada - creada vacía")
+    
+    # Verificar columnas requeridas
+    requeridas = ['Fecha', 'Concepto', 'Valor']
+    faltantes = [r for r in requeridas if r not in columnas_map]
+    if faltantes:
+        raise ValueError(f"❌ Faltan columnas requeridas: {faltantes}")
+    
+    # Renombrar columnas
+    df = df.rename(columns={v: k for k, v in columnas_map.items()})
+    
+    # Convertir tipos
+    df['Fecha'] = pd.to_datetime(df['Fecha'], errors='coerce')
+    df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce')
+    df['Concepto'] = df['Concepto'].fillna('').astype(str)
+    df['Descripción'] = df['Descripción'].fillna('').astype(str)
+    
+    # ⚡ OPTIMIZACIÓN 2: Filtrar SOLO filas con Fecha Y Valor válidos
+    registros_antes = len(df)
+    df = df.dropna(subset=['Fecha', 'Valor'])
+    df = df[df['Valor'] != 0]  # Eliminar valores $0
+    registros_despues = len(df)
+    
+    if registros_antes != registros_despues:
+        print(f"  ⚠️ Filtradas {registros_antes - registros_despues} filas sin Fecha/Valor válidos")
+    
+    # Campos de búsqueda
+    df['Texto_Busqueda'] = (df['Concepto'].astype(str) + ' ' + df['Descripción'].astype(str)).apply(normalizar_texto)
+    df['Concepto_Norm'] = df['Concepto'].apply(normalizar_texto)  # ← RESTAURADO del v5
+    df['Proveedor_ID'] = df['Descripción'].apply(extraer_identificador_proveedor)
+    df['Empresa_Norm'] = df['Texto_Busqueda'].apply(normalizar_nombre_empresa)
+    df['Es_Impuesto'] = df['Texto_Busqueda'].apply(es_patron_impuesto)
+    df['Es_Comision'] = df['Texto_Busqueda'].apply(es_patron_comision)
+    df['Es_TC'] = df['Texto_Busqueda'].apply(es_patron_tc)  # ← NUEVO v6.5
+    
+    # Control
+    df['ID_Original'] = range(len(df))
+    df['Conciliado'] = False
+    
+    print(f"  ✅ Cargados: {len(df)} registros válidos")
+    return df
+
+
+
+
+
+
+
+# Cargas de Archivos CONTABLE
+
+
 # ============================================================================
 # 🎯 ESTRATEGIA 1: MONTO EXACTO (1:1) - CON SCORE COMBINADO
 # ============================================================================
@@ -1615,6 +1700,7 @@ def aplicar_formato_profesional(ruta):
 # ============================================================================
 
 def main():
+
     """Función principal de conciliación"""
     import time
     tiempo_inicio = time.time()
@@ -1635,16 +1721,37 @@ def main():
     print(f"  🔧 Segunda pasada: {'Sí' if EJECUTAR_SEGUNDA_PASADA else 'No'}")
     print(f"  🔧 Búsqueda exhaustiva: {'Sí' if EJECUTAR_BUSQUEDA_EXHAUSTIVA else 'No'}")
     
+    print("\n🏦 BANCOS:")
+    print("─"*70)
+    print(f"  1) BanReservas")
+    print(f"  2) Popular")
+    print(f"  3) BHD")
+    print(f"  4) Santa Cruz")
+
+    print(f" 🔧 Ingrese el numero para su selección")
+
+    valid = False
+    while valid == False:
+        tipoBanco = input("\nIngrese aqui el banco que esta utilizando: ")
+        if tipoBanco.isdigit() and int(tipoBanco) in [1, 2, 3, 4]:
+            tipoBanco = int(tipoBanco)
+            valid = True
+        else:
+            print(f"❌ Entrada inválida.")
+
     print("\n" + "="*70)
     print("📂 CARGANDO DATOS")
     print("="*70)
     
-    try:
-        banco = cargar_datos(RUTA_BANCO, "BANCO")
-    except Exception as e:
-        print(f"❌ Error al cargar banco: {e}")
-        return
-    
+    # Carga de Banco
+    if tipoBanco == 1:
+        try:
+            banco = cargar_datos(RUTA_BANCO, "BANCO")
+        except Exception as e:
+            print(f"❌ Error al cargar banco: {e}")
+            return
+        
+    # Carga de Contable
     try:
         contable = cargar_datos(RUTA_CONTABLE, "CONTABLE")
     except Exception as e:
