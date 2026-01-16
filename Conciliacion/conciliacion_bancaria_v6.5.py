@@ -47,7 +47,8 @@ warnings.filterwarnings('ignore')
 # ⚙️ CONFIGURACIÓN DE RUTAS
 # ============================================================================
 
-RUTA_SALIDA = r"...\Consiliacion\Conciliacion_Resultados.xlsx"
+# Guardar en el mismo directorio del script
+RUTA_SALIDA = str(Path(__file__).resolve().parent / "Conciliacion_Resultados.xlsx")
 
 # ============================================================================
 # ⚙️ PARÁMETROS AJUSTABLES
@@ -244,9 +245,9 @@ def es_patron_transferencia(texto):
 # 📂 CARGA DE DATOS OPTIMIZADA (SOLO FILAS VÁLIDAS)
 # ============================================================================
 
-# Carga de Archivos BANRESERVAS
-def cargar_banreservas(ruta, nombre=""):
-    """Carga datos - OPTIMIZACIÓN: solo lee filas con Fecha Y Valor válidos"""
+# Carga de Archivos (BANRESERVAS, BHD)
+def cargar_banco(ruta, nombre=""):
+    """Carga datos - OPTIMIZACIÓN: solo lee filas con FeScha Y Valor válidos"""
     print(f"\n  📂 Cargando: {nombre.upper() if nombre else ruta}")
 
     # Resolver ruta relativa: si el usuario pasa solo el nombre de archivo,
@@ -291,6 +292,21 @@ def cargar_banreservas(ruta, nombre=""):
         # ⚡ OPTIMIZACIÓN 1: Eliminar filas completamente vacías PRIMERO
         df = df.dropna(how='all')
 
+        # Evitar errores por columnas duplicadas en el Excel (por ejemplo cabeceras repetidas).
+        # Hacemos los nombres de columnas únicos antes del mapeo (col -> col, col_1, col_2...)
+        cols = [str(c) if c is not None else '' for c in df.columns]
+        seen = {}
+        unique_cols = []
+        for c in cols:
+            if c in seen:
+                seen[c] += 1
+                new_c = f"{c}_{seen[c]}"
+            else:
+                seen[c] = 0
+                new_c = c
+            unique_cols.append(new_c)
+        df.columns = unique_cols
+
     except Exception as e:
         raise ValueError(f"❌ Error al cargar '{ruta}': {e}")
     
@@ -305,18 +321,26 @@ def cargar_banreservas(ruta, nombre=""):
             columnas_map['Fecha'] = col
         elif 'CONCEPTO' in col_upper and 'Concepto' not in columnas_map:
             columnas_map['Concepto'] = col
-        elif 'DEBITO' in col_upper and 'Debito' not in columnas_map:
+        elif 'DÉBITO' in col_upper and 'Debito' not in columnas_map:
             columnas_map['Debito'] = col
-        elif 'CREDITO' in col_upper and 'Credito' not in columnas_map:
+        elif 'CRÉDITO' in col_upper and 'Credito' not in columnas_map:
             columnas_map['Credito'] = col
         elif any(x in col_upper for x in ['VALOR', 'MONTO', 'IMPORTE']) and 'Valor' not in columnas_map:
             columnas_map['Valor'] = col
         elif any(x in col_upper for x in ['DESCRIP', 'DETALLE', 'OBSERV', 'REFERENCIA']) and 'Descripción' not in columnas_map:
             columnas_map['Descripción'] = col
+
+    # Fallback: detect Valor-like column with additional keywords (English variants)
+    if 'Valor' not in columnas_map:
+        for col in df.columns:
+            cu = str(col).upper()
+            if any(k in cu for k in ['VALOR', 'MONTO', 'IMPORTE', 'AMOUNT', 'AMT']):
+                columnas_map['Valor'] = col
+                break
     
-    # Detectar si hay Debito y Credito
-    tiene_debito_credito = 'Debito' in columnas_map and 'Credito' in columnas_map
-    
+    # Detectar si hay Debito y/o Credito
+    tiene_debito_credito = ('Debito' in columnas_map) or ('Credito' in columnas_map)
+    print(f"  🔍 Formato detectado: {'Debito/Credito' if tiene_debito_credito else 'Valor Único'}")
     # Si no hay Descripción, crearla vacía
     if 'Descripción' not in columnas_map:
         df['Descripción'] = ''
@@ -325,7 +349,12 @@ def cargar_banreservas(ruta, nombre=""):
     
     # Verificar columnas requeridas
     if tiene_debito_credito:
-        requeridas = ['Fecha', 'Concepto', 'Debito', 'Credito']
+        # Requerir Fecha, Concepto y al menos una de Debito/Credito
+        requeridas = ['Fecha', 'Concepto']
+        if 'Debito' in columnas_map:
+            requeridas.append('Debito')
+        if 'Credito' in columnas_map:
+            requeridas.append('Credito')
     else:
         requeridas = ['Fecha', 'Concepto', 'Valor']
     
@@ -333,8 +362,29 @@ def cargar_banreservas(ruta, nombre=""):
     if faltantes:
         raise ValueError(f"❌ Faltan columnas requeridas: {faltantes}")
     
-    # Renombrar columnas
-    df = df.rename(columns={v: k for k, v in columnas_map.items()})
+    # Renombrar columnas - hacerlo de forma segura para evitar reindex errors
+    try:
+        mapping = {v: k for k, v in columnas_map.items()}
+        # Construir nueva lista de columnas aplicando mapping y asegurando unicidad
+        new_cols = []
+        seen = {}
+        for orig in list(df.columns):
+            target = mapping.get(orig, orig)
+            if target in seen:
+                seen[target] += 1
+                target = f"{target}_{seen[target]}"
+            else:
+                seen[target] = 0
+            new_cols.append(target)
+        df.columns = new_cols
+    except Exception as e:
+        # Proveer información diagnóstica
+        msg = (
+            f"Error renombrando columnas: {e}\n"
+            f"Columnas actuales: {list(df.columns)}\n"
+            f"Columnas mapeadas: {columnas_map}"
+        )
+        raise ValueError(msg)
     
     # Convertir tipos y combinar Debito/Credito si es necesario
     df['Fecha'] = pd.to_datetime(df['Fecha'], errors='coerce')
@@ -342,13 +392,20 @@ def cargar_banreservas(ruta, nombre=""):
     df['Descripción'] = df['Descripción'].fillna('').astype(str)
     
     if tiene_debito_credito:
+        # Asegurar que ambas columnas existen en el DataFrame (llenar con 0 si faltan)
+        if 'Debito' not in df.columns:
+            df['Debito'] = 0
+        if 'Credito' not in df.columns:
+            df['Credito'] = 0
         # Convertir Debito y Credito a numéricos
         df['Debito'] = pd.to_numeric(df['Debito'], errors='coerce').fillna(0)
         df['Credito'] = pd.to_numeric(df['Credito'], errors='coerce').fillna(0)
         # Crear Valor: Credito positivo, Debito negativo
         df['Valor'] = df['Credito'] - df['Debito']
-        # Eliminar columnas originales
-        df = df.drop(columns=['Debito', 'Credito'])
+        # Eliminar columnas originales si existían
+        drop_cols = [c for c in ['Debito', 'Credito'] if c in df.columns]
+        if drop_cols:
+            df = df.drop(columns=drop_cols)
     else:
         df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce')
     
@@ -378,7 +435,7 @@ def cargar_banreservas(ruta, nombre=""):
     return df
 
 # Cargas de Archivos CONTABLE
-def cargar_contable(ruta, nombre=""):
+def cargar_contable(ruta, usa_dolares, nombre=""):
     """Carga datos - OPTIMIZACIÓN: solo lee filas con Fecha Y Valor válidos"""
     print(f"\n  📂 Cargando: {nombre.upper() if nombre else ruta}")
 
@@ -429,38 +486,42 @@ def cargar_contable(ruta, nombre=""):
     
     print(f"  📋 Columnas encontradas: {list(df.columns)}")
     
-    # Mapeo automático de columnas
+    # Mapeo automático de columnas (normaliza espacios/acentos al buscar)
     columnas_map = {}
-    tiene_debito_credito = False
     for col in df.columns:
         col_upper = str(col).upper().strip()
-        if 'FECHA' in col_upper and 'Fecha' not in columnas_map:
+        if 'F.COMP' in col_upper and 'Fecha' not in columnas_map:
             columnas_map['Fecha'] = col
-        elif 'CONCEPTO' in col_upper and 'Concepto' not in columnas_map:
+        elif 'DETALLE' in col_upper and 'Concepto' not in columnas_map:
             columnas_map['Concepto'] = col
-        elif 'DEBITO' in col_upper and 'Debito' not in columnas_map:
-            columnas_map['Debito'] = col
-        elif 'CREDITO' in col_upper and 'Credito' not in columnas_map:
-            columnas_map['Credito'] = col
-        elif any(x in col_upper for x in ['VALOR', 'MONTO', 'IMPORTE']) and 'Valor' not in columnas_map:
+        elif 'NATU' in col_upper and 'Natu' not in columnas_map:
+            columnas_map['Natu'] = col
+
+        # Detectar "Valor Moneda Extranjera" para USD (tiene signos ya aplicados)
+        elif 'EXTRANJERA' in col_upper and 'Valor_USD' not in columnas_map:
+            columnas_map['Valor_USD'] = col
+        # Valor (único) - detecta nombres comunes (incluye variantes en inglés)
+        elif any(x in col_upper for x in ['VALOR', 'MONTO', 'IMPORTE', 'AMOUNT', 'AMT']) and 'Valor' not in columnas_map:
             columnas_map['Valor'] = col
-        elif any(x in col_upper for x in ['DESCRIP', 'DETALLE', 'OBSERV', 'REFERENCIA']) and 'Descripción' not in columnas_map:
-            columnas_map['Descripción'] = col
+        #elif any(x in col_upper for x in ['DESCRIP', 'DETALLE', 'OBSERV', 'REFERENCIA']) and 'Descripción' not in columnas_map:
+            #columnas_map['Descripción'] = col
     
-    # Detectar si hay Debito y Credito
-    tiene_debito_credito = 'Debito' in columnas_map and 'Credito' in columnas_map
-    
+    # Detectar si hay columna de naturaleza (Natu) y si hay Valor en USD
+    tiene_natu = 'Natu' in columnas_map
+
     # Si no hay Descripción, crearla vacía
     if 'Descripción' not in columnas_map:
         df['Descripción'] = ''
         columnas_map['Descripción'] = 'Descripción'
         print("  ⚠️ Columna 'Descripción' no encontrada - creada vacía")
     
-    # Verificar columnas requeridas
-    if tiene_debito_credito:
-        requeridas = ['Fecha', 'Concepto', 'Debito', 'Credito']
+    # Verificar columnas requeridas según moneda
+    if usa_dolares:
+        # USD: solo necesita Valor_USD
+        requeridas = ['Fecha', 'Concepto', 'Valor_USD']
     else:
-        requeridas = ['Fecha', 'Concepto', 'Valor']
+        # RD: necesita Valor y Natu
+        requeridas = ['Fecha', 'Concepto', 'Valor', 'Natu']
     
     faltantes = [r for r in requeridas if r not in columnas_map]
     if faltantes:
@@ -469,21 +530,41 @@ def cargar_contable(ruta, nombre=""):
     # Renombrar columnas
     df = df.rename(columns={v: k for k, v in columnas_map.items()})
     
-    # Convertir tipos y combinar Debito/Credito si es necesario
+    # Convertir tipos y combinar/ajustar columnas según formato
     df['Fecha'] = pd.to_datetime(df['Fecha'], errors='coerce')
     df['Concepto'] = df['Concepto'].fillna('').astype(str)
     df['Descripción'] = df['Descripción'].fillna('').astype(str)
-    
-    if tiene_debito_credito:
-        # Convertir Debito y Credito a numéricos
-        df['Debito'] = pd.to_numeric(df['Debito'], errors='coerce').fillna(0)
-        df['Credito'] = pd.to_numeric(df['Credito'], errors='coerce').fillna(0)
-        # Crear Valor: Credito positivo, Debito negativo
-        df['Valor'] = df['Credito'] - df['Debito']
-        # Eliminar columnas originales
-        df = df.drop(columns=['Debito', 'Credito'])
+
+    # Procesar Valor según moneda detectada
+    if usa_dolares == True and 'Valor_USD' in df.columns:
+        # USD: usar Valor Moneda Extranjera directamente (ya tiene signos correctos)
+        print("  💵 Detectada moneda USD - usando 'Valor Moneda Extranjera'")
+        # Descartar columnas RD primero
+        if 'Valor' in df.columns:
+            df = df.drop(columns=['Valor'], errors='ignore')
+        if 'Natu' in df.columns:
+            df = df.drop(columns=['Natu'], errors='ignore')
+        # Luego usar USD como Valor
+        df['Valor'] = pd.to_numeric(df['Valor_USD'], errors='coerce')
+        df = df.drop(columns=['Valor_USD'], errors='ignore')
     else:
+        # RD: usar Valor + Natu (lógica existente)
+        print("  🏴 Detectada moneda RD - usando 'Valor' con naturaleza (Natu)")
         df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce')
+        
+        # Si existe columna NATU, aplicar signo: 'I' => positivo, 'E' => negativo
+        if tiene_natu:
+            df['Natu'] = df['Natu'].fillna('').astype(str).str.upper().str.strip()
+            # Usar valor absoluto y luego aplicar signo según Natu
+            df['Valor'] = df['Valor'].abs()
+            mask_e = df['Natu'].str.startswith('E')
+            df.loc[mask_e, 'Valor'] = -df.loc[mask_e, 'Valor']
+            # Eliminar columna Natu para mantener esquema uniforme
+            df = df.drop(columns=['Natu'])
+        
+        # Descartar columna USD si existe
+        if 'Valor_USD' in df.columns:
+            df = df.drop(columns=['Valor_USD'], errors='ignore')
     
     # ⚡ OPTIMIZACIÓN 2: Filtrar SOLO filas con Fecha Y Valor válidos
     registros_antes = len(df)
@@ -1845,15 +1926,31 @@ def main():
         else:
             print(f"❌ Entrada inválida.")
 
+    valid = False
+    usa_dolares = False
+    while valid == False:
+        op = input("¿Está utilizando dólares? (s/n): ").strip().lower()
+        if op == 's':   
+            usa_dolares = True
+        elif op == 'n':
+            usa_dolares = False
+        if op in ['s', 'n']:
+            valid = True
+        else:
+            print(f"❌ Entrada inválida.")
+
     print("\n" + "="*70)
     print("📂 CARGANDO DATOS")
     print("="*70)
     
     # Carga de Banco
-    if tipoBanco == 1:
-        try:
+    if tipoBanco == 1 or tipoBanco == 3:
+        if tipoBanco == 1:
             ARCHIVO_BANCO = r"BANRESERVAS.xlsx"
-            banco = cargar_banreservas(ARCHIVO_BANCO, "BANCO")
+        else:
+            ARCHIVO_BANCO = r"BHD.xlsx"
+        try:
+            banco = cargar_banco(ARCHIVO_BANCO, "BANCO")
         except Exception as e:
             print(f"❌ Error al cargar banco: {e}")
             return
@@ -1862,14 +1959,6 @@ def main():
         try:
             ARCHIVO_BANCO = r"POPULAR.xlsx"
             banco = cargar_popular(ARCHIVO_BANCO, "BANCO")
-        except Exception as e:
-            print(f"❌ Error al cargar banco: {e}")
-            return
-        
-    if tipoBanco == 3:
-        try:
-            ARCHIVO_BANCO = r"BHD.xlsx"
-            banco = cargar_bhd(ARCHIVO_BANCO, "BANCO")
         except Exception as e:
             print(f"❌ Error al cargar banco: {e}")
             return
@@ -1885,7 +1974,7 @@ def main():
     # Carga de Contable
     try:
         ARCHIVO_CONTABLE = r"LIBRO_CONTABLE.xlsx"
-        contable = cargar_contable(ARCHIVO_CONTABLE, "CONTABLE")
+        contable = cargar_contable(ARCHIVO_CONTABLE, usa_dolares, "CONTABLE")
     except Exception as e:
         print(f"❌ Error al cargar contable: {e}")
         return
