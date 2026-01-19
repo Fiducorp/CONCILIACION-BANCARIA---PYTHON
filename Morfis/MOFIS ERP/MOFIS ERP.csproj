@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C28EBEFF-F66F-4180-9CF6-A1C97B1497AB}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>MOFIS_ERP</RootNamespace>
+    <AssemblyName>MOFIS ERP</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BCrypt.Net-Next, Version=4.0.3.0, Culture=neutral, PublicKeyToken=1e11be04b6288443, processorArchitecture=MSIL">
+      <HintPath>..\packages\BCrypt.Net-Next.4.0.3\lib\net472\BCrypt.Net-Next.dll</HintPath>
+    </Reference>
+    <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
+      <HintPath>..\packages\BouncyCastle.Cryptography.2.4.0\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="ClosedXML, Version=0.105.0.0, Culture=neutral, PublicKeyToken=fd1eb21b62ae805b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.0.105.0\lib\netstandard2.0\ClosedXML.dll</HintPath>
+    </Reference>
+    <Reference Include="ClosedXML.Parser, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1d5f7376574c51ec, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.Parser.2.0.0\lib\netstandard2.0\ClosedXML.Parser.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=3.1.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.3.1.1\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml.Framework, Version=3.1.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.Framework.3.1.1\lib\net46\DocumentFormat.OpenXml.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelNumberFormat, Version=1.1.0.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelNumberFormat.1.1.0\lib\net20\ExcelNumberFormat.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.13.3, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.13.3\lib\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.HashCode, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.HashCode.1.1.1\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.5.0.0\lib\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.5.0.0\lib\net461\Microsoft.Extensions.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Options.5.0.0\lib\net461\Microsoft.Extensions.Options.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.5.0.0\lib\net461\Microsoft.Extensions.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="QuestPDF, Version=2025.12.1.0, Culture=neutral, PublicKeyToken=0f3c2b2315ff52c8, processorArchitecture=MSIL">
+      <HintPath>..\packages\QuestPDF.2025.12.1\lib\netstandard2.0\QuestPDF.dll</HintPath>
+    </Reference>
+    <Reference Include="RBush, Version=4.0.0.0, Culture=neutral, PublicKeyToken=c77e27b81f4d0187, processorArchitecture=MSIL">
+      <HintPath>..\packages\RBush.Signed.4.0.0\lib\net47\RBush.dll</HintPath>
+    </Reference>
+    <Reference Include="SixLabors.Fonts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d998eea7b14cab13, processorArchitecture=MSIL">
+      <HintPath>..\packages\SixLabors.Fonts.1.0.0\lib\netstandard2.0\SixLabors.Fonts.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.5.0.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.6.1\lib\net462\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="System.Security.AccessControl, Version=6.0.0.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.AccessControl.6.0.1\lib\net461\System.Security.AccessControl.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Xml, Version=6.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Xml.6.0.2\lib\net461\System.Security.Cryptography.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Principal.Windows, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Principal.Windows.5.0.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DataVisualization" />
+    <Reference Include="System.Web.DataVisualization.Design" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Windows.Forms.DataVisualization.Design" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Classes\AuditoriaHelper.cs" />
+    <Compile Include="Classes\AutenticacionHelper.cs" />
+    <Compile Include="Classes\DatabaseConnection.cs" />
+    <Compile Include="Classes\PDFReporteGenerator.cs" />
+    <Compile Include="Classes\PermisosHelper.cs" />
+    <Compile Include="Classes\SesionActual.cs" />
+    <Compile Include="Classes\UsuarioDTO.cs" />
+    <Compile Include="Controls\CardControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\CardControl.Designer.cs">
+      <DependentUpon>CardControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormPruebaBCrypt.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormPruebaBCrypt.Designer.cs">
+      <DependentUpon>FormPruebaBCrypt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\FormMenuCartasSolicitudes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\FormMenuCartasSolicitudes.Designer.cs">
+      <DependentUpon>FormMenuCartasSolicitudes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Contabilidad\CuentasPorPagar\FormDashboardCuentasPorPagar.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Contabilidad\CuentasPorPagar\FormDashboardCuentasPorPagar.Designer.cs">
+      <DependentUpon>FormDashboardCuentasPorPagar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Contabilidad\FormDashboardContabilidad.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Contabilidad\FormDashboardContabilidad.Designer.cs">
+      <DependentUpon>FormDashboardContabilidad.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormDashboardCategorias.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormDashboardCategorias.Designer.cs">
+      <DependentUpon>FormDashboardCategorias.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormMain.Designer.cs">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\Auditoria\AuditoriaAcciones.cs" />
+    <Compile Include="Forms\Sistema\Auditoria\FormAuditoria.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\Auditoria\FormAuditoria.Designer.cs">
+      <DependentUpon>FormAuditoria.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\Auditoria\FormBusquedaAvanzadaAuditoria.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\Auditoria\FormBusquedaAvanzadaAuditoria.Designer.cs">
+      <DependentUpon>FormBusquedaAvanzadaAuditoria.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\Auditoria\FormConfiguracionReportePDF.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\Auditoria\FormConfiguracionReportePDF.Designer.cs">
+      <DependentUpon>FormConfiguracionReportePDF.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\Auditoria\FormDashboardAuditoria.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\Auditoria\FormDashboardAuditoria.Designer.cs">
+      <DependentUpon>FormDashboardAuditoria.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\Auditoria\FormDetalleAuditoria.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\Auditoria\FormDetalleAuditoria.Designer.cs">
+      <DependentUpon>FormDetalleAuditoria.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\FormDashboardSistema.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\FormDashboardSistema.Designer.cs">
+      <DependentUpon>FormDashboardSistema.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionRoles\FormAdministrarPermisos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionRoles\FormAdministrarPermisos.Designer.cs">
+      <DependentUpon>FormAdministrarPermisos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionRoles\FormConfirmarPassword.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionRoles\FormConfirmarPassword.Designer.cs">
+      <DependentUpon>FormConfirmarPassword.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionRoles\FormConsultarPermisos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionRoles\FormConsultarPermisos.Designer.cs">
+      <DependentUpon>FormConsultarPermisos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionRoles\FormCopiarPermisos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionRoles\FormCopiarPermisos.Designer.cs">
+      <DependentUpon>FormCopiarPermisos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionRoles\FormCrearRol.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionRoles\FormCrearRol.Designer.cs">
+      <DependentUpon>FormCrearRol.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionRoles\FormDashboardRoles.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionRoles\FormDashboardRoles.Designer.cs">
+      <DependentUpon>FormDashboardRoles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionRoles\FormGenerarReporte.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionRoles\FormGenerarReporte.Designer.cs">
+      <DependentUpon>FormGenerarReporte.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionRoles\FormReportesPermisos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionRoles\FormReportesPermisos.Designer.cs">
+      <DependentUpon>FormReportesPermisos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionRoles\FormVistaPreviaCambios.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionRoles\FormVistaPreviaCambios.Designer.cs">
+      <DependentUpon>FormVistaPreviaCambios.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionUsuarios\FormConfirmarEliminacion.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionUsuarios\FormConfirmarEliminacion.Designer.cs">
+      <DependentUpon>FormConfirmarEliminacion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionUsuarios\FormGestionUsuarios.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionUsuarios\FormGestionUsuarios.Designer.cs">
+      <DependentUpon>FormGestionUsuarios.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionUsuarios\FormResetPassword.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionUsuarios\FormResetPassword.Designer.cs">
+      <DependentUpon>FormResetPassword.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionUsuarios\FormUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Sistema\GestionUsuarios\FormUsuario.Designer.cs">
+      <DependentUpon>FormUsuario.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FORMULARIOS - LOGIN\FormCambiarPassword.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FORMULARIOS - LOGIN\FormCambiarPassword.Designer.cs">
+      <DependentUpon>FormCambiarPassword.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FORMULARIOS - LOGIN\FormLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FORMULARIOS - LOGIN\FormLogin.Designer.cs">
+      <DependentUpon>FormLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Controls\CardControl.resx">
+      <DependentUpon>CardControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormPruebaBCrypt.resx">
+      <DependentUpon>FormPruebaBCrypt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\FormMenuCartasSolicitudes.resx">
+      <DependentUpon>FormMenuCartasSolicitudes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormMain.resx">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Sistema\Auditoria\FormAuditoria.resx">
+      <DependentUpon>FormAuditoria.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Sistema\Auditoria\FormBusquedaAvanzadaAuditoria.resx">
+      <DependentUpon>FormBusquedaAvanzadaAuditoria.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Sistema\Auditoria\FormConfiguracionReportePDF.resx">
+      <DependentUpon>FormConfiguracionReportePDF.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Sistema\Auditoria\FormDashboardAuditoria.resx">
+      <DependentUpon>FormDashboardAuditoria.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Sistema\Auditoria\FormDetalleAuditoria.resx">
+      <DependentUpon>FormDetalleAuditoria.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Sistema\GestionRoles\FormAdministrarPermisos.resx">
+      <DependentUpon>FormAdministrarPermisos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Sistema\GestionRoles\FormConfirmarPassword.resx">
+      <DependentUpon>FormConfirmarPassword.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Sistema\GestionRoles\FormConsultarPermisos.resx">
+      <DependentUpon>FormConsultarPermisos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Sistema\GestionRoles\FormCopiarPermisos.resx">
+      <DependentUpon>FormCopiarPermisos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Sistema\GestionRoles\FormCrearRol.resx">
+      <DependentUpon>FormCrearRol.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Sistema\GestionRoles\FormDashboardRoles.resx">
+      <DependentUpon>FormDashboardRoles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Sistema\GestionRoles\FormGenerarReporte.resx">
+      <DependentUpon>FormGenerarReporte.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Sistema\GestionRoles\FormReportesPermisos.resx">
+      <DependentUpon>FormReportesPermisos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Sistema\GestionRoles\FormVistaPreviaCambios.resx">
+      <DependentUpon>FormVistaPreviaCambios.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Sistema\GestionUsuarios\FormConfirmarEliminacion.resx">
+      <DependentUpon>FormConfirmarEliminacion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Sistema\GestionUsuarios\FormGestionUsuarios.resx">
+      <DependentUpon>FormGestionUsuarios.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Sistema\GestionUsuarios\FormResetPassword.resx">
+      <DependentUpon>FormResetPassword.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Sistema\GestionUsuarios\FormUsuario.resx">
+      <DependentUpon>FormUsuario.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FORMULARIOS - LOGIN\FormCambiarPassword.resx">
+      <DependentUpon>FormCambiarPassword.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FORMULARIOS - LOGIN\FormLogin.resx">
+      <DependentUpon>FormLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Database\README.md" />
+    <None Include="Database\README_CXP.md" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="Resources\Icon_Advert.avif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Database\01_Schema\01_CreateDatabase.sql" />
+    <Content Include="Database\01_Schema\SCRIPT_06_CrearTablaCatalogoCategorias.sql" />
+    <Content Include="Database\01_Schema\SCRIPT_07_CrearTablaCatalogoModulos.sql" />
+    <Content Include="Database\01_Schema\SCRIPT_08_CrearTablaCatalogoFormularios.sql" />
+    <Content Include="Database\01_Schema\SCRIPT_09_CrearTablaCatalogoAcciones.sql" />
+    <Content Include="Database\01_Schema\SCRIPT_10_CrearTablaPermisosRol.sql" />
+    <Content Include="Database\01_Schema\SCRIPT_11_CrearTablaPermisosUsuario.sql" />
+    <Content Include="Database\01_Schema\SCRIPT_12_CrearTablasCatalogosCXP.sql" />
+    <Content Include="Database\01_Schema\SCRIPT_13_CrearTablasFideicomisosProveedores.sql" />
+    <Content Include="Database\01_Schema\SCRIPT_14_CrearTablaSolicitudesPago.sql" />
+    <Content Include="Database\01_Schema\SCRIPT_15_CrearTablasFirmasConfiguracion.sql" />
+    <Content Include="Database\02_Data\SCRIPT_01_InsertarRoles.sql" />
+    <Content Include="Database\01_Schema\02_CreateTable_Roles.sql" />
+    <Content Include="Database\01_Schema\03_CreateTable_Usuarios.sql" />
+    <Content Include="Database\01_Schema\04_CreateTable_Permisos.sql" />
+    <Content Include="Database\01_Schema\05_CreateTable_Auditoria.sql" />
+    <Content Include="Database\02_Data\SCRIPT_02_CrearUsuarioRoot.sql" />
+    <Content Include="Database\02_Data\SCRIPT_03_InsertarCategorias.sql" />
+    <Content Include="Database\02_Data\SCRIPT_04_InsertarModulos.sql" />
+    <Content Include="Database\02_Data\SCRIPT_05_InsertarFormularios.sql" />
+    <Content Include="Database\02_Data\SCRIPT_06_InsertarAcciones.sql" />
+    <Content Include="Database\02_Data\SCRIPT_07_InsertarPermisosIniciales.sql" />
+    <Content Include="Database\02_Data\SCRIPT_08_InsertarDatosCatalogosCXP.sql" />
+    <Content Include="Database\02_Data\SCRIPT_09_InsertarConfiguracionCXP.sql" />
+    <Content Include="Database\02_Data\SCRIPT_10_ActualizarCatalogosCXP.sql" />
+    <Content Include="Database\03_Updates\UPDATE_001_AgregarColumnasEliminacion.sql" />
+    <Content Include="Database\03_Updates\UPDATE_004_AgregarColumnaEsSistema.sql" />
+    <Content Include="Database\03_Updates\UPDATE_002_AgregarRolesFaltantes.sql" />
+    <Content Include="Database\03_Updates\UPDATE_003_AgregarPermisosNuevosRoles.sql" />
+    <Content Include="Database\SCRIPT_MAESTRO_CXP.sql" />
+    <Content Include="Resources\LOGOTIPO.png" />
+    <None Include="Resources\icon_Adv.png" />
+    <EmbeddedResource Include="Resources\MOFIS ERP -LOGO.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\QuestPDF.2025.12.1\build\net4\QuestPDF.targets" Condition="Exists('..\packages\QuestPDF.2025.12.1\build\net4\QuestPDF.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Este proyecto hace referencia a los paquetes NuGet que faltan en este equipo. Use la restauración de paquetes NuGet para descargarlos. Para obtener más información, consulte http://go.microsoft.com/fwlink/?LinkID=322105. El archivo que falta es {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\QuestPDF.2025.12.1\build\net4\QuestPDF.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\QuestPDF.2025.12.1\build\net4\QuestPDF.targets'))" />
+  </Target>
+</Project>
