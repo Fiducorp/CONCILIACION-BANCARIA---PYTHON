@@ -558,11 +558,95 @@ def limpiar_promerica(df_original):
     return df
 
 def limpiar_santa_cruz(df_original):
-    """Limpieza específica para SANTA_CRUZ"""
-    print("\n   Aplicando limpieza: SANTA_CRUZ")
+    """Limpieza ligera para SANTA CRUZ.
+
+    Objetivo: eliminar filas arriba de la tabla de datos (texto libre, títulos,
+    metadatos) para que pandas pueda leer correctamente la tabla. NO debe
+    transformar o combinar columnas (p.ej. Debito/Credito) — eso lo hace el
+    loader universal posteriormente.
+    
+    Mapeo de columnas Santa Cruz:
+    - Fecha de Posteo → IGNORADA
+    - Fecha Efectiva → Fecha (IMPORTANTE)
+    - No. Cheque → IGNORADA
+    - No. Referencia → Concepto (ID de transacción)
+    - Descripcion → Descripción
+    - Retiros → Debito
+    - Despositos → Credito
+    - Balance → IGNORADA
+    """
+    print("\n   Aplicando limpieza: SANTA CRUZ (solo remover encabezados no-datos)")
     df = df_original.copy()
     df = df.reset_index(drop=True)
+    # Eliminar filas completamente vacías
     df = df.dropna(how='all')
+
+    # Buscar fila de cabecera en las primeras N filas
+    header_row = None
+    max_search = min(25, len(df))
+    for i in range(max_search):
+        vals = ' '.join([str(x) for x in df.iloc[i].values if pd.notna(x)])
+        up = quitar_acentos(vals).upper()
+        # Buscar palabras clave de Santa Cruz
+        if any(k in up for k in ['FECHA EFECTIVA', 'FECHA DE POSTEO', 'NO. REFERENCIA', 'REFERENCIA', 'RETIROS', 'DESPOSITOS', 'DEPOSITOS']):
+            header_row = i
+            break
+
+    # Fallback: buscar solo 'FECHA'
+    if header_row is None:
+        for i in range(max_search):
+            vals = ' '.join([str(x) for x in df.iloc[i].values if pd.notna(x)])
+            up = quitar_acentos(vals).upper()
+            if 'FECHA' in up:
+                header_row = i
+                break
+
+    if header_row is None:
+        # No se detectó cabecera; devolver df con filas vacías eliminadas
+        return df
+
+    # Aplicar la fila encontrada como cabecera y devolver solo las filas de datos
+    raw_header = df.iloc[header_row].astype(str).tolist()
+    df = df.iloc[header_row + 1 :].reset_index(drop=True)
+    df.columns = raw_header
+
+    # Normalizar nombres de columnas para Santa Cruz
+    rename_map = {}
+    for col in list(df.columns):
+        key = quitar_acentos(str(col)).upper()
+        
+        # Mapeo específico para Santa Cruz
+        if 'FECHA EFECTIVA' in key:
+            rename_map[col] = 'Fecha'
+        elif 'FECHA DE POSTEO' in key or 'FECHA POSTEO' in key:
+            # Ignorar Fecha de Posteo (no usar para mapeo)
+            pass
+        elif 'NO. REFERENCIA' in key or 'NO REFERENCIA' in key or 'REFERENCIA' in key:
+            rename_map[col] = 'Concepto'
+        elif 'DESCRIPCION' in key or 'DESCRIP' in key:
+            rename_map[col] = 'Descripción'
+        elif 'RETIROS' in key or 'RETIRO' in key:
+            rename_map[col] = 'Debito'
+        elif 'DESPOSITOS' in key or 'DEPOSITOS' in key or 'DEPOSITO' in key:
+            rename_map[col] = 'Credito'
+        elif 'NO. CHEQUE' in key or 'NO CHEQUE' in key or 'CHEQUE' in key:
+            # Ignorar No. Cheque
+            pass
+        elif 'BALANCE' in key or 'SALDO' in key:
+            # Ignorar Balance/Saldo
+            pass
+
+    if rename_map:
+        df = df.rename(columns=rename_map)
+
+    # Quitar filas de totales u otros rótulos (líneas que contienen 'TOTAL' u 'NETO')
+    mask_tot = df.apply(lambda r: any('TOTAL' in str(x).upper() or 'NETO' in str(x).upper() for x in r.values), axis=1)
+    if mask_tot.any():
+        df = df[~mask_tot].reset_index(drop=True)
+
+    # Eliminar filas vacías residuales
+    df = df.dropna(how='all').reset_index(drop=True)
+
     return df
 
 def limpiar_ademi(df_original):
@@ -789,7 +873,7 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
         col_upper = str(col).upper().strip()
         if any(x in col_upper for x in ['FECHA', 'DATE','EFECTIVA']) and 'Fecha' not in columnas_map:
             columnas_map['Fecha'] = col
-        elif 'CONCEPTO' in col_upper and 'Concepto' not in columnas_map:
+        elif any(x in col_upper for x in ['CONCEPTO', 'REFERENCIA']) and 'Concepto' not in columnas_map:
             columnas_map['Concepto'] = col
         elif any(x in col_upper for x in ['DÉBITO', 'DEBITO', 'RETIRO', 'RETIROS']) and 'Debito' not in columnas_map:
             columnas_map['Debito'] = col
@@ -797,7 +881,7 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
             columnas_map['Credito'] = col
         elif any(x in col_upper for x in ['VALOR', 'MONTO', 'IMPORTE']) and 'Valor' not in columnas_map:
             columnas_map['Valor'] = col
-        elif any(x in col_upper for x in ['DESCRIP', 'DETALLE', 'OBSERV', 'REFERENCIA']) and 'Descripción' not in columnas_map:
+        elif any(x in col_upper for x in ['DESCRIP', 'DETALLE', 'OBSERV']) and 'Descripción' not in columnas_map:
             columnas_map['Descripción'] = col
 
     # Fallback: detect Valor-like column with additional keywords (English variants)
