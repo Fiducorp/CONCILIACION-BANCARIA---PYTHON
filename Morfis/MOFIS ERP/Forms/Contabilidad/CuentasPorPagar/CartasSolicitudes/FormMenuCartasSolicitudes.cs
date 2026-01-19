@@ -269,7 +269,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             lblTitulo.Visible = true;
             lblSubtitulo.Visible = true;
             picLogo.Dock = DockStyle.Left;
-            picLogo.Width = 50;
+            picLogo.Width = 106;
             picLogo.Visible = true;
 
             // Cambiar Dock del botón toggle a Right (estado inicial)
