@@ -546,7 +546,7 @@ def limpiar_banreservas(df_original):
             rename_map[col] = 'Credito'
         elif 'REFER' in key:
             rename_map[col] = 'Referencia'
-        elif 'DESCRIP' in key or 'OBSERV' in key:
+        elif any(k in key for k in ['DESCRIP', 'DETALLE', 'OBSERV', 'DESCRIPCIÓN']):
             rename_map[col] = 'Descripción'
         elif any(k in key for k in ['VALOR', 'MONTO', 'IMPORTE', 'AMOUNT']):
             rename_map[col] = 'Valor'
@@ -1008,7 +1008,7 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
             columnas_map['Credito'] = col
         elif any(x in col_upper for x in ['VALOR', 'MONTO', 'IMPORTE']) and 'Valor' not in columnas_map:
             columnas_map['Valor'] = col
-        elif any(x in col_upper for x in ['DESCRIP', 'DETALLE', 'OBSERV']) and 'Descripción' not in columnas_map:
+        elif any(x in col_upper for x in ['DESCRIP', 'DETALLE', 'OBSERV', 'DESCRIPCIÓN']) and 'Descripción' not in columnas_map:
             columnas_map['Descripción'] = col
 
     # Fallback: detect Valor-like column with additional keywords (English variants)
@@ -1184,8 +1184,8 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
         # Valor (único) - detecta nombres comunes (incluye variantes en inglés)
         elif any(x in col_upper for x in ['VALOR', 'MONTO', 'IMPORTE', 'AMOUNT', 'AMT']) and 'Valor' not in columnas_map:
             columnas_map['Valor'] = col
-        #elif any(x in col_upper for x in ['DESCRIP', 'DETALLE', 'OBSERV', 'REFERENCIA']) and 'Descripción' not in columnas_map:
-            #columnas_map['Descripción'] = col
+        elif any(x in col_upper for x in ['DESCRIP', 'DETALLE', 'OBSERV', 'REFERENCIA', 'BENEFICIARIO', 'BENEF']) and 'Descripción' not in columnas_map:
+            columnas_map['Descripción'] = col
     
     # Detectar si hay columna de naturaleza (Natu) y si hay Valor en USD
     tiene_natu = 'Natu' in columnas_map
@@ -1244,12 +1244,19 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
         df['Valor'] = pd.to_numeric(df['Valor_USD'], errors='coerce')
         df = df.drop(columns=['Valor_USD'], errors='ignore')
     else:
-        # RD: usar Valor tal cual (NO aplicar interpretación de NATU aquí)
-        print("  Detectada moneda RD - usando 'Valor' sin interpretar 'Natu'")
+        # RD: usar Valor aplicando interpretación de NATU
+        print("  Detectada moneda RD - usando 'Valor' interpretando 'Natu'")
         df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce')
-        # Si existe columna NATU, simplemente eliminarla para no interpretar signos
+
         if 'Natu' in df.columns:
+            df['Natu'] = df['Natu'].astype(str).str.strip().str.upper()
+
+            # 🔹 APLICAR SIGNO SEGÚN NATU
+            df.loc[df['Natu'] == 'E', 'Valor'] *= -1
+            df.loc[df['Natu'] == 'I', 'Valor'] = df.loc[df['Natu'] == 'I', 'Valor'].abs()
+
             df = df.drop(columns=['Natu'])
+
         # Descartar columna USD si existe
         if 'Valor_USD' in df.columns:
             df = df.drop(columns=['Valor_USD'], errors='ignore')
