@@ -2,22 +2,22 @@
 ============================================================================
 CONCILIACIÓN BANCARIA INTELIGENTE v6.5 DEFINITIVO
 ============================================================================
-Proyecto: GREEN PARK - BANRESERBAS
+Proyecto: GREEN PARK - BANRESERVAS
 
-MOTOR DEFINITIVO = v6.0 (completo) + v6.1 (estrategias 1.6 y 7) + OPTIMIZACIONES
+MOTOR DEFINITIVO = v0.6 (completo) + v0.6.1 (estrategias 1.6 y 7) + OPTIMIZACIONES
 
 ✅ TODAS LAS ESTRATEGIAS (7 estrategias completas):
    1.   Monto Exacto (1:1)
    1.5  Transferencias + Comisión ($7)
-   1.6  Comisiones Agrupadas Multi-fecha [v6.1]
+   1.6  Comisiones Agrupadas Multi-fecha [v0.6.1]
    2.   Agrupaciones N→1 (4 métodos)
    3.   Agrupaciones 1→N
    4.   Agrupaciones N↔M
    5.   Impuestos DGII (0.15%)
    6.   Segunda Pasada Flexible
-   7.   Búsqueda Exhaustiva Final [v6.1]
+   7.   Búsqueda Exhaustiva Final [v0.6.1]
 
-✅ OPTIMIZACIONES v6.5:
+✅ OPTIMIZACIONES v0.6.5:
    - Lectura rápida: solo filas con Fecha Y Valor válidos
    - Límites por estrategia para evitar timeouts
    - Alias TC/LEGAL mejorados: TC LEGAL ↔ TC Corporativa ↔ Legalizaciones ↔ IPI
@@ -166,21 +166,22 @@ def buscar_archivos_en_carpeta():
     print("="*70)
     print(f"📁 Carpeta de trabajo: {CARPETA_TRABAJO}\n")
     
-    # Buscar todos los archivos Excel
+    # Buscar todos los archivos Excel y CSV
     archivos_excel = []
-    for extension in ['*.xlsx', '*.xls', '*.xlsm']:
+    for extension in ['*.xlsx', '*.xls', '*.xlsm', '*.csv']:
         archivos_excel.extend(glob.glob(os.path.join(CARPETA_TRABAJO, extension)))
     
     if not archivos_excel:
-        print("❌ No se encontraron archivos Excel (.xlsx, .xls) en la carpeta")
+        print("❌ No se encontraron archivos Excel (.xlsx, .xls) o CSV (.csv) en la carpeta")
         return None, None, None, None
     
-    print(f"📋 Archivos Excel encontrados: {len(archivos_excel)}")
+    print(f"📋 Archivos encontrados: {len(archivos_excel)}")
     for archivo in archivos_excel:
         print(f"   • {os.path.basename(archivo)}")
     
-    archivo_contable = None
-    archivos_banco = []  # Lista para almacenar múltiples archivos de banco
+    # Lista para almacenar múltiples archivos de banco y contable
+    archivos_contable = []
+    archivos_banco = []
     
     # Analizar cada archivo
     for ruta_archivo in archivos_excel:
@@ -189,17 +190,17 @@ def buscar_archivos_en_carpeta():
         
         # Verificar si es el archivo CONTABLE
         nombre_norm = normalizar_nombre_banco(nombre_sin_extension)
-        if nombre_norm in ['CONTABLE', 'LIBROCONTABLE', 'LIBRO', 'ACCOUNTINGBOOK']:
-            archivo_contable = ruta_archivo
+        # Verificar si contiene palabras clave del contable (como se hace con bancos)
+        if any(keyword in nombre_norm for keyword in ['CONTABLE', 'LIBROCONTABLE', 'LIBRO', 'ACCOUNTINGBOOK']):
+            archivos_contable.append((ruta_archivo, 'CONTABLE', 'Libro Contable', nombre_archivo))
             print(f"\n✅ CONTABLE identificado: {nombre_archivo}")
-            continue
-        
         # Verificar si es un archivo de BANCO
-        banco_det, nombre_det = detectar_banco_en_nombre_archivo(nombre_sin_extension)
-        if banco_det:
-            archivos_banco.append((ruta_archivo, banco_det, nombre_det, nombre_archivo))
-            print(f"\n✅ BANCO identificado: {nombre_archivo}")
-            print(f"   🏦 Banco: {banco_det} ({nombre_det})")
+        else:
+            banco_det, nombre_det = detectar_banco_en_nombre_archivo(nombre_sin_extension)
+            if banco_det:
+                archivos_banco.append((ruta_archivo, banco_det, nombre_det, nombre_archivo))
+                print(f"\n✅ BANCO identificado: {nombre_archivo}")
+                print(f"   🏦 Banco: {banco_det} ({nombre_det})")
     
     print("\n" + "─"*70)
     
@@ -210,14 +211,14 @@ def buscar_archivos_en_carpeta():
         print(f"   Bancos soportados: {', '.join(BANCOS_SOPORTADOS.keys())}")
         return None, None, None, None
     
-    if not archivo_contable:
+    if not archivos_contable:
         print("\n❌ ERROR: No se encontró archivo CONTABLE")
         print("   El archivo debe llamarse 'CONTABLE.xlsx' o similar")
         return None, None, None, None
     
     # Si hay múltiples archivos de banco, permitir al usuario seleccionar
     if len(archivos_banco) > 1:
-        print("\n🏦 SE ENCONTRARON MÚLTIPLES ARCHIVOS DE BANCO:\n")
+        print("\n❗ SE ENCONTRARON MÚLTIPLES ARCHIVOS DE BANCO:\n")
         for idx, (ruta, codigo, nombre, archivo_nombre) in enumerate(archivos_banco, 1):
             print(f"   {idx}) {archivo_nombre}")
             print(f"      🏦 Banco: {codigo} ({nombre})\n")
@@ -244,9 +245,38 @@ def buscar_archivos_en_carpeta():
         # Si hay solo un archivo de banco, seleccionarlo automáticamente
         archivo_banco, codigo_banco, nombre_banco, nombre_archivo_banco = archivos_banco[0]
     
+    # Si hay múltiples archivos del libro contable, permitir al usuario seleccionar
+    if len(archivos_contable) > 1:
+        print("\n❗ SE ENCONTRARON MÚLTIPLES ARCHIVOS DEL LIBRO CONTABLE:\n")
+        for idx, (ruta, codigo, nombre, archivo_nombre) in enumerate(archivos_contable, 1):
+            print(f"   {idx}) {archivo_nombre}")
+            print(f"      📖 Libro Contable: {codigo} ({nombre})\n")
+        
+        valid = False
+        while not valid:
+            try:
+                entrada = input(f"Selecciona el número del libro contable a usar (1-{len(archivos_contable)}): ").strip()
+                if entrada.isdigit():
+                    seleccion = int(entrada)
+                    if 1 <= seleccion <= len(archivos_contable):
+                        valid = True
+                        archivo_contable, _, _, _ = archivos_contable[seleccion - 1]
+                    else:
+                        print(f"❌ Ingresa un número entre 1 y {len(archivos_contable)}")
+                else:
+                    print(f"❌ Entrada inválida. Ingresa un número")
+            except KeyboardInterrupt:
+                print("\n❌ Operación cancelada")
+                return None, None, None, None
+
+        print(f"\n✅ Libro contable seleccionado: {archivos_contable[seleccion - 1][3]}")
+    else:
+        # Si hay solo un archivo del libro contable, seleccionarlo automáticamente
+        archivo_contable, _, _, _ = archivos_contable[0]
+
     print("\n✅ Archivos validados correctamente")
     print(f"   🏦 Banco:    {os.path.basename(archivo_banco)}")
-    print(f"   📗 Contable: {os.path.basename(archivo_contable)}")
+    print(f"   📖 Contable: {os.path.basename(archivo_contable)}")
     
     return archivo_banco, archivo_contable, codigo_banco, nombre_banco
 
@@ -526,12 +556,61 @@ def limpiar_banreservas(df_original):
     return df
 
 def limpiar_bhd(df_original):
-    """Limpieza específica para BHD"""
+    """Limpieza específica para BHD (Excel)"""
     print("\n   Aplicando limpieza: BHD")
     df = df_original.copy()
     df = df.reset_index(drop=True)
     df = df.dropna(how='all')
     return df
+
+def limpiar_bhd_csv(ruta_archivo):
+    """
+    Limpieza específica para BHD en formato CSV
+    
+    Estructura esperada (sin headers):
+    Fecha, USELESS, USELESS, USELESS, Concepto, Debito, Credito, USELESS, Balance, Hour
+    
+    La primera fila es un resumen y debe ignorarse.
+    """
+    print("\n   Aplicando limpieza: BHD (CSV)")
+    
+    try:
+        # Leer CSV sin headers (no_column_names)
+        df = pd.read_csv(ruta_archivo, header=None)
+        print(f"  📊 CSV cargado: {df.shape[0]} filas × {df.shape[1]} columnas")
+        
+        # Asignar nombres temporales a las columnas (0-indexed)
+        df.columns = [f'col_{i}' for i in range(df.shape[1])]
+        
+        # Saltar la primera fila (resumen/encabezado)
+        df = df.iloc[1:].reset_index(drop=True)
+        print(f"  ✅ Salteada primera fila (resumen), quedaron: {df.shape[0]} filas")
+        
+        # Mapear columnas: Fecha=0, Concepto=4, Debito=5, Credito=6
+        # Las demás columnas (1,2,3,7,8,9) son inútiles
+        df_limpio = pd.DataFrame({
+            'Fecha': df['col_0'],
+            'Concepto': df['col_4'],
+            'Descripción': '',  # Campo vacío por defecto
+            'Debito': df['col_5'],
+            'Credito': df['col_6']
+        })
+        
+        # Limpiar datos
+        df_limpio = df_limpio.reset_index(drop=True)
+        df_limpio = df_limpio.dropna(how='all')
+        
+        # Convertir a tipos de datos correctos
+        df_limpio['Fecha'] = pd.to_datetime(df_limpio['Fecha'], errors='coerce')
+        df_limpio['Debito'] = pd.to_numeric(df_limpio['Debito'], errors='coerce')
+        df_limpio['Credito'] = pd.to_numeric(df_limpio['Credito'], errors='coerce')
+        
+        print(f"  ✅ Limpieza BHD CSV completada: {df_limpio.shape[0]} filas")
+        return df_limpio
+        
+    except Exception as e:
+        print(f"  ❌ Error al limpiar CSV de BHD: {e}")
+        raise
 
 def limpiar_banesco(df_original):
     """Limpieza específica para BANESCO"""
@@ -690,36 +769,64 @@ FUNCIONES_LIMPIEZA_BANCO = {
 def limpiar_archivo_banco(ruta_archivo, codigo_banco):
     """
     Carga y limpia el archivo del banco según su código
+    Soporta archivos Excel y CSV (especialmente para BHD)
     """
     print(f"\n  📂 Cargando archivo de {codigo_banco}...")
     
     try:
-        # Leer archivo Excel completo (sin procesar)
-        df_crudo = pd.read_excel(ruta_archivo)
-        print(f"  📊 Dimensiones originales: {df_crudo.shape[0]} filas × {df_crudo.shape[1]} columnas")
-        print(f"  📋 Columnas originales: {list(df_crudo.columns)}")
-        
-        # Aplicar limpieza específica del banco
-        if codigo_banco in FUNCIONES_LIMPIEZA_BANCO:
-            df_limpio = FUNCIONES_LIMPIEZA_BANCO[codigo_banco](df_crudo)
+        # Detectar si es un archivo CSV (especialmente para BHD)
+        if ruta_archivo.lower().endswith('.csv'):
+            if codigo_banco == 'BHD':
+                print(f"  📋 Detectado archivo CSV para BHD")
+                df_limpio = limpiar_bhd_csv(ruta_archivo)
+            else:
+                print(f"  ⚠️  Archivo CSV para {codigo_banco} no soportado aún")
+                return None
         else:
-            print(f"  ⚠️  No hay función de limpieza para {codigo_banco}")
-            df_limpio = df_crudo
+            # Leer archivo Excel completo (sin procesar)
+            df_crudo = pd.read_excel(ruta_archivo)
+            print(f"  📊 Dimensiones originales: {df_crudo.shape[0]} filas × {df_crudo.shape[1]} columnas")
+            print(f"  📋 Columnas originales: {list(df_crudo.columns)}")
+            
+            # Aplicar limpieza específica del banco
+            if codigo_banco in FUNCIONES_LIMPIEZA_BANCO:
+                df_limpio = FUNCIONES_LIMPIEZA_BANCO[codigo_banco](df_crudo)
+            else:
+                print(f"  ⚠️  No hay función de limpieza para {codigo_banco}")
+                df_limpio = df_crudo
         
         # Validar que tengamos las 4 columnas necesarias
         columnas_requeridas = ['Fecha', 'Concepto', 'Valor', 'Descripción']
         columnas_presentes = [col for col in columnas_requeridas if col in df_limpio.columns]
         
-        if len(columnas_presentes) != 4:
-            print(f"\n  ❌ ERROR: El archivo limpio no tiene las 4 columnas necesarias")
-            print(f"     Requeridas: {columnas_requeridas}")
-            print(f"     Presentes:  {columnas_presentes}")
-            print(f"     Columnas actuales: {list(df_limpio.columns)}")
-            print(f"\n  💡 Debes configurar la función de limpieza para {codigo_banco}")
-            return None
-        
-        # Seleccionar solo las 4 columnas en el orden correcto
-        df_final = df_limpio[columnas_requeridas].copy()
+        # Para CSV de BHD, buscar Debito/Credito en lugar de Valor
+        if ruta_archivo.lower().endswith('.csv') and codigo_banco == 'BHD':
+            columnas_requeridas = ['Fecha', 'Concepto', 'Debito', 'Credito', 'Descripción']
+            columnas_presentes = [col for col in columnas_requeridas if col in df_limpio.columns]
+            
+            if len(columnas_presentes) < 4:
+                print(f"\n  ❌ ERROR: El archivo CSV limpio no tiene las columnas necesarias")
+                print(f"     Requeridas: {columnas_requeridas}")
+                print(f"     Presentes:  {columnas_presentes}")
+                return None
+            
+            # Para Debito/Credito, necesitamos crear una columna Valor
+            df_final = df_limpio[['Fecha', 'Concepto', 'Descripción']].copy()
+            # Usar Debito si existe, sino Credito
+            df_final['Valor'] = df_limpio['Debito'].fillna(0) + df_limpio['Credito'].fillna(0)
+            df_final['Debito'] = df_limpio['Debito']
+            df_final['Credito'] = df_limpio['Credito']
+        else:
+            if len(columnas_presentes) != 4:
+                print(f"\n  ❌ ERROR: El archivo limpio no tiene las 4 columnas necesarias")
+                print(f"     Requeridas: {columnas_requeridas}")
+                print(f"     Presentes:  {columnas_presentes}")
+                print(f"     Columnas actuales: {list(df_limpio.columns)}")
+                print(f"\n  💡 Debes configurar la función de limpieza para {codigo_banco}")
+                return None
+            
+            # Seleccionar solo las 4 columnas en el orden correcto
+            df_final = df_limpio[columnas_requeridas].copy()
         
         print(f"  ✅ Limpieza completada: {df_final.shape[0]} filas × {df_final.shape[1]} columnas")
         return df_final
@@ -831,15 +938,26 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
                 ruta = str(alt)
 
     try:
-        # Leer Excel
-        df = pd.read_excel(ruta)
+        # Detectar si es CSV o Excel basado en la extensión del archivo
+        if ruta.lower().endswith('.csv'):
+            print(f"  📋 Detectado archivo CSV")
+            # Para BHD CSV, usar la función de limpieza específica
+            if codigo_banco == 'BHD':
+                df = limpiar_bhd_csv(ruta)
+            else:
+                # Para otros CSVs, cargar directamente
+                df = pd.read_csv(ruta)
+        else:
+            # Leer Excel
+            df = pd.read_excel(ruta)
 
         # ⚡ OPTIMIZACIÓN 1: Eliminar filas completamente vacías PRIMERO
         df = df.dropna(how='all')
 
         # Si se indicó un código de banco y existe una función de limpieza,
         # aplicar la limpieza específica antes del mapeo automático.
-        if codigo_banco and codigo_banco in FUNCIONES_LIMPIEZA_BANCO:
+        # (Para CSV de BHD, la limpieza ya se aplicó arriba)
+        if codigo_banco and codigo_banco in FUNCIONES_LIMPIEZA_BANCO and not (ruta.lower().endswith('.csv') and codigo_banco == 'BHD'):
             try:
                 print(f"  🧹 Aplicando limpieza específica para {codigo_banco}...")
                 df = FUNCIONES_LIMPIEZA_BANCO[codigo_banco](df)
