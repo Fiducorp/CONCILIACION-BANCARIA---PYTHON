@@ -538,7 +538,7 @@ def limpiar_banreservas(df_original):
         key = quitar_acentos(str(col)).upper()
         if 'FECHA' in key:
             rename_map[col] = 'Fecha'
-        elif 'CONCEP' in key or 'DETALLE' in key or 'DESCRIP' in key:
+        elif 'CONCEP' in key:
             rename_map[col] = 'Concepto'
         elif 'DEB' in key and 'DEBITO' in key or 'DEBITO' in key:
             rename_map[col] = 'Debito'
