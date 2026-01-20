@@ -29,6 +29,12 @@
         private void InitializeComponent()
         {
             this.panelBotones = new System.Windows.Forms.Panel();
+            this.tableBotones = new System.Windows.Forms.TableLayoutPanel();
+            this.btnExcel = new System.Windows.Forms.Button();
+            this.btnPDF = new System.Windows.Forms.Button();
+            this.btnImprimir = new System.Windows.Forms.Button();
+            this.btnGuardar = new System.Windows.Forms.Button();
+            this.btnLimpiar = new System.Windows.Forms.Button();
             this.panelTotales = new System.Windows.Forms.Panel();
             this.tableTotales = new System.Windows.Forms.TableLayoutPanel();
             this.lblTotalAPagar = new System.Windows.Forms.Label();
@@ -48,6 +54,15 @@
             this.btnVolver = new System.Windows.Forms.Button();
             this.panelContenido = new System.Windows.Forms.Panel();
             this.tableLayoutPrincipal = new System.Windows.Forms.TableLayoutPanel();
+            this.gbMontos = new System.Windows.Forms.GroupBox();
+            this.panelMontos = new System.Windows.Forms.Panel();
+            this.dgvSubtotales = new System.Windows.Forms.DataGridView();
+            this.btnAgregarSubtotal = new System.Windows.Forms.Button();
+            this.lblSubtotalTotal = new System.Windows.Forms.Label();
+            this.gbConcepto = new System.Windows.Forms.GroupBox();
+            this.panelConcepto = new System.Windows.Forms.Panel();
+            this.txtConcepto = new System.Windows.Forms.TextBox();
+            this.lblContadorConcepto = new System.Windows.Forms.Label();
             this.gbDatosGenerales = new System.Windows.Forms.GroupBox();
             this.tableDatosGenerales = new System.Windows.Forms.TableLayoutPanel();
             this.cboMoneda = new System.Windows.Forms.ComboBox();
@@ -73,41 +88,114 @@
             this.cboProveedor = new System.Windows.Forms.ComboBox();
             this.lblTelefonoProveedor = new System.Windows.Forms.Label();
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
-            this.btnLimpiar = new System.Windows.Forms.Button();
-            this.btnGuardar = new System.Windows.Forms.Button();
-            this.btnImprimir = new System.Windows.Forms.Button();
-            this.btnPDF = new System.Windows.Forms.Button();
-            this.btnExcel = new System.Windows.Forms.Button();
-            this.tableBotones = new System.Windows.Forms.TableLayoutPanel();
             this.gbComprobantes = new System.Windows.Forms.GroupBox();
             this.tableComprobantes = new System.Windows.Forms.TableLayoutPanel();
+            this.cboTipoNCF = new System.Windows.Forms.ComboBox();
             this.lblTipoComprobante = new System.Windows.Forms.Label();
             this.cboTipoComprobante = new System.Windows.Forms.ComboBox();
-            this.cboTipoNCF = new System.Windows.Forms.ComboBox();
             this.txtNumeroNCF = new System.Windows.Forms.TextBox();
             this.btnAgregarComprobante = new System.Windows.Forms.Button();
             this.lstComprobantes = new System.Windows.Forms.ListBox();
-            this.gbConcepto = new System.Windows.Forms.GroupBox();
-            this.panelConcepto = new System.Windows.Forms.Panel();
-            this.lblContadorConcepto = new System.Windows.Forms.Label();
-            this.txtConcepto = new System.Windows.Forms.TextBox();
+            this.gbOtrosMontos = new System.Windows.Forms.GroupBox();
+            this.tableOtrosMontos = new System.Windows.Forms.TableLayoutPanel();
+            this.txtDescuento = new System.Windows.Forms.TextBox();
+            this.lblDescuento = new System.Windows.Forms.Label();
+            this.txtDireccionTecnica = new System.Windows.Forms.TextBox();
+            this.lblExento = new System.Windows.Forms.Label();
+            this.txtExento = new System.Windows.Forms.TextBox();
+            this.lblDireccionTecnica = new System.Windows.Forms.Label();
+            this.lblHorasExtras = new System.Windows.Forms.Label();
+            this.txtHorasExtras = new System.Windows.Forms.TextBox();
+            this.lblOtrosImpuestos = new System.Windows.Forms.Label();
+            this.panelOtrosImpuestos = new System.Windows.Forms.Panel();
+            this.txtOtrosImpuestos = new System.Windows.Forms.TextBox();
+            this.gbNotasCRDB = new System.Windows.Forms.GroupBox();
+            this.tableNotasCRDB = new System.Windows.Forms.TableLayoutPanel();
+            this.lblNotaCredito = new System.Windows.Forms.Label();
+            this.txtNotaCredito = new System.Windows.Forms.TextBox();
+            this.btnConfigNC = new System.Windows.Forms.Button();
+            this.lblNotaDebito = new System.Windows.Forms.Label();
+            this.txtNotaDebito = new System.Windows.Forms.TextBox();
+            this.btnConfigND = new System.Windows.Forms.Button();
+            this.lblAnticipo = new System.Windows.Forms.Label();
+            this.txtAnticipo = new System.Windows.Forms.TextBox();
+            this.lblAvancePagar = new System.Windows.Forms.Label();
+            this.txtAvancePagar = new System.Windows.Forms.TextBox();
+            this.gbImpuestos = new System.Windows.Forms.GroupBox();
+            this.panelImpuestosContenedor = new System.Windows.Forms.Panel();
+            this.panelFilaImpuestosObs = new System.Windows.Forms.Panel();
+            this.panelObservacionesContenedor = new System.Windows.Forms.Panel();
+            this.lblITBIS = new System.Windows.Forms.Label();
+            this.cboITBISPorcentaje = new System.Windows.Forms.ComboBox();
+            this.lblITBISBase = new System.Windows.Forms.Label();
+            this.rbBaseSubtotal = new System.Windows.Forms.RadioButton();
+            this.rbBaseDirTec = new System.Windows.Forms.RadioButton();
+            this.panelBaseITBIS = new System.Windows.Forms.Panel();
+            this.lblITBISCalc = new System.Windows.Forms.Label();
+            this.lblITBISCalculado = new System.Windows.Forms.Label();
+            this.lblITBISMan = new System.Windows.Forms.Label();
+            this.txtITBISManual = new System.Windows.Forms.TextBox();
+            this.lblDif = new System.Windows.Forms.Label();
+            this.lblITBISDiferencia = new System.Windows.Forms.Label();
+            this.panelRetenciones = new System.Windows.Forms.Panel();
+            this.tableRetenciones = new System.Windows.Forms.TableLayoutPanel();
+            this.lblRetITBIS = new System.Windows.Forms.Label();
+            this.cboRetITBIS = new System.Windows.Forms.ComboBox();
+            this.lblRetITBISMonto = new System.Windows.Forms.Label();
+            this.lblRetISR = new System.Windows.Forms.Label();
+            this.cboRetISR = new System.Windows.Forms.ComboBox();
+            this.lblRetISRMonto = new System.Windows.Forms.Label();
+            this.lblRetSFS = new System.Windows.Forms.Label();
+            this.txtRetSFS = new System.Windows.Forms.TextBox();
+            this.lblRetAFP = new System.Windows.Forms.Label();
+            this.txtRetAFP = new System.Windows.Forms.TextBox();
+            this.gbObservaciones = new System.Windows.Forms.GroupBox();
+            this.panelObservacionesInterno = new System.Windows.Forms.Panel();
+            this.txtObservaciones = new System.Windows.Forms.TextBox();
+            this.panelOpcionesFirma = new System.Windows.Forms.Panel();
+            this.tableOpcionesFirma = new System.Windows.Forms.TableLayoutPanel();
+            this.chkMostrarConversion = new System.Windows.Forms.CheckBox();
+            this.chkIncluirFirma = new System.Windows.Forms.CheckBox();
+            this.cboFirma = new System.Windows.Forms.ComboBox();
+            this.btnConfigConversion = new System.Windows.Forms.Button();
+            this.lblContadorObservaciones = new System.Windows.Forms.Label();
+            this.button4 = new System.Windows.Forms.Button();
             this.panelBotones.SuspendLayout();
+            this.tableBotones.SuspendLayout();
             this.panelTotales.SuspendLayout();
             this.tableTotales.SuspendLayout();
             this.panelEncabezado.SuspendLayout();
             this.panelDerecho.SuspendLayout();
             this.panelContenido.SuspendLayout();
             this.tableLayoutPrincipal.SuspendLayout();
+            this.gbMontos.SuspendLayout();
+            this.panelMontos.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvSubtotales)).BeginInit();
+            this.gbConcepto.SuspendLayout();
+            this.panelConcepto.SuspendLayout();
             this.gbDatosGenerales.SuspendLayout();
             this.tableDatosGenerales.SuspendLayout();
             this.panelTasaExterno.SuspendLayout();
             this.panelFideicomisoProveedor.SuspendLayout();
             this.tableFideicomisoProveedor.SuspendLayout();
-            this.tableBotones.SuspendLayout();
             this.gbComprobantes.SuspendLayout();
             this.tableComprobantes.SuspendLayout();
-            this.gbConcepto.SuspendLayout();
-            this.panelConcepto.SuspendLayout();
+            this.gbOtrosMontos.SuspendLayout();
+            this.tableOtrosMontos.SuspendLayout();
+            this.panelOtrosImpuestos.SuspendLayout();
+            this.gbNotasCRDB.SuspendLayout();
+            this.tableNotasCRDB.SuspendLayout();
+            this.gbImpuestos.SuspendLayout();
+            this.panelImpuestosContenedor.SuspendLayout();
+            this.panelFilaImpuestosObs.SuspendLayout();
+            this.panelObservacionesContenedor.SuspendLayout();
+            this.panelBaseITBIS.SuspendLayout();
+            this.panelRetenciones.SuspendLayout();
+            this.tableRetenciones.SuspendLayout();
+            this.gbObservaciones.SuspendLayout();
+            this.panelObservacionesInterno.SuspendLayout();
+            this.panelOpcionesFirma.SuspendLayout();
+            this.tableOpcionesFirma.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelBotones
@@ -120,6 +208,115 @@
             this.panelBotones.Padding = new System.Windows.Forms.Padding(10);
             this.panelBotones.Size = new System.Drawing.Size(1925, 80);
             this.panelBotones.TabIndex = 0;
+            // 
+            // tableBotones
+            // 
+            this.tableBotones.BackColor = System.Drawing.Color.Transparent;
+            this.tableBotones.ColumnCount = 7;
+            this.tableBotones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableBotones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 170F));
+            this.tableBotones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 170F));
+            this.tableBotones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 170F));
+            this.tableBotones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 170F));
+            this.tableBotones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 170F));
+            this.tableBotones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableBotones.Controls.Add(this.btnExcel, 5, 0);
+            this.tableBotones.Controls.Add(this.btnPDF, 4, 0);
+            this.tableBotones.Controls.Add(this.btnImprimir, 3, 0);
+            this.tableBotones.Controls.Add(this.btnGuardar, 2, 0);
+            this.tableBotones.Controls.Add(this.btnLimpiar, 1, 0);
+            this.tableBotones.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableBotones.Location = new System.Drawing.Point(10, 10);
+            this.tableBotones.Name = "tableBotones";
+            this.tableBotones.RowCount = 1;
+            this.tableBotones.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableBotones.Size = new System.Drawing.Size(1905, 60);
+            this.tableBotones.TabIndex = 0;
+            // 
+            // btnExcel
+            // 
+            this.btnExcel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(136)))), ((int)(((byte)(61)))));
+            this.btnExcel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnExcel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnExcel.FlatAppearance.BorderSize = 0;
+            this.btnExcel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExcel.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnExcel.ForeColor = System.Drawing.Color.White;
+            this.btnExcel.Location = new System.Drawing.Point(1227, 5);
+            this.btnExcel.Margin = new System.Windows.Forms.Padding(20, 5, 20, 5);
+            this.btnExcel.Name = "btnExcel";
+            this.btnExcel.Size = new System.Drawing.Size(130, 50);
+            this.btnExcel.TabIndex = 5;
+            this.btnExcel.Text = "📊 Excel";
+            this.btnExcel.UseVisualStyleBackColor = false;
+            // 
+            // btnPDF
+            // 
+            this.btnPDF.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
+            this.btnPDF.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnPDF.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnPDF.FlatAppearance.BorderSize = 0;
+            this.btnPDF.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPDF.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnPDF.ForeColor = System.Drawing.Color.White;
+            this.btnPDF.Location = new System.Drawing.Point(1057, 5);
+            this.btnPDF.Margin = new System.Windows.Forms.Padding(20, 5, 20, 5);
+            this.btnPDF.Name = "btnPDF";
+            this.btnPDF.Size = new System.Drawing.Size(130, 50);
+            this.btnPDF.TabIndex = 4;
+            this.btnPDF.Text = "📄  PDF";
+            this.btnPDF.UseVisualStyleBackColor = false;
+            // 
+            // btnImprimir
+            // 
+            this.btnImprimir.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(123)))), ((int)(((byte)(255)))));
+            this.btnImprimir.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnImprimir.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnImprimir.FlatAppearance.BorderSize = 0;
+            this.btnImprimir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnImprimir.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnImprimir.ForeColor = System.Drawing.Color.White;
+            this.btnImprimir.Location = new System.Drawing.Point(887, 5);
+            this.btnImprimir.Margin = new System.Windows.Forms.Padding(20, 5, 20, 5);
+            this.btnImprimir.Name = "btnImprimir";
+            this.btnImprimir.Size = new System.Drawing.Size(130, 50);
+            this.btnImprimir.TabIndex = 3;
+            this.btnImprimir.Text = "🖨️ Imprimir";
+            this.btnImprimir.UseVisualStyleBackColor = false;
+            // 
+            // btnGuardar
+            // 
+            this.btnGuardar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
+            this.btnGuardar.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnGuardar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnGuardar.FlatAppearance.BorderSize = 0;
+            this.btnGuardar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnGuardar.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnGuardar.ForeColor = System.Drawing.Color.White;
+            this.btnGuardar.Location = new System.Drawing.Point(717, 5);
+            this.btnGuardar.Margin = new System.Windows.Forms.Padding(20, 5, 20, 5);
+            this.btnGuardar.Name = "btnGuardar";
+            this.btnGuardar.Size = new System.Drawing.Size(130, 50);
+            this.btnGuardar.TabIndex = 2;
+            this.btnGuardar.Text = "💾 Guardar";
+            this.btnGuardar.UseVisualStyleBackColor = false;
+            // 
+            // btnLimpiar
+            // 
+            this.btnLimpiar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.btnLimpiar.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnLimpiar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnLimpiar.FlatAppearance.BorderSize = 0;
+            this.btnLimpiar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnLimpiar.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnLimpiar.ForeColor = System.Drawing.Color.White;
+            this.btnLimpiar.Location = new System.Drawing.Point(547, 5);
+            this.btnLimpiar.Margin = new System.Windows.Forms.Padding(20, 5, 20, 5);
+            this.btnLimpiar.Name = "btnLimpiar";
+            this.btnLimpiar.Size = new System.Drawing.Size(130, 50);
+            this.btnLimpiar.TabIndex = 1;
+            this.btnLimpiar.Text = "🧹 Limpiar";
+            this.btnLimpiar.UseVisualStyleBackColor = false;
             // 
             // panelTotales
             // 
@@ -363,6 +560,7 @@
             this.panelContenido.AutoScroll = true;
             this.panelContenido.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
             this.panelContenido.Controls.Add(this.tableLayoutPrincipal);
+            this.panelContenido.Controls.Add(this.panelFilaImpuestosObs);
             this.panelContenido.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelContenido.Location = new System.Drawing.Point(0, 60);
             this.panelContenido.Name = "panelContenido";
@@ -377,19 +575,137 @@
             this.tableLayoutPrincipal.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
             this.tableLayoutPrincipal.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
             this.tableLayoutPrincipal.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
+            this.tableLayoutPrincipal.Controls.Add(this.gbMontos, 0, 2);
+            this.tableLayoutPrincipal.Controls.Add(this.gbConcepto, 1, 1);
             this.tableLayoutPrincipal.Controls.Add(this.gbDatosGenerales, 0, 0);
             this.tableLayoutPrincipal.Controls.Add(this.gbComprobantes, 0, 1);
-            this.tableLayoutPrincipal.Controls.Add(this.gbConcepto, 0, 2);
+            this.tableLayoutPrincipal.Controls.Add(this.gbOtrosMontos, 1, 2);
+            this.tableLayoutPrincipal.Controls.Add(this.gbNotasCRDB, 2, 2);
             this.tableLayoutPrincipal.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPrincipal.Location = new System.Drawing.Point(15, 15);
             this.tableLayoutPrincipal.Name = "tableLayoutPrincipal";
-            this.tableLayoutPrincipal.RowCount = 4;
+            this.tableLayoutPrincipal.RowCount = 3;
             this.tableLayoutPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 115F));
             this.tableLayoutPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.tableLayoutPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.tableLayoutPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.tableLayoutPrincipal.Size = new System.Drawing.Size(1895, 580);
+            this.tableLayoutPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 200F));
+            this.tableLayoutPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPrincipal.Size = new System.Drawing.Size(1895, 505);
             this.tableLayoutPrincipal.TabIndex = 0;
+            // 
+            // gbMontos
+            // 
+            this.gbMontos.Controls.Add(this.panelMontos);
+            this.gbMontos.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gbMontos.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gbMontos.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
+            this.gbMontos.Location = new System.Drawing.Point(5, 270);
+            this.gbMontos.Margin = new System.Windows.Forms.Padding(5);
+            this.gbMontos.Name = "gbMontos";
+            this.gbMontos.Size = new System.Drawing.Size(748, 230);
+            this.gbMontos.TabIndex = 5;
+            this.gbMontos.TabStop = false;
+            this.gbMontos.Text = "💰 SUBTOTALES";
+            // 
+            // panelMontos
+            // 
+            this.panelMontos.Controls.Add(this.dgvSubtotales);
+            this.panelMontos.Controls.Add(this.btnAgregarSubtotal);
+            this.panelMontos.Controls.Add(this.lblSubtotalTotal);
+            this.panelMontos.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelMontos.Location = new System.Drawing.Point(3, 25);
+            this.panelMontos.Name = "panelMontos";
+            this.panelMontos.Size = new System.Drawing.Size(742, 202);
+            this.panelMontos.TabIndex = 0;
+            // 
+            // dgvSubtotales
+            // 
+            this.dgvSubtotales.AllowUserToAddRows = false;
+            this.dgvSubtotales.AllowUserToDeleteRows = false;
+            this.dgvSubtotales.AllowUserToResizeColumns = false;
+            this.dgvSubtotales.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvSubtotales.BackgroundColor = System.Drawing.Color.White;
+            this.dgvSubtotales.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvSubtotales.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvSubtotales.Location = new System.Drawing.Point(0, 28);
+            this.dgvSubtotales.MultiSelect = false;
+            this.dgvSubtotales.Name = "dgvSubtotales";
+            this.dgvSubtotales.RowHeadersVisible = false;
+            this.dgvSubtotales.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvSubtotales.Size = new System.Drawing.Size(742, 149);
+            this.dgvSubtotales.TabIndex = 2;
+            // 
+            // btnAgregarSubtotal
+            // 
+            this.btnAgregarSubtotal.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
+            this.btnAgregarSubtotal.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnAgregarSubtotal.FlatAppearance.BorderSize = 0;
+            this.btnAgregarSubtotal.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAgregarSubtotal.ForeColor = System.Drawing.Color.White;
+            this.btnAgregarSubtotal.Location = new System.Drawing.Point(0, 0);
+            this.btnAgregarSubtotal.Name = "btnAgregarSubtotal";
+            this.btnAgregarSubtotal.Size = new System.Drawing.Size(742, 28);
+            this.btnAgregarSubtotal.TabIndex = 1;
+            this.btnAgregarSubtotal.Text = "+ Agregar Subtotal";
+            this.btnAgregarSubtotal.UseVisualStyleBackColor = false;
+            // 
+            // lblSubtotalTotal
+            // 
+            this.lblSubtotalTotal.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.lblSubtotalTotal.Location = new System.Drawing.Point(0, 177);
+            this.lblSubtotalTotal.Name = "lblSubtotalTotal";
+            this.lblSubtotalTotal.Padding = new System.Windows.Forms.Padding(0, 0, 10, 0);
+            this.lblSubtotalTotal.Size = new System.Drawing.Size(742, 25);
+            this.lblSubtotalTotal.TabIndex = 0;
+            this.lblSubtotalTotal.Text = "SUBTOTAL: RD$ 0.00";
+            this.lblSubtotalTotal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // gbConcepto
+            // 
+            this.tableLayoutPrincipal.SetColumnSpan(this.gbConcepto, 2);
+            this.gbConcepto.Controls.Add(this.panelConcepto);
+            this.gbConcepto.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gbConcepto.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gbConcepto.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
+            this.gbConcepto.Location = new System.Drawing.Point(761, 118);
+            this.gbConcepto.Name = "gbConcepto";
+            this.gbConcepto.Padding = new System.Windows.Forms.Padding(5);
+            this.gbConcepto.Size = new System.Drawing.Size(1131, 144);
+            this.gbConcepto.TabIndex = 4;
+            this.gbConcepto.TabStop = false;
+            this.gbConcepto.Text = "📝 CONCEPTO";
+            // 
+            // panelConcepto
+            // 
+            this.panelConcepto.Controls.Add(this.txtConcepto);
+            this.panelConcepto.Controls.Add(this.lblContadorConcepto);
+            this.panelConcepto.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelConcepto.Location = new System.Drawing.Point(5, 27);
+            this.panelConcepto.Name = "panelConcepto";
+            this.panelConcepto.Size = new System.Drawing.Size(1121, 112);
+            this.panelConcepto.TabIndex = 0;
+            // 
+            // txtConcepto
+            // 
+            this.txtConcepto.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtConcepto.Location = new System.Drawing.Point(0, 0);
+            this.txtConcepto.MaxLength = 2000;
+            this.txtConcepto.Multiline = true;
+            this.txtConcepto.Name = "txtConcepto";
+            this.txtConcepto.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtConcepto.Size = new System.Drawing.Size(1121, 91);
+            this.txtConcepto.TabIndex = 1;
+            // 
+            // lblContadorConcepto
+            // 
+            this.lblContadorConcepto.AutoSize = true;
+            this.lblContadorConcepto.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.lblContadorConcepto.ForeColor = System.Drawing.Color.Gray;
+            this.lblContadorConcepto.Location = new System.Drawing.Point(0, 91);
+            this.lblContadorConcepto.Name = "lblContadorConcepto";
+            this.lblContadorConcepto.Size = new System.Drawing.Size(151, 21);
+            this.lblContadorConcepto.TabIndex = 0;
+            this.lblContadorConcepto.Text = "0 / 2000 caracteres";
+            this.lblContadorConcepto.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // gbDatosGenerales
             // 
@@ -705,115 +1021,6 @@
             this.dateTimePicker1.Size = new System.Drawing.Size(114, 29);
             this.dateTimePicker1.TabIndex = 3;
             // 
-            // btnLimpiar
-            // 
-            this.btnLimpiar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
-            this.btnLimpiar.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnLimpiar.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnLimpiar.FlatAppearance.BorderSize = 0;
-            this.btnLimpiar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnLimpiar.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnLimpiar.ForeColor = System.Drawing.Color.White;
-            this.btnLimpiar.Location = new System.Drawing.Point(547, 5);
-            this.btnLimpiar.Margin = new System.Windows.Forms.Padding(20, 5, 20, 5);
-            this.btnLimpiar.Name = "btnLimpiar";
-            this.btnLimpiar.Size = new System.Drawing.Size(130, 50);
-            this.btnLimpiar.TabIndex = 1;
-            this.btnLimpiar.Text = "🧹 Limpiar";
-            this.btnLimpiar.UseVisualStyleBackColor = false;
-            // 
-            // btnGuardar
-            // 
-            this.btnGuardar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
-            this.btnGuardar.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnGuardar.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnGuardar.FlatAppearance.BorderSize = 0;
-            this.btnGuardar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnGuardar.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnGuardar.ForeColor = System.Drawing.Color.White;
-            this.btnGuardar.Location = new System.Drawing.Point(717, 5);
-            this.btnGuardar.Margin = new System.Windows.Forms.Padding(20, 5, 20, 5);
-            this.btnGuardar.Name = "btnGuardar";
-            this.btnGuardar.Size = new System.Drawing.Size(130, 50);
-            this.btnGuardar.TabIndex = 2;
-            this.btnGuardar.Text = "💾 Guardar";
-            this.btnGuardar.UseVisualStyleBackColor = false;
-            // 
-            // btnImprimir
-            // 
-            this.btnImprimir.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(123)))), ((int)(((byte)(255)))));
-            this.btnImprimir.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnImprimir.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnImprimir.FlatAppearance.BorderSize = 0;
-            this.btnImprimir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnImprimir.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnImprimir.ForeColor = System.Drawing.Color.White;
-            this.btnImprimir.Location = new System.Drawing.Point(887, 5);
-            this.btnImprimir.Margin = new System.Windows.Forms.Padding(20, 5, 20, 5);
-            this.btnImprimir.Name = "btnImprimir";
-            this.btnImprimir.Size = new System.Drawing.Size(130, 50);
-            this.btnImprimir.TabIndex = 3;
-            this.btnImprimir.Text = "🖨️ Imprimir";
-            this.btnImprimir.UseVisualStyleBackColor = false;
-            // 
-            // btnPDF
-            // 
-            this.btnPDF.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
-            this.btnPDF.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnPDF.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnPDF.FlatAppearance.BorderSize = 0;
-            this.btnPDF.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnPDF.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnPDF.ForeColor = System.Drawing.Color.White;
-            this.btnPDF.Location = new System.Drawing.Point(1057, 5);
-            this.btnPDF.Margin = new System.Windows.Forms.Padding(20, 5, 20, 5);
-            this.btnPDF.Name = "btnPDF";
-            this.btnPDF.Size = new System.Drawing.Size(130, 50);
-            this.btnPDF.TabIndex = 4;
-            this.btnPDF.Text = "📄  PDF";
-            this.btnPDF.UseVisualStyleBackColor = false;
-            // 
-            // btnExcel
-            // 
-            this.btnExcel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(136)))), ((int)(((byte)(61)))));
-            this.btnExcel.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnExcel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnExcel.FlatAppearance.BorderSize = 0;
-            this.btnExcel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnExcel.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnExcel.ForeColor = System.Drawing.Color.White;
-            this.btnExcel.Location = new System.Drawing.Point(1227, 5);
-            this.btnExcel.Margin = new System.Windows.Forms.Padding(20, 5, 20, 5);
-            this.btnExcel.Name = "btnExcel";
-            this.btnExcel.Size = new System.Drawing.Size(130, 50);
-            this.btnExcel.TabIndex = 5;
-            this.btnExcel.Text = "📊 Excel";
-            this.btnExcel.UseVisualStyleBackColor = false;
-            // 
-            // tableBotones
-            // 
-            this.tableBotones.BackColor = System.Drawing.Color.Transparent;
-            this.tableBotones.ColumnCount = 7;
-            this.tableBotones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableBotones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 170F));
-            this.tableBotones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 170F));
-            this.tableBotones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 170F));
-            this.tableBotones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 170F));
-            this.tableBotones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 170F));
-            this.tableBotones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableBotones.Controls.Add(this.btnExcel, 5, 0);
-            this.tableBotones.Controls.Add(this.btnPDF, 4, 0);
-            this.tableBotones.Controls.Add(this.btnImprimir, 3, 0);
-            this.tableBotones.Controls.Add(this.btnGuardar, 2, 0);
-            this.tableBotones.Controls.Add(this.btnLimpiar, 1, 0);
-            this.tableBotones.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableBotones.Location = new System.Drawing.Point(10, 10);
-            this.tableBotones.Name = "tableBotones";
-            this.tableBotones.RowCount = 1;
-            this.tableBotones.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableBotones.Size = new System.Drawing.Size(1905, 60);
-            this.tableBotones.TabIndex = 0;
-            // 
             // gbComprobantes
             // 
             this.gbComprobantes.Controls.Add(this.tableComprobantes);
@@ -851,6 +1058,16 @@
             this.tableComprobantes.Size = new System.Drawing.Size(742, 112);
             this.tableComprobantes.TabIndex = 0;
             // 
+            // cboTipoNCF
+            // 
+            this.cboTipoNCF.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cboTipoNCF.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboTipoNCF.FormattingEnabled = true;
+            this.cboTipoNCF.Location = new System.Drawing.Point(227, 3);
+            this.cboTipoNCF.Name = "cboTipoNCF";
+            this.cboTipoNCF.Size = new System.Drawing.Size(94, 29);
+            this.cboTipoNCF.TabIndex = 2;
+            // 
             // lblTipoComprobante
             // 
             this.lblTipoComprobante.AutoSize = true;
@@ -872,16 +1089,6 @@
             this.cboTipoComprobante.Name = "cboTipoComprobante";
             this.cboTipoComprobante.Size = new System.Drawing.Size(164, 29);
             this.cboTipoComprobante.TabIndex = 1;
-            // 
-            // cboTipoNCF
-            // 
-            this.cboTipoNCF.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cboTipoNCF.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboTipoNCF.FormattingEnabled = true;
-            this.cboTipoNCF.Location = new System.Drawing.Point(227, 3);
-            this.cboTipoNCF.Name = "cboTipoNCF";
-            this.cboTipoNCF.Size = new System.Drawing.Size(94, 29);
-            this.cboTipoNCF.TabIndex = 2;
             // 
             // txtNumeroNCF
             // 
@@ -921,53 +1128,799 @@
             this.lstComprobantes.Size = new System.Drawing.Size(736, 71);
             this.lstComprobantes.TabIndex = 5;
             // 
-            // gbConcepto
+            // gbOtrosMontos
             // 
-            this.tableLayoutPrincipal.SetColumnSpan(this.gbConcepto, 2);
-            this.gbConcepto.Controls.Add(this.panelConcepto);
-            this.gbConcepto.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gbConcepto.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gbConcepto.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
-            this.gbConcepto.Location = new System.Drawing.Point(3, 268);
-            this.gbConcepto.Name = "gbConcepto";
-            this.gbConcepto.Padding = new System.Windows.Forms.Padding(5);
-            this.gbConcepto.Size = new System.Drawing.Size(1320, 144);
-            this.gbConcepto.TabIndex = 2;
-            this.gbConcepto.TabStop = false;
-            this.gbConcepto.Text = "📝 CONCEPTO";
+            this.gbOtrosMontos.Controls.Add(this.tableOtrosMontos);
+            this.gbOtrosMontos.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gbOtrosMontos.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gbOtrosMontos.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
+            this.gbOtrosMontos.Location = new System.Drawing.Point(763, 270);
+            this.gbOtrosMontos.Margin = new System.Windows.Forms.Padding(5);
+            this.gbOtrosMontos.Name = "gbOtrosMontos";
+            this.gbOtrosMontos.Size = new System.Drawing.Size(558, 230);
+            this.gbOtrosMontos.TabIndex = 6;
+            this.gbOtrosMontos.TabStop = false;
+            this.gbOtrosMontos.Text = "📊 OTROS MONTOS";
             // 
-            // panelConcepto
+            // tableOtrosMontos
             // 
-            this.panelConcepto.Controls.Add(this.txtConcepto);
-            this.panelConcepto.Controls.Add(this.lblContadorConcepto);
-            this.panelConcepto.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelConcepto.Location = new System.Drawing.Point(5, 27);
-            this.panelConcepto.Name = "panelConcepto";
-            this.panelConcepto.Size = new System.Drawing.Size(1310, 112);
-            this.panelConcepto.TabIndex = 0;
+            this.tableOtrosMontos.ColumnCount = 3;
+            this.tableOtrosMontos.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableOtrosMontos.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableOtrosMontos.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableOtrosMontos.Controls.Add(this.button4, 2, 4);
+            this.tableOtrosMontos.Controls.Add(this.lblOtrosImpuestos, 0, 4);
+            this.tableOtrosMontos.Controls.Add(this.txtHorasExtras, 1, 3);
+            this.tableOtrosMontos.Controls.Add(this.lblHorasExtras, 0, 3);
+            this.tableOtrosMontos.Controls.Add(this.txtDescuento, 1, 2);
+            this.tableOtrosMontos.Controls.Add(this.lblDescuento, 0, 2);
+            this.tableOtrosMontos.Controls.Add(this.txtDireccionTecnica, 1, 1);
+            this.tableOtrosMontos.Controls.Add(this.lblExento, 0, 0);
+            this.tableOtrosMontos.Controls.Add(this.txtExento, 1, 0);
+            this.tableOtrosMontos.Controls.Add(this.lblDireccionTecnica, 0, 1);
+            this.tableOtrosMontos.Controls.Add(this.panelOtrosImpuestos, 1, 4);
+            this.tableOtrosMontos.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableOtrosMontos.Location = new System.Drawing.Point(3, 25);
+            this.tableOtrosMontos.Name = "tableOtrosMontos";
+            this.tableOtrosMontos.RowCount = 5;
+            this.tableOtrosMontos.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableOtrosMontos.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableOtrosMontos.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableOtrosMontos.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableOtrosMontos.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableOtrosMontos.Size = new System.Drawing.Size(552, 202);
+            this.tableOtrosMontos.TabIndex = 0;
             // 
-            // lblContadorConcepto
+            // txtDescuento
             // 
-            this.lblContadorConcepto.AutoSize = true;
-            this.lblContadorConcepto.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.lblContadorConcepto.ForeColor = System.Drawing.Color.Gray;
-            this.lblContadorConcepto.Location = new System.Drawing.Point(0, 91);
-            this.lblContadorConcepto.Name = "lblContadorConcepto";
-            this.lblContadorConcepto.Size = new System.Drawing.Size(151, 21);
-            this.lblContadorConcepto.TabIndex = 0;
-            this.lblContadorConcepto.Text = "0 / 2000 caracteres";
-            this.lblContadorConcepto.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.txtDescuento.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtDescuento.Location = new System.Drawing.Point(157, 85);
+            this.txtDescuento.Margin = new System.Windows.Forms.Padding(3, 5, 10, 5);
+            this.txtDescuento.Name = "txtDescuento";
+            this.txtDescuento.Size = new System.Drawing.Size(345, 29);
+            this.txtDescuento.TabIndex = 5;
+            this.txtDescuento.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
-            // txtConcepto
+            // lblDescuento
             // 
-            this.txtConcepto.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtConcepto.Location = new System.Drawing.Point(0, 0);
-            this.txtConcepto.MaxLength = 2000;
-            this.txtConcepto.Multiline = true;
-            this.txtConcepto.Name = "txtConcepto";
-            this.txtConcepto.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtConcepto.Size = new System.Drawing.Size(1310, 91);
-            this.txtConcepto.TabIndex = 1;
+            this.lblDescuento.AutoSize = true;
+            this.lblDescuento.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblDescuento.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblDescuento.Location = new System.Drawing.Point(3, 80);
+            this.lblDescuento.Name = "lblDescuento";
+            this.lblDescuento.Size = new System.Drawing.Size(148, 40);
+            this.lblDescuento.TabIndex = 4;
+            this.lblDescuento.Text = "Descuento:";
+            this.lblDescuento.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // txtDireccionTecnica
+            // 
+            this.txtDireccionTecnica.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtDireccionTecnica.Location = new System.Drawing.Point(157, 45);
+            this.txtDireccionTecnica.Margin = new System.Windows.Forms.Padding(3, 5, 10, 5);
+            this.txtDireccionTecnica.Name = "txtDireccionTecnica";
+            this.txtDireccionTecnica.Size = new System.Drawing.Size(345, 29);
+            this.txtDireccionTecnica.TabIndex = 3;
+            this.txtDireccionTecnica.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // lblExento
+            // 
+            this.lblExento.AutoSize = true;
+            this.lblExento.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblExento.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblExento.Location = new System.Drawing.Point(3, 0);
+            this.lblExento.Name = "lblExento";
+            this.lblExento.Size = new System.Drawing.Size(148, 40);
+            this.lblExento.TabIndex = 0;
+            this.lblExento.Text = "Exento:";
+            this.lblExento.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // txtExento
+            // 
+            this.txtExento.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtExento.Location = new System.Drawing.Point(157, 5);
+            this.txtExento.Margin = new System.Windows.Forms.Padding(3, 5, 10, 5);
+            this.txtExento.Name = "txtExento";
+            this.txtExento.Size = new System.Drawing.Size(345, 29);
+            this.txtExento.TabIndex = 1;
+            this.txtExento.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // lblDireccionTecnica
+            // 
+            this.lblDireccionTecnica.AutoSize = true;
+            this.lblDireccionTecnica.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblDireccionTecnica.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblDireccionTecnica.Location = new System.Drawing.Point(3, 40);
+            this.lblDireccionTecnica.Name = "lblDireccionTecnica";
+            this.lblDireccionTecnica.Size = new System.Drawing.Size(148, 40);
+            this.lblDireccionTecnica.TabIndex = 2;
+            this.lblDireccionTecnica.Text = "Dirección Técnica:";
+            this.lblDireccionTecnica.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblHorasExtras
+            // 
+            this.lblHorasExtras.AutoSize = true;
+            this.lblHorasExtras.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblHorasExtras.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblHorasExtras.Location = new System.Drawing.Point(3, 120);
+            this.lblHorasExtras.Name = "lblHorasExtras";
+            this.lblHorasExtras.Size = new System.Drawing.Size(148, 40);
+            this.lblHorasExtras.TabIndex = 6;
+            this.lblHorasExtras.Text = "Horas Extras:";
+            this.lblHorasExtras.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // txtHorasExtras
+            // 
+            this.txtHorasExtras.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtHorasExtras.Location = new System.Drawing.Point(157, 125);
+            this.txtHorasExtras.Margin = new System.Windows.Forms.Padding(3, 5, 10, 5);
+            this.txtHorasExtras.Name = "txtHorasExtras";
+            this.txtHorasExtras.Size = new System.Drawing.Size(345, 29);
+            this.txtHorasExtras.TabIndex = 7;
+            this.txtHorasExtras.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // lblOtrosImpuestos
+            // 
+            this.lblOtrosImpuestos.AutoSize = true;
+            this.lblOtrosImpuestos.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblOtrosImpuestos.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblOtrosImpuestos.Location = new System.Drawing.Point(3, 160);
+            this.lblOtrosImpuestos.Name = "lblOtrosImpuestos";
+            this.lblOtrosImpuestos.Size = new System.Drawing.Size(148, 42);
+            this.lblOtrosImpuestos.TabIndex = 8;
+            this.lblOtrosImpuestos.Text = "Otros Impuestos:";
+            this.lblOtrosImpuestos.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // panelOtrosImpuestos
+            // 
+            this.panelOtrosImpuestos.Controls.Add(this.txtOtrosImpuestos);
+            this.panelOtrosImpuestos.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelOtrosImpuestos.Location = new System.Drawing.Point(157, 163);
+            this.panelOtrosImpuestos.Name = "panelOtrosImpuestos";
+            this.panelOtrosImpuestos.Size = new System.Drawing.Size(352, 36);
+            this.panelOtrosImpuestos.TabIndex = 9;
+            // 
+            // txtOtrosImpuestos
+            // 
+            this.txtOtrosImpuestos.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtOtrosImpuestos.Location = new System.Drawing.Point(0, 0);
+            this.txtOtrosImpuestos.Name = "txtOtrosImpuestos";
+            this.txtOtrosImpuestos.Size = new System.Drawing.Size(352, 29);
+            this.txtOtrosImpuestos.TabIndex = 1;
+            this.txtOtrosImpuestos.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // gbNotasCRDB
+            // 
+            this.gbNotasCRDB.Controls.Add(this.tableNotasCRDB);
+            this.gbNotasCRDB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gbNotasCRDB.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gbNotasCRDB.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
+            this.gbNotasCRDB.Location = new System.Drawing.Point(1331, 270);
+            this.gbNotasCRDB.Margin = new System.Windows.Forms.Padding(5);
+            this.gbNotasCRDB.Name = "gbNotasCRDB";
+            this.gbNotasCRDB.Size = new System.Drawing.Size(559, 230);
+            this.gbNotasCRDB.TabIndex = 7;
+            this.gbNotasCRDB.TabStop = false;
+            this.gbNotasCRDB.Text = "📋 NOTAS CR/DB Y AVANCES";
+            // 
+            // tableNotasCRDB
+            // 
+            this.tableNotasCRDB.ColumnCount = 3;
+            this.tableNotasCRDB.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableNotasCRDB.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableNotasCRDB.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableNotasCRDB.Controls.Add(this.txtAvancePagar, 1, 3);
+            this.tableNotasCRDB.Controls.Add(this.lblAvancePagar, 0, 3);
+            this.tableNotasCRDB.Controls.Add(this.txtAnticipo, 1, 2);
+            this.tableNotasCRDB.Controls.Add(this.lblAnticipo, 0, 2);
+            this.tableNotasCRDB.Controls.Add(this.btnConfigND, 2, 1);
+            this.tableNotasCRDB.Controls.Add(this.txtNotaDebito, 1, 1);
+            this.tableNotasCRDB.Controls.Add(this.lblNotaDebito, 0, 1);
+            this.tableNotasCRDB.Controls.Add(this.btnConfigNC, 2, 0);
+            this.tableNotasCRDB.Controls.Add(this.lblNotaCredito, 0, 0);
+            this.tableNotasCRDB.Controls.Add(this.txtNotaCredito, 1, 0);
+            this.tableNotasCRDB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableNotasCRDB.Location = new System.Drawing.Point(3, 25);
+            this.tableNotasCRDB.Name = "tableNotasCRDB";
+            this.tableNotasCRDB.RowCount = 4;
+            this.tableNotasCRDB.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableNotasCRDB.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableNotasCRDB.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableNotasCRDB.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableNotasCRDB.Size = new System.Drawing.Size(553, 202);
+            this.tableNotasCRDB.TabIndex = 0;
+            // 
+            // lblNotaCredito
+            // 
+            this.lblNotaCredito.AutoSize = true;
+            this.lblNotaCredito.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblNotaCredito.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblNotaCredito.Location = new System.Drawing.Point(3, 0);
+            this.lblNotaCredito.Name = "lblNotaCredito";
+            this.lblNotaCredito.Size = new System.Drawing.Size(119, 50);
+            this.lblNotaCredito.TabIndex = 0;
+            this.lblNotaCredito.Text = "Nota Crédito:";
+            this.lblNotaCredito.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // txtNotaCredito
+            // 
+            this.txtNotaCredito.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtNotaCredito.Location = new System.Drawing.Point(128, 5);
+            this.txtNotaCredito.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.txtNotaCredito.Name = "txtNotaCredito";
+            this.txtNotaCredito.Size = new System.Drawing.Size(382, 29);
+            this.txtNotaCredito.TabIndex = 1;
+            // 
+            // btnConfigNC
+            // 
+            this.btnConfigNC.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.btnConfigNC.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnConfigNC.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnConfigNC.FlatAppearance.BorderSize = 0;
+            this.btnConfigNC.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnConfigNC.ForeColor = System.Drawing.Color.White;
+            this.btnConfigNC.Location = new System.Drawing.Point(515, 5);
+            this.btnConfigNC.Margin = new System.Windows.Forms.Padding(2, 5, 5, 5);
+            this.btnConfigNC.Name = "btnConfigNC";
+            this.btnConfigNC.Size = new System.Drawing.Size(33, 40);
+            this.btnConfigNC.TabIndex = 2;
+            this.btnConfigNC.Text = "⚙";
+            this.btnConfigNC.UseVisualStyleBackColor = false;
+            // 
+            // lblNotaDebito
+            // 
+            this.lblNotaDebito.AutoSize = true;
+            this.lblNotaDebito.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblNotaDebito.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblNotaDebito.Location = new System.Drawing.Point(3, 50);
+            this.lblNotaDebito.Name = "lblNotaDebito";
+            this.lblNotaDebito.Size = new System.Drawing.Size(119, 50);
+            this.lblNotaDebito.TabIndex = 3;
+            this.lblNotaDebito.Text = "Nota Débito:";
+            this.lblNotaDebito.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // txtNotaDebito
+            // 
+            this.txtNotaDebito.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtNotaDebito.Location = new System.Drawing.Point(128, 55);
+            this.txtNotaDebito.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.txtNotaDebito.Name = "txtNotaDebito";
+            this.txtNotaDebito.Size = new System.Drawing.Size(382, 29);
+            this.txtNotaDebito.TabIndex = 4;
+            // 
+            // btnConfigND
+            // 
+            this.btnConfigND.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.btnConfigND.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnConfigND.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnConfigND.FlatAppearance.BorderSize = 0;
+            this.btnConfigND.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnConfigND.ForeColor = System.Drawing.Color.White;
+            this.btnConfigND.Location = new System.Drawing.Point(515, 55);
+            this.btnConfigND.Margin = new System.Windows.Forms.Padding(2, 5, 5, 5);
+            this.btnConfigND.Name = "btnConfigND";
+            this.btnConfigND.Size = new System.Drawing.Size(33, 40);
+            this.btnConfigND.TabIndex = 5;
+            this.btnConfigND.Text = "⚙";
+            this.btnConfigND.UseVisualStyleBackColor = false;
+            // 
+            // lblAnticipo
+            // 
+            this.lblAnticipo.AutoSize = true;
+            this.lblAnticipo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblAnticipo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblAnticipo.Location = new System.Drawing.Point(3, 100);
+            this.lblAnticipo.Name = "lblAnticipo";
+            this.lblAnticipo.Size = new System.Drawing.Size(119, 50);
+            this.lblAnticipo.TabIndex = 6;
+            this.lblAnticipo.Text = "Anticipo:";
+            this.lblAnticipo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // txtAnticipo
+            // 
+            this.txtAnticipo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtAnticipo.Location = new System.Drawing.Point(128, 105);
+            this.txtAnticipo.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.txtAnticipo.Name = "txtAnticipo";
+            this.txtAnticipo.Size = new System.Drawing.Size(382, 29);
+            this.txtAnticipo.TabIndex = 7;
+            // 
+            // lblAvancePagar
+            // 
+            this.lblAvancePagar.AutoSize = true;
+            this.lblAvancePagar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblAvancePagar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblAvancePagar.Location = new System.Drawing.Point(3, 150);
+            this.lblAvancePagar.Name = "lblAvancePagar";
+            this.lblAvancePagar.Size = new System.Drawing.Size(119, 52);
+            this.lblAvancePagar.TabIndex = 9;
+            this.lblAvancePagar.Text = "Avance Pagar:";
+            this.lblAvancePagar.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // txtAvancePagar
+            // 
+            this.txtAvancePagar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtAvancePagar.Location = new System.Drawing.Point(128, 155);
+            this.txtAvancePagar.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.txtAvancePagar.Name = "txtAvancePagar";
+            this.txtAvancePagar.Size = new System.Drawing.Size(382, 29);
+            this.txtAvancePagar.TabIndex = 11;
+            // 
+            // gbImpuestos
+            // 
+            this.gbImpuestos.Controls.Add(this.panelRetenciones);
+            this.gbImpuestos.Controls.Add(this.lblITBISDiferencia);
+            this.gbImpuestos.Controls.Add(this.lblDif);
+            this.gbImpuestos.Controls.Add(this.txtITBISManual);
+            this.gbImpuestos.Controls.Add(this.lblITBISMan);
+            this.gbImpuestos.Controls.Add(this.lblITBISCalculado);
+            this.gbImpuestos.Controls.Add(this.lblITBISCalc);
+            this.gbImpuestos.Controls.Add(this.panelBaseITBIS);
+            this.gbImpuestos.Controls.Add(this.cboITBISPorcentaje);
+            this.gbImpuestos.Controls.Add(this.lblITBIS);
+            this.gbImpuestos.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gbImpuestos.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gbImpuestos.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
+            this.gbImpuestos.Location = new System.Drawing.Point(0, 0);
+            this.gbImpuestos.Name = "gbImpuestos";
+            this.gbImpuestos.Padding = new System.Windows.Forms.Padding(5);
+            this.gbImpuestos.Size = new System.Drawing.Size(1324, 189);
+            this.gbImpuestos.TabIndex = 0;
+            this.gbImpuestos.TabStop = false;
+            this.gbImpuestos.Text = "🧾 IMPUESTOS Y RETENCIONES";
+            // 
+            // panelImpuestosContenedor
+            // 
+            this.panelImpuestosContenedor.Controls.Add(this.gbImpuestos);
+            this.panelImpuestosContenedor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelImpuestosContenedor.Location = new System.Drawing.Point(0, 0);
+            this.panelImpuestosContenedor.Name = "panelImpuestosContenedor";
+            this.panelImpuestosContenedor.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
+            this.panelImpuestosContenedor.Size = new System.Drawing.Size(1329, 189);
+            this.panelImpuestosContenedor.TabIndex = 1;
+            // 
+            // panelFilaImpuestosObs
+            // 
+            this.panelFilaImpuestosObs.Controls.Add(this.panelImpuestosContenedor);
+            this.panelFilaImpuestosObs.Controls.Add(this.panelObservacionesContenedor);
+            this.panelFilaImpuestosObs.Location = new System.Drawing.Point(15, 523);
+            this.panelFilaImpuestosObs.Name = "panelFilaImpuestosObs";
+            this.panelFilaImpuestosObs.Size = new System.Drawing.Size(1895, 189);
+            this.panelFilaImpuestosObs.TabIndex = 8;
+            // 
+            // panelObservacionesContenedor
+            // 
+            this.panelObservacionesContenedor.Controls.Add(this.gbObservaciones);
+            this.panelObservacionesContenedor.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panelObservacionesContenedor.Location = new System.Drawing.Point(1329, 0);
+            this.panelObservacionesContenedor.Name = "panelObservacionesContenedor";
+            this.panelObservacionesContenedor.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+            this.panelObservacionesContenedor.Size = new System.Drawing.Size(566, 189);
+            this.panelObservacionesContenedor.TabIndex = 0;
+            // 
+            // lblITBIS
+            // 
+            this.lblITBIS.AutoSize = true;
+            this.lblITBIS.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblITBIS.Location = new System.Drawing.Point(104, 69);
+            this.lblITBIS.Name = "lblITBIS";
+            this.lblITBIS.Size = new System.Drawing.Size(52, 21);
+            this.lblITBIS.TabIndex = 0;
+            this.lblITBIS.Text = "ITBIS:";
+            this.lblITBIS.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // cboITBISPorcentaje
+            // 
+            this.cboITBISPorcentaje.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboITBISPorcentaje.FormattingEnabled = true;
+            this.cboITBISPorcentaje.Location = new System.Drawing.Point(162, 65);
+            this.cboITBISPorcentaje.Name = "cboITBISPorcentaje";
+            this.cboITBISPorcentaje.Size = new System.Drawing.Size(74, 29);
+            this.cboITBISPorcentaje.TabIndex = 1;
+            // 
+            // lblITBISBase
+            // 
+            this.lblITBISBase.AutoSize = true;
+            this.lblITBISBase.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblITBISBase.Location = new System.Drawing.Point(3, 22);
+            this.lblITBISBase.Name = "lblITBISBase";
+            this.lblITBISBase.Size = new System.Drawing.Size(49, 21);
+            this.lblITBISBase.TabIndex = 0;
+            this.lblITBISBase.Text = "Base:";
+            this.lblITBISBase.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // rbBaseSubtotal
+            // 
+            this.rbBaseSubtotal.AutoSize = true;
+            this.rbBaseSubtotal.Checked = true;
+            this.rbBaseSubtotal.Location = new System.Drawing.Point(58, 4);
+            this.rbBaseSubtotal.Name = "rbBaseSubtotal";
+            this.rbBaseSubtotal.Size = new System.Drawing.Size(93, 25);
+            this.rbBaseSubtotal.TabIndex = 2;
+            this.rbBaseSubtotal.TabStop = true;
+            this.rbBaseSubtotal.Text = "Subtotal";
+            this.rbBaseSubtotal.UseVisualStyleBackColor = true;
+            // 
+            // rbBaseDirTec
+            // 
+            this.rbBaseDirTec.AutoSize = true;
+            this.rbBaseDirTec.Checked = true;
+            this.rbBaseDirTec.Location = new System.Drawing.Point(58, 35);
+            this.rbBaseDirTec.Name = "rbBaseDirTec";
+            this.rbBaseDirTec.Size = new System.Drawing.Size(162, 25);
+            this.rbBaseDirTec.TabIndex = 2;
+            this.rbBaseDirTec.TabStop = true;
+            this.rbBaseDirTec.Text = "Dirección Técnica";
+            this.rbBaseDirTec.UseVisualStyleBackColor = true;
+            // 
+            // panelBaseITBIS
+            // 
+            this.panelBaseITBIS.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelBaseITBIS.Controls.Add(this.lblITBISBase);
+            this.panelBaseITBIS.Controls.Add(this.rbBaseDirTec);
+            this.panelBaseITBIS.Controls.Add(this.rbBaseSubtotal);
+            this.panelBaseITBIS.Location = new System.Drawing.Point(263, 42);
+            this.panelBaseITBIS.Name = "panelBaseITBIS";
+            this.panelBaseITBIS.Size = new System.Drawing.Size(225, 65);
+            this.panelBaseITBIS.TabIndex = 3;
+            // 
+            // lblITBISCalc
+            // 
+            this.lblITBISCalc.AutoSize = true;
+            this.lblITBISCalc.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblITBISCalc.Location = new System.Drawing.Point(512, 69);
+            this.lblITBISCalc.Name = "lblITBISCalc";
+            this.lblITBISCalc.Size = new System.Drawing.Size(71, 21);
+            this.lblITBISCalc.TabIndex = 4;
+            this.lblITBISCalc.Text = "Cálculo:";
+            this.lblITBISCalc.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblITBISCalculado
+            // 
+            this.lblITBISCalculado.AutoSize = true;
+            this.lblITBISCalculado.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
+            this.lblITBISCalculado.Location = new System.Drawing.Point(589, 69);
+            this.lblITBISCalculado.Name = "lblITBISCalculado";
+            this.lblITBISCalculado.Size = new System.Drawing.Size(76, 21);
+            this.lblITBISCalculado.TabIndex = 4;
+            this.lblITBISCalculado.Text = "RD$ 0.00";
+            this.lblITBISCalculado.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblITBISMan
+            // 
+            this.lblITBISMan.AutoSize = true;
+            this.lblITBISMan.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblITBISMan.Location = new System.Drawing.Point(726, 68);
+            this.lblITBISMan.Name = "lblITBISMan";
+            this.lblITBISMan.Size = new System.Drawing.Size(72, 21);
+            this.lblITBISMan.TabIndex = 5;
+            this.lblITBISMan.Text = "Manual:";
+            this.lblITBISMan.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // txtITBISManual
+            // 
+            this.txtITBISManual.Location = new System.Drawing.Point(804, 65);
+            this.txtITBISManual.Name = "txtITBISManual";
+            this.txtITBISManual.Size = new System.Drawing.Size(180, 29);
+            this.txtITBISManual.TabIndex = 6;
+            // 
+            // lblDif
+            // 
+            this.lblDif.AutoSize = true;
+            this.lblDif.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblDif.Location = new System.Drawing.Point(990, 68);
+            this.lblDif.Name = "lblDif";
+            this.lblDif.Size = new System.Drawing.Size(93, 21);
+            this.lblDif.TabIndex = 7;
+            this.lblDif.Text = "Diferencia:";
+            this.lblDif.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblITBISDiferencia
+            // 
+            this.lblITBISDiferencia.AutoSize = true;
+            this.lblITBISDiferencia.ForeColor = System.Drawing.Color.Gray;
+            this.lblITBISDiferencia.Location = new System.Drawing.Point(1089, 68);
+            this.lblITBISDiferencia.Name = "lblITBISDiferencia";
+            this.lblITBISDiferencia.Size = new System.Drawing.Size(76, 21);
+            this.lblITBISDiferencia.TabIndex = 7;
+            this.lblITBISDiferencia.Text = "RD$ 0.00";
+            this.lblITBISDiferencia.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // panelRetenciones
+            // 
+            this.panelRetenciones.Controls.Add(this.tableRetenciones);
+            this.panelRetenciones.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelRetenciones.Location = new System.Drawing.Point(5, 145);
+            this.panelRetenciones.Name = "panelRetenciones";
+            this.panelRetenciones.Size = new System.Drawing.Size(1314, 39);
+            this.panelRetenciones.TabIndex = 8;
+            // 
+            // tableRetenciones
+            // 
+            this.tableRetenciones.ColumnCount = 10;
+            this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
+            this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
+            this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableRetenciones.Controls.Add(this.txtRetAFP, 9, 0);
+            this.tableRetenciones.Controls.Add(this.lblRetAFP, 8, 0);
+            this.tableRetenciones.Controls.Add(this.lblRetSFS, 6, 0);
+            this.tableRetenciones.Controls.Add(this.lblRetISRMonto, 5, 0);
+            this.tableRetenciones.Controls.Add(this.cboRetISR, 4, 0);
+            this.tableRetenciones.Controls.Add(this.lblRetISR, 3, 0);
+            this.tableRetenciones.Controls.Add(this.lblRetITBISMonto, 2, 0);
+            this.tableRetenciones.Controls.Add(this.lblRetITBIS, 0, 0);
+            this.tableRetenciones.Controls.Add(this.cboRetITBIS, 1, 0);
+            this.tableRetenciones.Controls.Add(this.txtRetSFS, 7, 0);
+            this.tableRetenciones.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableRetenciones.Location = new System.Drawing.Point(0, 0);
+            this.tableRetenciones.Name = "tableRetenciones";
+            this.tableRetenciones.RowCount = 1;
+            this.tableRetenciones.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableRetenciones.Size = new System.Drawing.Size(1314, 39);
+            this.tableRetenciones.TabIndex = 0;
+            // 
+            // lblRetITBIS
+            // 
+            this.lblRetITBIS.AutoSize = true;
+            this.lblRetITBIS.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblRetITBIS.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblRetITBIS.Location = new System.Drawing.Point(3, 0);
+            this.lblRetITBIS.Name = "lblRetITBIS";
+            this.lblRetITBIS.Size = new System.Drawing.Size(148, 39);
+            this.lblRetITBIS.TabIndex = 0;
+            this.lblRetITBIS.Text = "Retetención ITBIS:";
+            this.lblRetITBIS.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // cboRetITBIS
+            // 
+            this.cboRetITBIS.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cboRetITBIS.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboRetITBIS.FormattingEnabled = true;
+            this.cboRetITBIS.Location = new System.Drawing.Point(157, 5);
+            this.cboRetITBIS.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.cboRetITBIS.Name = "cboRetITBIS";
+            this.cboRetITBIS.Size = new System.Drawing.Size(74, 29);
+            this.cboRetITBIS.TabIndex = 1;
+            // 
+            // lblRetITBISMonto
+            // 
+            this.lblRetITBISMonto.AutoSize = true;
+            this.lblRetITBISMonto.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblRetITBISMonto.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
+            this.lblRetITBISMonto.Location = new System.Drawing.Point(237, 0);
+            this.lblRetITBISMonto.Name = "lblRetITBISMonto";
+            this.lblRetITBISMonto.Size = new System.Drawing.Size(94, 39);
+            this.lblRetITBISMonto.TabIndex = 2;
+            this.lblRetITBISMonto.Text = "RD$ 0.00";
+            this.lblRetITBISMonto.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblRetISR
+            // 
+            this.lblRetISR.AutoSize = true;
+            this.lblRetISR.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblRetISR.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblRetISR.Location = new System.Drawing.Point(337, 0);
+            this.lblRetISR.Name = "lblRetISR";
+            this.lblRetISR.Size = new System.Drawing.Size(134, 39);
+            this.lblRetISR.TabIndex = 3;
+            this.lblRetISR.Text = "Retetención ISR:";
+            this.lblRetISR.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // cboRetISR
+            // 
+            this.cboRetISR.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cboRetISR.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboRetISR.FormattingEnabled = true;
+            this.cboRetISR.Location = new System.Drawing.Point(477, 5);
+            this.cboRetISR.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.cboRetISR.Name = "cboRetISR";
+            this.cboRetISR.Size = new System.Drawing.Size(74, 29);
+            this.cboRetISR.TabIndex = 4;
+            // 
+            // lblRetISRMonto
+            // 
+            this.lblRetISRMonto.AutoSize = true;
+            this.lblRetISRMonto.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblRetISRMonto.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
+            this.lblRetISRMonto.Location = new System.Drawing.Point(557, 0);
+            this.lblRetISRMonto.Name = "lblRetISRMonto";
+            this.lblRetISRMonto.Size = new System.Drawing.Size(94, 39);
+            this.lblRetISRMonto.TabIndex = 5;
+            this.lblRetISRMonto.Text = "RD$ 0.00";
+            this.lblRetISRMonto.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblRetSFS
+            // 
+            this.lblRetSFS.AutoSize = true;
+            this.lblRetSFS.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblRetSFS.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblRetSFS.Location = new System.Drawing.Point(657, 0);
+            this.lblRetSFS.Name = "lblRetSFS";
+            this.lblRetSFS.Size = new System.Drawing.Size(136, 39);
+            this.lblRetSFS.TabIndex = 6;
+            this.lblRetSFS.Text = "Retetención SFS:";
+            this.lblRetSFS.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // txtRetSFS
+            // 
+            this.txtRetSFS.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtRetSFS.Location = new System.Drawing.Point(799, 5);
+            this.txtRetSFS.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.txtRetSFS.Name = "txtRetSFS";
+            this.txtRetSFS.Size = new System.Drawing.Size(180, 29);
+            this.txtRetSFS.TabIndex = 7;
+            // 
+            // lblRetAFP
+            // 
+            this.lblRetAFP.AutoSize = true;
+            this.lblRetAFP.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblRetAFP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblRetAFP.Location = new System.Drawing.Point(985, 0);
+            this.lblRetAFP.Name = "lblRetAFP";
+            this.lblRetAFP.Size = new System.Drawing.Size(139, 39);
+            this.lblRetAFP.TabIndex = 8;
+            this.lblRetAFP.Text = "Retetención AFP:";
+            this.lblRetAFP.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // txtRetAFP
+            // 
+            this.txtRetAFP.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtRetAFP.Location = new System.Drawing.Point(1130, 5);
+            this.txtRetAFP.Margin = new System.Windows.Forms.Padding(3, 5, 10, 5);
+            this.txtRetAFP.Name = "txtRetAFP";
+            this.txtRetAFP.Size = new System.Drawing.Size(174, 29);
+            this.txtRetAFP.TabIndex = 9;
+            // 
+            // gbObservaciones
+            // 
+            this.gbObservaciones.Controls.Add(this.panelObservacionesInterno);
+            this.gbObservaciones.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gbObservaciones.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gbObservaciones.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
+            this.gbObservaciones.Location = new System.Drawing.Point(5, 0);
+            this.gbObservaciones.Name = "gbObservaciones";
+            this.gbObservaciones.Padding = new System.Windows.Forms.Padding(5);
+            this.gbObservaciones.Size = new System.Drawing.Size(561, 189);
+            this.gbObservaciones.TabIndex = 0;
+            this.gbObservaciones.TabStop = false;
+            this.gbObservaciones.Text = "📝 OBSERVACIONES Y FIRMA";
+            // 
+            // panelObservacionesInterno
+            // 
+            this.panelObservacionesInterno.BackColor = System.Drawing.Color.Transparent;
+            this.panelObservacionesInterno.Controls.Add(this.panelOpcionesFirma);
+            this.panelObservacionesInterno.Controls.Add(this.txtObservaciones);
+            this.panelObservacionesInterno.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelObservacionesInterno.Location = new System.Drawing.Point(5, 27);
+            this.panelObservacionesInterno.Name = "panelObservacionesInterno";
+            this.panelObservacionesInterno.Size = new System.Drawing.Size(551, 157);
+            this.panelObservacionesInterno.TabIndex = 0;
+            // 
+            // txtObservaciones
+            // 
+            this.txtObservaciones.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtObservaciones.Location = new System.Drawing.Point(0, 0);
+            this.txtObservaciones.MaxLength = 1000;
+            this.txtObservaciones.Multiline = true;
+            this.txtObservaciones.Name = "txtObservaciones";
+            this.txtObservaciones.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtObservaciones.Size = new System.Drawing.Size(551, 51);
+            this.txtObservaciones.TabIndex = 1;
+            // 
+            // panelOpcionesFirma
+            // 
+            this.panelOpcionesFirma.Controls.Add(this.tableOpcionesFirma);
+            this.panelOpcionesFirma.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelOpcionesFirma.Location = new System.Drawing.Point(0, 54);
+            this.panelOpcionesFirma.Name = "panelOpcionesFirma";
+            this.panelOpcionesFirma.Size = new System.Drawing.Size(551, 103);
+            this.panelOpcionesFirma.TabIndex = 2;
+            // 
+            // tableOpcionesFirma
+            // 
+            this.tableOpcionesFirma.ColumnCount = 2;
+            this.tableOpcionesFirma.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableOpcionesFirma.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableOpcionesFirma.Controls.Add(this.lblContadorObservaciones, 0, 2);
+            this.tableOpcionesFirma.Controls.Add(this.chkMostrarConversion, 0, 1);
+            this.tableOpcionesFirma.Controls.Add(this.chkIncluirFirma, 0, 0);
+            this.tableOpcionesFirma.Controls.Add(this.cboFirma, 1, 0);
+            this.tableOpcionesFirma.Controls.Add(this.btnConfigConversion, 1, 1);
+            this.tableOpcionesFirma.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableOpcionesFirma.Location = new System.Drawing.Point(0, 0);
+            this.tableOpcionesFirma.Name = "tableOpcionesFirma";
+            this.tableOpcionesFirma.RowCount = 3;
+            this.tableOpcionesFirma.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 35F));
+            this.tableOpcionesFirma.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 35F));
+            this.tableOpcionesFirma.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30F));
+            this.tableOpcionesFirma.Size = new System.Drawing.Size(551, 103);
+            this.tableOpcionesFirma.TabIndex = 0;
+            // 
+            // chkMostrarConversion
+            // 
+            this.chkMostrarConversion.AutoSize = true;
+            this.chkMostrarConversion.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.chkMostrarConversion.Location = new System.Drawing.Point(3, 39);
+            this.chkMostrarConversion.Name = "chkMostrarConversion";
+            this.chkMostrarConversion.Size = new System.Drawing.Size(127, 30);
+            this.chkMostrarConversion.TabIndex = 2;
+            this.chkMostrarConversion.Text = "Conversión:";
+            this.chkMostrarConversion.UseVisualStyleBackColor = true;
+            // 
+            // chkIncluirFirma
+            // 
+            this.chkIncluirFirma.AutoSize = true;
+            this.chkIncluirFirma.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.chkIncluirFirma.Location = new System.Drawing.Point(3, 3);
+            this.chkIncluirFirma.Name = "chkIncluirFirma";
+            this.chkIncluirFirma.Size = new System.Drawing.Size(127, 30);
+            this.chkIncluirFirma.TabIndex = 0;
+            this.chkIncluirFirma.Text = "Incluir firma:";
+            this.chkIncluirFirma.UseVisualStyleBackColor = true;
+            // 
+            // cboFirma
+            // 
+            this.cboFirma.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cboFirma.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboFirma.Enabled = false;
+            this.cboFirma.FormattingEnabled = true;
+            this.cboFirma.Location = new System.Drawing.Point(136, 3);
+            this.cboFirma.Margin = new System.Windows.Forms.Padding(3, 3, 5, 3);
+            this.cboFirma.Name = "cboFirma";
+            this.cboFirma.Size = new System.Drawing.Size(410, 29);
+            this.cboFirma.TabIndex = 1;
+            // 
+            // btnConfigConversion
+            // 
+            this.btnConfigConversion.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.btnConfigConversion.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnConfigConversion.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnConfigConversion.Enabled = false;
+            this.btnConfigConversion.FlatAppearance.BorderSize = 0;
+            this.btnConfigConversion.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnConfigConversion.ForeColor = System.Drawing.Color.White;
+            this.btnConfigConversion.Location = new System.Drawing.Point(136, 39);
+            this.btnConfigConversion.Margin = new System.Windows.Forms.Padding(3, 3, 5, 3);
+            this.btnConfigConversion.Name = "btnConfigConversion";
+            this.btnConfigConversion.Size = new System.Drawing.Size(410, 30);
+            this.btnConfigConversion.TabIndex = 3;
+            this.btnConfigConversion.Text = "⚙ Configurar";
+            this.btnConfigConversion.UseVisualStyleBackColor = false;
+            // 
+            // lblContadorObservaciones
+            // 
+            this.lblContadorObservaciones.AutoSize = true;
+            this.tableOpcionesFirma.SetColumnSpan(this.lblContadorObservaciones, 2);
+            this.lblContadorObservaciones.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.lblContadorObservaciones.ForeColor = System.Drawing.Color.Gray;
+            this.lblContadorObservaciones.Location = new System.Drawing.Point(3, 82);
+            this.lblContadorObservaciones.Name = "lblContadorObservaciones";
+            this.lblContadorObservaciones.Size = new System.Drawing.Size(545, 21);
+            this.lblContadorObservaciones.TabIndex = 5;
+            this.lblContadorObservaciones.Text = "0 / 1000 caracteres";
+            this.lblContadorObservaciones.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // button4
+            // 
+            this.button4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.button4.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button4.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button4.FlatAppearance.BorderSize = 0;
+            this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button4.ForeColor = System.Drawing.Color.White;
+            this.button4.Location = new System.Drawing.Point(516, 163);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(33, 36);
+            this.button4.TabIndex = 14;
+            this.button4.Text = "⚙";
+            this.button4.UseVisualStyleBackColor = false;
             // 
             // FormSolicitudPago
             // 
@@ -984,12 +1937,19 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Solicitud de Pago";
             this.panelBotones.ResumeLayout(false);
+            this.tableBotones.ResumeLayout(false);
             this.panelTotales.ResumeLayout(false);
             this.tableTotales.ResumeLayout(false);
             this.panelEncabezado.ResumeLayout(false);
             this.panelDerecho.ResumeLayout(false);
             this.panelContenido.ResumeLayout(false);
             this.tableLayoutPrincipal.ResumeLayout(false);
+            this.gbMontos.ResumeLayout(false);
+            this.panelMontos.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvSubtotales)).EndInit();
+            this.gbConcepto.ResumeLayout(false);
+            this.panelConcepto.ResumeLayout(false);
+            this.panelConcepto.PerformLayout();
             this.gbDatosGenerales.ResumeLayout(false);
             this.tableDatosGenerales.ResumeLayout(false);
             this.tableDatosGenerales.PerformLayout();
@@ -998,13 +1958,33 @@
             this.panelFideicomisoProveedor.ResumeLayout(false);
             this.tableFideicomisoProveedor.ResumeLayout(false);
             this.tableFideicomisoProveedor.PerformLayout();
-            this.tableBotones.ResumeLayout(false);
             this.gbComprobantes.ResumeLayout(false);
             this.tableComprobantes.ResumeLayout(false);
             this.tableComprobantes.PerformLayout();
-            this.gbConcepto.ResumeLayout(false);
-            this.panelConcepto.ResumeLayout(false);
-            this.panelConcepto.PerformLayout();
+            this.gbOtrosMontos.ResumeLayout(false);
+            this.tableOtrosMontos.ResumeLayout(false);
+            this.tableOtrosMontos.PerformLayout();
+            this.panelOtrosImpuestos.ResumeLayout(false);
+            this.panelOtrosImpuestos.PerformLayout();
+            this.gbNotasCRDB.ResumeLayout(false);
+            this.tableNotasCRDB.ResumeLayout(false);
+            this.tableNotasCRDB.PerformLayout();
+            this.gbImpuestos.ResumeLayout(false);
+            this.gbImpuestos.PerformLayout();
+            this.panelImpuestosContenedor.ResumeLayout(false);
+            this.panelFilaImpuestosObs.ResumeLayout(false);
+            this.panelObservacionesContenedor.ResumeLayout(false);
+            this.panelBaseITBIS.ResumeLayout(false);
+            this.panelBaseITBIS.PerformLayout();
+            this.panelRetenciones.ResumeLayout(false);
+            this.tableRetenciones.ResumeLayout(false);
+            this.tableRetenciones.PerformLayout();
+            this.gbObservaciones.ResumeLayout(false);
+            this.panelObservacionesInterno.ResumeLayout(false);
+            this.panelObservacionesInterno.PerformLayout();
+            this.panelOpcionesFirma.ResumeLayout(false);
+            this.tableOpcionesFirma.ResumeLayout(false);
+            this.tableOpcionesFirma.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1074,5 +2054,74 @@
         private System.Windows.Forms.Panel panelConcepto;
         private System.Windows.Forms.TextBox txtConcepto;
         private System.Windows.Forms.Label lblContadorConcepto;
+        private System.Windows.Forms.GroupBox gbMontos;
+        private System.Windows.Forms.Panel panelMontos;
+        private System.Windows.Forms.DataGridView dgvSubtotales;
+        private System.Windows.Forms.Button btnAgregarSubtotal;
+        private System.Windows.Forms.Label lblSubtotalTotal;
+        private System.Windows.Forms.GroupBox gbOtrosMontos;
+        private System.Windows.Forms.TableLayoutPanel tableOtrosMontos;
+        private System.Windows.Forms.Label lblExento;
+        private System.Windows.Forms.TextBox txtDescuento;
+        private System.Windows.Forms.Label lblDescuento;
+        private System.Windows.Forms.TextBox txtDireccionTecnica;
+        private System.Windows.Forms.TextBox txtExento;
+        private System.Windows.Forms.Label lblDireccionTecnica;
+        private System.Windows.Forms.Label lblOtrosImpuestos;
+        private System.Windows.Forms.TextBox txtHorasExtras;
+        private System.Windows.Forms.Label lblHorasExtras;
+        private System.Windows.Forms.Panel panelOtrosImpuestos;
+        private System.Windows.Forms.TextBox txtOtrosImpuestos;
+        private System.Windows.Forms.GroupBox gbNotasCRDB;
+        private System.Windows.Forms.TableLayoutPanel tableNotasCRDB;
+        private System.Windows.Forms.Label lblNotaDebito;
+        private System.Windows.Forms.Button btnConfigNC;
+        private System.Windows.Forms.Label lblNotaCredito;
+        private System.Windows.Forms.TextBox txtNotaCredito;
+        private System.Windows.Forms.TextBox txtAvancePagar;
+        private System.Windows.Forms.Label lblAvancePagar;
+        private System.Windows.Forms.TextBox txtAnticipo;
+        private System.Windows.Forms.Label lblAnticipo;
+        private System.Windows.Forms.Button btnConfigND;
+        private System.Windows.Forms.TextBox txtNotaDebito;
+        private System.Windows.Forms.GroupBox gbImpuestos;
+        private System.Windows.Forms.Panel panelFilaImpuestosObs;
+        private System.Windows.Forms.Panel panelImpuestosContenedor;
+        private System.Windows.Forms.Panel panelObservacionesContenedor;
+        private System.Windows.Forms.RadioButton rbBaseDirTec;
+        private System.Windows.Forms.RadioButton rbBaseSubtotal;
+        private System.Windows.Forms.Label lblITBISBase;
+        private System.Windows.Forms.ComboBox cboITBISPorcentaje;
+        private System.Windows.Forms.Label lblITBIS;
+        private System.Windows.Forms.Label lblITBISDiferencia;
+        private System.Windows.Forms.Label lblDif;
+        private System.Windows.Forms.TextBox txtITBISManual;
+        private System.Windows.Forms.Label lblITBISMan;
+        private System.Windows.Forms.Label lblITBISCalculado;
+        private System.Windows.Forms.Label lblITBISCalc;
+        private System.Windows.Forms.Panel panelBaseITBIS;
+        private System.Windows.Forms.Panel panelRetenciones;
+        private System.Windows.Forms.TableLayoutPanel tableRetenciones;
+        private System.Windows.Forms.Label lblRetISR;
+        private System.Windows.Forms.Label lblRetITBISMonto;
+        private System.Windows.Forms.Label lblRetITBIS;
+        private System.Windows.Forms.ComboBox cboRetITBIS;
+        private System.Windows.Forms.TextBox txtRetAFP;
+        private System.Windows.Forms.Label lblRetAFP;
+        private System.Windows.Forms.Label lblRetSFS;
+        private System.Windows.Forms.Label lblRetISRMonto;
+        private System.Windows.Forms.ComboBox cboRetISR;
+        private System.Windows.Forms.TextBox txtRetSFS;
+        private System.Windows.Forms.GroupBox gbObservaciones;
+        private System.Windows.Forms.Panel panelObservacionesInterno;
+        private System.Windows.Forms.TextBox txtObservaciones;
+        private System.Windows.Forms.Panel panelOpcionesFirma;
+        private System.Windows.Forms.TableLayoutPanel tableOpcionesFirma;
+        private System.Windows.Forms.CheckBox chkMostrarConversion;
+        private System.Windows.Forms.CheckBox chkIncluirFirma;
+        private System.Windows.Forms.ComboBox cboFirma;
+        private System.Windows.Forms.Button btnConfigConversion;
+        private System.Windows.Forms.Label lblContadorObservaciones;
+        private System.Windows.Forms.Button button4;
     }
 }

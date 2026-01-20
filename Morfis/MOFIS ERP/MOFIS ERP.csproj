@@ -417,6 +417,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="CONTEXTO\PLAN_DESARROLLO_FormSolicitudPago.md" />
+    <None Include="CONTEXTO\RESUMEN_IMPLEMENTACION_FormSolicitudPago.md" />
+    <None Include="CONTEXTO\RESUMEN_IMPLEMENTACION_MOFIS_ERP.md" />
     <None Include="Database\README.md" />
     <None Include="Database\README_CXP.md" />
     <None Include="packages.config" />
@@ -436,6 +439,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="CONTEXTO\ANÁLISIS INFORMAR - MÓDULO SOLICITUD DE PAGO.txt" />
     <Content Include="Database\01_Schema\01_CreateDatabase.sql" />
     <Content Include="Database\01_Schema\SCRIPT_06_CrearTablaCatalogoCategorias.sql" />
     <Content Include="Database\01_Schema\SCRIPT_07_CrearTablaCatalogoModulos.sql" />
