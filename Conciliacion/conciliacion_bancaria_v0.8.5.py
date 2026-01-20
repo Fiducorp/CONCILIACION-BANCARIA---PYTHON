@@ -2,22 +2,22 @@
 ============================================================================
 CONCILIACIÓN BANCARIA INTELIGENTE v6.5 DEFINITIVO
 ============================================================================
-Proyecto: GREEN PARK - BANRESERBAS
+Proyecto: GREEN PARK - BANRESERVAS
 
-MOTOR DEFINITIVO = v6.0 (completo) + v6.1 (estrategias 1.6 y 7) + OPTIMIZACIONES
+MOTOR DEFINITIVO = v0.6 (completo) + v0.6.1 (estrategias 1.6 y 7) + OPTIMIZACIONES
 
 ✅ TODAS LAS ESTRATEGIAS (7 estrategias completas):
    1.   Monto Exacto (1:1)
    1.5  Transferencias + Comisión ($7)
-   1.6  Comisiones Agrupadas Multi-fecha [v6.1]
+   1.6  Comisiones Agrupadas Multi-fecha [v0.6.1]
    2.   Agrupaciones N→1 (4 métodos)
    3.   Agrupaciones 1→N
    4.   Agrupaciones N↔M
    5.   Impuestos DGII (0.15%)
    6.   Segunda Pasada Flexible
-   7.   Búsqueda Exhaustiva Final [v6.1]
+   7.   Búsqueda Exhaustiva Final [v0.6.1]
 
-✅ OPTIMIZACIONES v6.5:
+✅ OPTIMIZACIONES v0.6.5:
    - Lectura rápida: solo filas con Fecha Y Valor válidos
    - Límites por estrategia para evitar timeouts
    - Alias TC/LEGAL mejorados: TC LEGAL ↔ TC Corporativa ↔ Legalizaciones ↔ IPI
@@ -166,21 +166,22 @@ def buscar_archivos_en_carpeta():
     print("="*70)
     print(f"📁 Carpeta de trabajo: {CARPETA_TRABAJO}\n")
     
-    # Buscar todos los archivos Excel
+    # Buscar todos los archivos Excel y CSV
     archivos_excel = []
-    for extension in ['*.xlsx', '*.xls', '*.xlsm']:
+    for extension in ['*.xlsx', '*.xls', '*.xlsm', '*.csv']:
         archivos_excel.extend(glob.glob(os.path.join(CARPETA_TRABAJO, extension)))
     
     if not archivos_excel:
-        print("❌ No se encontraron archivos Excel (.xlsx, .xls) en la carpeta")
+        print("❌ No se encontraron archivos Excel (.xlsx, .xls) o CSV (.csv) en la carpeta")
         return None, None, None, None
     
-    print(f"📋 Archivos Excel encontrados: {len(archivos_excel)}")
+    print(f"📋 Archivos encontrados: {len(archivos_excel)}")
     for archivo in archivos_excel:
         print(f"   • {os.path.basename(archivo)}")
     
-    archivo_contable = None
-    archivos_banco = []  # Lista para almacenar múltiples archivos de banco
+    # Lista para almacenar múltiples archivos de banco y contable
+    archivos_contable = []
+    archivos_banco = []
     
     # Analizar cada archivo
     for ruta_archivo in archivos_excel:
@@ -189,17 +190,17 @@ def buscar_archivos_en_carpeta():
         
         # Verificar si es el archivo CONTABLE
         nombre_norm = normalizar_nombre_banco(nombre_sin_extension)
-        if nombre_norm in ['CONTABLE', 'LIBROCONTABLE', 'LIBRO', 'ACCOUNTINGBOOK']:
-            archivo_contable = ruta_archivo
+        # Verificar si contiene palabras clave del contable (como se hace con bancos)
+        if any(keyword in nombre_norm for keyword in ['CONTABLE', 'LIBROCONTABLE', 'LIBRO', 'ACCOUNTINGBOOK']):
+            archivos_contable.append((ruta_archivo, 'CONTABLE', 'Libro Contable', nombre_archivo))
             print(f"\n✅ CONTABLE identificado: {nombre_archivo}")
-            continue
-        
         # Verificar si es un archivo de BANCO
-        banco_det, nombre_det = detectar_banco_en_nombre_archivo(nombre_sin_extension)
-        if banco_det:
-            archivos_banco.append((ruta_archivo, banco_det, nombre_det, nombre_archivo))
-            print(f"\n✅ BANCO identificado: {nombre_archivo}")
-            print(f"   🏦 Banco: {banco_det} ({nombre_det})")
+        else:
+            banco_det, nombre_det = detectar_banco_en_nombre_archivo(nombre_sin_extension)
+            if banco_det:
+                archivos_banco.append((ruta_archivo, banco_det, nombre_det, nombre_archivo))
+                print(f"\n✅ BANCO identificado: {nombre_archivo}")
+                print(f"   🏦 Banco: {banco_det} ({nombre_det})")
     
     print("\n" + "─"*70)
     
@@ -210,14 +211,14 @@ def buscar_archivos_en_carpeta():
         print(f"   Bancos soportados: {', '.join(BANCOS_SOPORTADOS.keys())}")
         return None, None, None, None
     
-    if not archivo_contable:
+    if not archivos_contable:
         print("\n❌ ERROR: No se encontró archivo CONTABLE")
         print("   El archivo debe llamarse 'CONTABLE.xlsx' o similar")
         return None, None, None, None
     
     # Si hay múltiples archivos de banco, permitir al usuario seleccionar
     if len(archivos_banco) > 1:
-        print("\n🏦 SE ENCONTRARON MÚLTIPLES ARCHIVOS DE BANCO:\n")
+        print("\n❗ SE ENCONTRARON MÚLTIPLES ARCHIVOS DE BANCO:\n")
         for idx, (ruta, codigo, nombre, archivo_nombre) in enumerate(archivos_banco, 1):
             print(f"   {idx}) {archivo_nombre}")
             print(f"      🏦 Banco: {codigo} ({nombre})\n")
@@ -244,9 +245,38 @@ def buscar_archivos_en_carpeta():
         # Si hay solo un archivo de banco, seleccionarlo automáticamente
         archivo_banco, codigo_banco, nombre_banco, nombre_archivo_banco = archivos_banco[0]
     
+    # Si hay múltiples archivos del libro contable, permitir al usuario seleccionar
+    if len(archivos_contable) > 1:
+        print("\n❗ SE ENCONTRARON MÚLTIPLES ARCHIVOS DEL LIBRO CONTABLE:\n")
+        for idx, (ruta, codigo, nombre, archivo_nombre) in enumerate(archivos_contable, 1):
+            print(f"   {idx}) {archivo_nombre}")
+            print(f"      📖 Libro Contable: {codigo} ({nombre})\n")
+        
+        valid = False
+        while not valid:
+            try:
+                entrada = input(f"Selecciona el número del libro contable a usar (1-{len(archivos_contable)}): ").strip()
+                if entrada.isdigit():
+                    seleccion = int(entrada)
+                    if 1 <= seleccion <= len(archivos_contable):
+                        valid = True
+                        archivo_contable, _, _, _ = archivos_contable[seleccion - 1]
+                    else:
+                        print(f"❌ Ingresa un número entre 1 y {len(archivos_contable)}")
+                else:
+                    print(f"❌ Entrada inválida. Ingresa un número")
+            except KeyboardInterrupt:
+                print("\n❌ Operación cancelada")
+                return None, None, None, None
+
+        print(f"\n✅ Libro contable seleccionado: {archivos_contable[seleccion - 1][3]}")
+    else:
+        # Si hay solo un archivo del libro contable, seleccionarlo automáticamente
+        archivo_contable, _, _, _ = archivos_contable[0]
+
     print("\n✅ Archivos validados correctamente")
     print(f"   🏦 Banco:    {os.path.basename(archivo_banco)}")
-    print(f"   📗 Contable: {os.path.basename(archivo_contable)}")
+    print(f"   📖 Contable: {os.path.basename(archivo_contable)}")
     
     return archivo_banco, archivo_contable, codigo_banco, nombre_banco
 
@@ -293,6 +323,15 @@ PALABRAS_COMUNES = {
     'DEPOSITO', 'BANCO', 'CTA', 'CTAS', 'FAC', 'FACT', 'FACTURA', 'NUM',
     'NUMERO', 'NO', 'Y', 'A', 'EN', 'AL', 'O', 'U', 'E', 'USD', 'DOP', 'RD'
 }
+
+# ============================================================================
+# 📝 PATRONES PARA CAJA CHICA (AÑADIR A LA SECCIÓN DE ALIAS)
+# ============================================================================
+
+PATRONES_CAJA_CHICA = [
+    'CAJA CHICA', 'CAJACHICA', 'REPOSICION', 'REPOSICION DE CAJA',
+    'REP CAJA', 'REPO CAJA', 'REEMBOLSO CAJA', 'CAJA MENOR'
+]
 
 # ============================================================================
 # 🔧 FUNCIONES DE NORMALIZACIÓN
@@ -499,7 +538,7 @@ def limpiar_banreservas(df_original):
         key = quitar_acentos(str(col)).upper()
         if 'FECHA' in key:
             rename_map[col] = 'Fecha'
-        elif 'CONCEP' in key or 'DETALLE' in key or 'DESCRIP' in key:
+        elif 'CONCEP' in key:
             rename_map[col] = 'Concepto'
         elif 'DEB' in key and 'DEBITO' in key or 'DEBITO' in key:
             rename_map[col] = 'Debito'
@@ -507,7 +546,7 @@ def limpiar_banreservas(df_original):
             rename_map[col] = 'Credito'
         elif 'REFER' in key:
             rename_map[col] = 'Referencia'
-        elif 'DESCRIP' in key or 'OBSERV' in key:
+        elif any(k in key for k in ['DESCRIP', 'DETALLE', 'OBSERV', 'DESCRIPCIÓN']):
             rename_map[col] = 'Descripción'
         elif any(k in key for k in ['VALOR', 'MONTO', 'IMPORTE', 'AMOUNT']):
             rename_map[col] = 'Valor'
@@ -526,12 +565,61 @@ def limpiar_banreservas(df_original):
     return df
 
 def limpiar_bhd(df_original):
-    """Limpieza específica para BHD"""
+    """Limpieza específica para BHD (Excel)"""
     print("\n   Aplicando limpieza: BHD")
     df = df_original.copy()
     df = df.reset_index(drop=True)
     df = df.dropna(how='all')
     return df
+
+def limpiar_bhd_csv(ruta_archivo):
+    """
+    Limpieza específica para BHD en formato CSV
+    
+    Estructura esperada (sin headers):
+    Fecha, USELESS, USELESS, USELESS, Concepto, Debito, Credito, USELESS, Balance, Hour
+    
+    La primera fila es un resumen y debe ignorarse.
+    """
+    print("\n   Aplicando limpieza: BHD (CSV)")
+    
+    try:
+        # Leer CSV sin headers (no_column_names)
+        df = pd.read_csv(ruta_archivo, header=None)
+        print(f"  📊 CSV cargado: {df.shape[0]} filas × {df.shape[1]} columnas")
+        
+        # Asignar nombres temporales a las columnas (0-indexed)
+        df.columns = [f'col_{i}' for i in range(df.shape[1])]
+        
+        # Saltar la primera fila (resumen/encabezado)
+        df = df.iloc[1:].reset_index(drop=True)
+        print(f"  ✅ Salteada primera fila (resumen), quedaron: {df.shape[0]} filas")
+        
+        # Mapear columnas: Fecha=0, Concepto=4, Debito=5, Credito=6
+        # Las demás columnas (1,2,3,7,8,9) son inútiles
+        df_limpio = pd.DataFrame({
+            'Fecha': df['col_0'],
+            'Concepto': df['col_4'],
+            'Descripción': '',  # Campo vacío por defecto
+            'Debito': df['col_5'],
+            'Credito': df['col_6']
+        })
+        
+        # Limpiar datos
+        df_limpio = df_limpio.reset_index(drop=True)
+        df_limpio = df_limpio.dropna(how='all')
+        
+        # Convertir a tipos de datos correctos
+        df_limpio['Fecha'] = pd.to_datetime(df_limpio['Fecha'], errors='coerce')
+        df_limpio['Debito'] = pd.to_numeric(df_limpio['Debito'], errors='coerce')
+        df_limpio['Credito'] = pd.to_numeric(df_limpio['Credito'], errors='coerce')
+        
+        print(f"  ✅ Limpieza BHD CSV completada: {df_limpio.shape[0]} filas")
+        return df_limpio
+        
+    except Exception as e:
+        print(f"  ❌ Error al limpiar CSV de BHD: {e}")
+        raise
 
 def limpiar_banesco(df_original):
     """Limpieza específica para BANESCO"""
@@ -690,36 +778,64 @@ FUNCIONES_LIMPIEZA_BANCO = {
 def limpiar_archivo_banco(ruta_archivo, codigo_banco):
     """
     Carga y limpia el archivo del banco según su código
+    Soporta archivos Excel y CSV (especialmente para BHD)
     """
     print(f"\n  📂 Cargando archivo de {codigo_banco}...")
     
     try:
-        # Leer archivo Excel completo (sin procesar)
-        df_crudo = pd.read_excel(ruta_archivo)
-        print(f"  📊 Dimensiones originales: {df_crudo.shape[0]} filas × {df_crudo.shape[1]} columnas")
-        print(f"  📋 Columnas originales: {list(df_crudo.columns)}")
-        
-        # Aplicar limpieza específica del banco
-        if codigo_banco in FUNCIONES_LIMPIEZA_BANCO:
-            df_limpio = FUNCIONES_LIMPIEZA_BANCO[codigo_banco](df_crudo)
+        # Detectar si es un archivo CSV (especialmente para BHD)
+        if ruta_archivo.lower().endswith('.csv'):
+            if codigo_banco == 'BHD':
+                print(f"  📋 Detectado archivo CSV para BHD")
+                df_limpio = limpiar_bhd_csv(ruta_archivo)
+            else:
+                print(f"  ⚠️  Archivo CSV para {codigo_banco} no soportado aún")
+                return None
         else:
-            print(f"  ⚠️  No hay función de limpieza para {codigo_banco}")
-            df_limpio = df_crudo
+            # Leer archivo Excel completo (sin procesar)
+            df_crudo = pd.read_excel(ruta_archivo)
+            print(f"  📊 Dimensiones originales: {df_crudo.shape[0]} filas × {df_crudo.shape[1]} columnas")
+            print(f"  📋 Columnas originales: {list(df_crudo.columns)}")
+            
+            # Aplicar limpieza específica del banco
+            if codigo_banco in FUNCIONES_LIMPIEZA_BANCO:
+                df_limpio = FUNCIONES_LIMPIEZA_BANCO[codigo_banco](df_crudo)
+            else:
+                print(f"  ⚠️  No hay función de limpieza para {codigo_banco}")
+                df_limpio = df_crudo
         
         # Validar que tengamos las 4 columnas necesarias
         columnas_requeridas = ['Fecha', 'Concepto', 'Valor', 'Descripción']
         columnas_presentes = [col for col in columnas_requeridas if col in df_limpio.columns]
         
-        if len(columnas_presentes) != 4:
-            print(f"\n  ❌ ERROR: El archivo limpio no tiene las 4 columnas necesarias")
-            print(f"     Requeridas: {columnas_requeridas}")
-            print(f"     Presentes:  {columnas_presentes}")
-            print(f"     Columnas actuales: {list(df_limpio.columns)}")
-            print(f"\n  💡 Debes configurar la función de limpieza para {codigo_banco}")
-            return None
-        
-        # Seleccionar solo las 4 columnas en el orden correcto
-        df_final = df_limpio[columnas_requeridas].copy()
+        # Para CSV de BHD, buscar Debito/Credito en lugar de Valor
+        if ruta_archivo.lower().endswith('.csv') and codigo_banco == 'BHD':
+            columnas_requeridas = ['Fecha', 'Concepto', 'Debito', 'Credito', 'Descripción']
+            columnas_presentes = [col for col in columnas_requeridas if col in df_limpio.columns]
+            
+            if len(columnas_presentes) < 4:
+                print(f"\n  ❌ ERROR: El archivo CSV limpio no tiene las columnas necesarias")
+                print(f"     Requeridas: {columnas_requeridas}")
+                print(f"     Presentes:  {columnas_presentes}")
+                return None
+            
+            # Para Debito/Credito, necesitamos crear una columna Valor
+            df_final = df_limpio[['Fecha', 'Concepto', 'Descripción']].copy()
+            # Usar Debito si existe, sino Credito
+            df_final['Valor'] = df_limpio['Debito'].fillna(0) + df_limpio['Credito'].fillna(0)
+            df_final['Debito'] = df_limpio['Debito']
+            df_final['Credito'] = df_limpio['Credito']
+        else:
+            if len(columnas_presentes) != 4:
+                print(f"\n  ❌ ERROR: El archivo limpio no tiene las 4 columnas necesarias")
+                print(f"     Requeridas: {columnas_requeridas}")
+                print(f"     Presentes:  {columnas_presentes}")
+                print(f"     Columnas actuales: {list(df_limpio.columns)}")
+                print(f"\n  💡 Debes configurar la función de limpieza para {codigo_banco}")
+                return None
+            
+            # Seleccionar solo las 4 columnas en el orden correcto
+            df_final = df_limpio[columnas_requeridas].copy()
         
         print(f"  ✅ Limpieza completada: {df_final.shape[0]} filas × {df_final.shape[1]} columnas")
         return df_final
@@ -831,15 +947,26 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
                 ruta = str(alt)
 
     try:
-        # Leer Excel
-        df = pd.read_excel(ruta)
+        # Detectar si es CSV o Excel basado en la extensión del archivo
+        if ruta.lower().endswith('.csv'):
+            print(f"  📋 Detectado archivo CSV")
+            # Para BHD CSV, usar la función de limpieza específica
+            if codigo_banco == 'BHD':
+                df = limpiar_bhd_csv(ruta)
+            else:
+                # Para otros CSVs, cargar directamente
+                df = pd.read_csv(ruta)
+        else:
+            # Leer Excel
+            df = pd.read_excel(ruta)
 
         # ⚡ OPTIMIZACIÓN 1: Eliminar filas completamente vacías PRIMERO
         df = df.dropna(how='all')
 
         # Si se indicó un código de banco y existe una función de limpieza,
         # aplicar la limpieza específica antes del mapeo automático.
-        if codigo_banco and codigo_banco in FUNCIONES_LIMPIEZA_BANCO:
+        # (Para CSV de BHD, la limpieza ya se aplicó arriba)
+        if codigo_banco and codigo_banco in FUNCIONES_LIMPIEZA_BANCO and not (ruta.lower().endswith('.csv') and codigo_banco == 'BHD'):
             try:
                 print(f"  🧹 Aplicando limpieza específica para {codigo_banco}...")
                 df = FUNCIONES_LIMPIEZA_BANCO[codigo_banco](df)
@@ -881,7 +1008,7 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
             columnas_map['Credito'] = col
         elif any(x in col_upper for x in ['VALOR', 'MONTO', 'IMPORTE']) and 'Valor' not in columnas_map:
             columnas_map['Valor'] = col
-        elif any(x in col_upper for x in ['DESCRIP', 'DETALLE', 'OBSERV']) and 'Descripción' not in columnas_map:
+        elif any(x in col_upper for x in ['DESCRIP', 'DETALLE', 'OBSERV', 'DESCRIPCIÓN']) and 'Descripción' not in columnas_map:
             columnas_map['Descripción'] = col
 
     # Fallback: detect Valor-like column with additional keywords (English variants)
@@ -980,6 +1107,7 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
     df['Es_Impuesto'] = df['Texto_Busqueda'].apply(es_patron_impuesto)
     df['Es_Comision'] = df['Texto_Busqueda'].apply(es_patron_comision)
     df['Es_TC'] = df['Texto_Busqueda'].apply(es_patron_tc)  # ← NUEVO v6.5
+    df['Es_Caja_Chica'] = df['Texto_Busqueda'].apply(es_patron_caja_chica)  # ← NUEVO v6.6
     
     # Control
     df['ID_Original'] = range(len(df))
@@ -1056,8 +1184,8 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
         # Valor (único) - detecta nombres comunes (incluye variantes en inglés)
         elif any(x in col_upper for x in ['VALOR', 'MONTO', 'IMPORTE', 'AMOUNT', 'AMT']) and 'Valor' not in columnas_map:
             columnas_map['Valor'] = col
-        #elif any(x in col_upper for x in ['DESCRIP', 'DETALLE', 'OBSERV', 'REFERENCIA']) and 'Descripción' not in columnas_map:
-            #columnas_map['Descripción'] = col
+        elif any(x in col_upper for x in ['DESCRIP', 'DETALLE', 'OBSERV', 'REFERENCIA', 'BENEFICIARIO', 'BENEF']) and 'Descripción' not in columnas_map:
+            columnas_map['Descripción'] = col
     
     # Detectar si hay columna de naturaleza (Natu) y si hay Valor en USD
     tiene_natu = 'Natu' in columnas_map
@@ -1116,12 +1244,19 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
         df['Valor'] = pd.to_numeric(df['Valor_USD'], errors='coerce')
         df = df.drop(columns=['Valor_USD'], errors='ignore')
     else:
-        # RD: usar Valor tal cual (NO aplicar interpretación de NATU aquí)
-        print("  Detectada moneda RD - usando 'Valor' sin interpretar 'Natu'")
+        # RD: usar Valor aplicando interpretación de NATU
+        print("  Detectada moneda RD - usando 'Valor' interpretando 'Natu'")
         df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce')
-        # Si existe columna NATU, simplemente eliminarla para no interpretar signos
+
         if 'Natu' in df.columns:
+            df['Natu'] = df['Natu'].astype(str).str.strip().str.upper()
+
+            # 🔹 APLICAR SIGNO SEGÚN NATU
+            df.loc[df['Natu'] == 'E', 'Valor'] *= -1
+            df.loc[df['Natu'] == 'I', 'Valor'] = df.loc[df['Natu'] == 'I', 'Valor'].abs()
+
             df = df.drop(columns=['Natu'])
+
         # Descartar columna USD si existe
         if 'Valor_USD' in df.columns:
             df = df.drop(columns=['Valor_USD'], errors='ignore')
@@ -2096,6 +2231,311 @@ def busqueda_exhaustiva_final(banco, contable, conciliaciones):
     return contador
 
 # ============================================================================
+# 🔧 FUNCIONES AUXILIARES PARA CAJA CHICA (AÑADIR DESPUÉS DE LAS FUNCIONES DE NORMALIZACIÓN)
+# ============================================================================
+
+def es_patron_caja_chica(texto):
+    """Detecta si el texto corresponde a reposición de caja chica"""
+    texto_norm = normalizar_texto(texto)
+    return any(patron in texto_norm for patron in PATRONES_CAJA_CHICA)
+
+def extraer_nombre_persona(texto):
+    """
+    Extrae el nombre completo de una persona del texto
+    Busca patrones como: "TRANSFERENCIA A JUAN PEREZ" o "MIGUEL ANGEL SANTIAGO"
+    """
+    texto_norm = normalizar_texto(texto)
+    if not texto_norm:
+        return None
+    
+    # Patrón 1: "TRANSFERENCIA A [NOMBRE]"
+    match = re.search(r'(?:TRANSFERENCIA|TRANSF|PAGO|DEBITO)\s+(?:A|PARA|DE)\s+([A-Z\s]{6,})', texto_norm)
+    if match:
+        nombre = match.group(1).strip()
+        # Eliminar tokens que no son parte del nombre (ej. REPOSICION, CAJA, CHICA)
+        ruido_tokens = set()
+        for pat in PATRONES_CAJA_CHICA:
+            for w in pat.split():
+                if len(w) >= 3:
+                    ruido_tokens.add(w)
+
+        palabras = [p for p in nombre.split() if len(p) >= 3 and p not in PALABRAS_COMUNES and p not in ruido_tokens]
+        if len(palabras) >= 2:
+            return ' '.join(palabras)
+    
+    # Patrón 2: Buscar nombres completos (2-4 palabras capitalizadas consecutivas)
+    palabras = texto_norm.split()
+    nombres_encontrados = []
+    
+    for i in range(len(palabras) - 1):
+        # Buscar secuencias de 2-4 palabras que parezcan nombres
+        for longitud in [4, 3, 2]:  # Empezar por las más largas
+            if i + longitud <= len(palabras):
+                candidato = palabras[i:i+longitud]
+                # Filtrar palabras comunes
+                candidato_limpio = [p for p in candidato if len(p) >= 3 and p not in PALABRAS_COMUNES]
+                
+                if len(candidato_limpio) >= 2:
+                    # También eliminar tokens de ruido de caja chica
+                    ruido_tokens = set()
+                    for pat in PATRONES_CAJA_CHICA:
+                        for w in pat.split():
+                            if len(w) >= 3:
+                                ruido_tokens.add(w)
+
+                    candidato_final = [p for p in candidato_limpio if p not in ruido_tokens]
+                    if len(candidato_final) >= 2:
+                        nombre_completo = ' '.join(candidato_final)
+                        # Validar que parezca un nombre (longitud razonable)
+                        if 10 <= len(nombre_completo) <= 50:
+                            nombres_encontrados.append(nombre_completo)
+    
+    # Retornar el nombre más largo encontrado (generalmente es el más completo)
+    if nombres_encontrados:
+        return max(nombres_encontrados, key=len)
+    
+    return None
+
+def similitud_nombres(nombre1, nombre2):
+    """
+    Calcula similitud entre dos nombres de persona
+    Retorna score de 0.0 a 1.0
+    """
+    if not nombre1 or not nombre2:
+        return 0.0
+    
+    n1 = normalizar_texto(nombre1)
+    n2 = normalizar_texto(nombre2)
+    
+    palabras1 = set(n1.split())
+    palabras2 = set(n2.split())
+    
+    # Si las palabras principales coinciden, es muy probable que sea la misma persona
+    coincidencias = len(palabras1 & palabras2)
+    max_palabras = max(len(palabras1), len(palabras2))
+    
+    if max_palabras == 0:
+        return 0.0
+    
+    return coincidencias / max_palabras
+
+# ============================================================================
+# 🎯 ESTRATEGIA 8: REPOSICIÓN DE CAJA CHICA [NUEVA v6.6]
+# ============================================================================
+
+def conciliacion_caja_chica(banco, contable, conciliaciones):
+    """
+    Estrategia especializada para reposiciones de caja chica
+    
+    LÓGICA:
+    1. Detecta registros de banco con patrón "REPOSICIÓN DE CAJA CHICA"
+    2. Extrae el nombre de la persona del banco
+    3. Busca TODAS las partidas contables con ese mismo nombre
+    4. Agrupa por suma de montos (los conceptos pueden ser diversos)
+    5. Concilia si la suma coincide con la reposición del banco
+    """
+    print("\n" + "="*70)
+    print("🎯 ESTRATEGIA 8: REPOSICIÓN DE CAJA CHICA")
+    print("="*70)
+    
+    contador = 0
+    id_conc = len(conciliaciones) + 1 if conciliaciones else 1
+    
+    # Buscar registros de caja chica en banco
+    banco_caja_chica = banco[
+        (~banco['Conciliado']) & 
+        (banco['Texto_Busqueda'].apply(es_patron_caja_chica))
+    ].copy()
+    
+    if len(banco_caja_chica) == 0:
+        print("⊘ No hay reposiciones de caja chica pendientes en banco")
+        return 0
+    
+    print(f"  📋 Encontradas {len(banco_caja_chica)} reposiciones de caja chica en banco")
+    
+    for idx_b, reg_b in banco_caja_chica.iterrows():
+        if banco.loc[idx_b, 'Conciliado']:
+            continue
+        
+        # PASO 1: Extraer nombre de persona del banco
+        nombre_banco = extraer_nombre_persona(reg_b['Texto_Busqueda'])
+        
+        if not nombre_banco:
+            print(f"  ⚠️  No se pudo extraer nombre de persona de: '{reg_b['Concepto']}'")
+            continue
+        
+        print(f"\n  🔍 Buscando gastos de: {nombre_banco}")
+        print(f"      Banco: {reg_b['Concepto']} - ${reg_b['Valor']:,.2f}")
+        
+        # PASO 2: Buscar TODAS las partidas contables con ese nombre
+        # Ventana de tiempo amplia (generalmente las reposiciones cubren varios días)
+        f_min = reg_b['Fecha'] - timedelta(days=VENTANA_DIAS_AGRUPACION)
+        f_max = reg_b['Fecha'] + timedelta(days=VENTANA_DIAS_AGRUPACION)
+        
+        # Excluir partidas que claramente son comisiones o impuestos;
+        # además filtrar por presencia del nombre extraído en el Texto_Busqueda
+        candidatos = contable[
+            (~contable['Conciliado']) &
+            (~contable.get('Es_Comision', False)) &
+            (~contable.get('Es_Impuesto', False)) &
+            (contable['Fecha'] >= f_min) &
+            (contable['Fecha'] <= f_max) &
+            (contable['Texto_Busqueda'].str.contains(nombre_banco))
+        ].copy()
+        
+        if len(candidatos) == 0:
+            continue
+        
+        # Buscar partidas que contengan el nombre de la persona
+        partidas_persona = []
+        # Diagnóstico: comparar con todas las partidas del periodo que contienen el nombre (sin excluir flags)
+        todas_partidas_nombre = []
+        for idx_c_all, reg_c_all in contable[(contable['Fecha'] >= f_min) & (contable['Fecha'] <= f_max)].iterrows():
+            # Incluir cualquier partida del periodo que contenga el nombre en Texto_Busqueda (no filtrar por flags aquí)
+            if nombre_banco and nombre_banco in reg_c_all['Texto_Busqueda']:
+                todas_partidas_nombre.append({'index': idx_c_all, 'registro': reg_c_all, 'Es_Comision': reg_c_all.get('Es_Comision', False), 'Es_Impuesto': reg_c_all.get('Es_Impuesto', False)})
+
+        if len(todas_partidas_nombre) != 0:
+            suma_todas = sum(r['registro']['Valor'] for r in todas_partidas_nombre)
+            excluidas = [r for r in todas_partidas_nombre if r['Es_Comision'] or r['Es_Impuesto']]
+            suma_excluidas = sum(r['registro']['Valor'] for r in excluidas) if excluidas else 0
+            print(f"      (DEBUG) Partidas totales con nombre en ventana: {len(todas_partidas_nombre)}; suma={suma_todas:,.2f}; excluidas por flag: {len(excluidas)} suma_excluidas={suma_excluidas:,.2f}")
+            # Mostrar detalles de las partidas totales (índice, valor, concepto, flags)
+            for r in todas_partidas_nombre:
+                reg = r['registro']
+                print(f"        (DBG-TOT) idx={r['index']} valor={reg['Valor']:,.2f} flag_com={r['Es_Comision']} flag_imp={r['Es_Impuesto']} concept='{reg['Concepto'][:50]}' desc='{reg['Descripción'][:40]}'")
+            if excluidas:
+                print("        (DBG-TOT) Excluidas:")
+                for e in excluidas:
+                    reg = e['registro']
+                    print(f"          - idx={e['index']} valor={reg['Valor']:,.2f} concept='{reg['Concepto'][:50]}' desc='{reg['Descripción'][:40]}'")
+        for idx_c, reg_c in candidatos.iterrows():
+            # Asegurar que no se consideren partidas marcadas como comisión/impuesto
+            if reg_c.get('Es_Comision', False) or reg_c.get('Es_Impuesto', False):
+                continue
+
+            # Si el nombre extraído del banco aparece literalmente en Texto_Busqueda, asumir match directo
+            if nombre_banco and nombre_banco in reg_c['Texto_Busqueda']:
+                partidas_persona.append({
+                    'index': idx_c,
+                    'registro': reg_c,
+                    'similitud_nombre': 1.0
+                })
+                continue
+
+            nombre_contable = extraer_nombre_persona(reg_c['Texto_Busqueda'])
+
+            if nombre_contable:
+                sim = similitud_nombres(nombre_banco, nombre_contable)
+
+                # Si hay alta similitud en nombres, es la misma persona
+                if sim >= 0.6:  # Al menos 60% de coincidencia
+                    partidas_persona.append({
+                        'index': idx_c,
+                        'registro': reg_c,
+                        'similitud_nombre': sim
+                    })
+
+        # Diagnóstico: imprimir suma de partidas_persona seleccionadas
+        if partidas_persona:
+            suma_seleccionadas = sum(p['registro']['Valor'] for p in partidas_persona)
+            print(f"      (DEBUG) Partidas seleccionadas (sin flags): {len(partidas_persona)}; suma={suma_seleccionadas:,.2f}")
+        
+        if len(partidas_persona) == 0:
+            print(f"      ❌ No se encontraron gastos de '{nombre_banco}' en contable")
+            continue
+        
+        # PASO 3: Agrupar todas las partidas de esa persona
+        indices_grupo = [p['index'] for p in partidas_persona]
+        grupo = contable.loc[indices_grupo]
+        
+        suma_contable = grupo['Valor'].sum()
+        diferencia = abs(reg_b['Valor'] - suma_contable)
+        
+        print(f"      ✓ Encontradas {len(grupo)} partidas:")
+        for _, reg in grupo.head(5).iterrows():  # Mostrar solo las primeras 5
+            print(f"        • {reg['Concepto'][:40]:40} ${reg['Valor']:>10,.2f}")
+        if len(grupo) > 5:
+            print(f"        ... y {len(grupo) - 5} partidas más")
+        print(f"      📊 Suma contable: ${suma_contable:,.2f}")
+        print(f"      📊 Diferencia:    ${diferencia:,.2f}")
+        
+        # PASO 4: Conciliar si la suma coincide
+        if diferencia < TOLERANCIA_VALOR_AGRUPACION:
+            print(f"      ✅ CONCILIADO - Diferencia aceptable: ${diferencia:.2f}")
+            
+            # Registrar conciliación
+            for i, (idx_c, reg_c) in enumerate(grupo.sort_values(['Fecha', 'Valor']).iterrows()):
+                conciliaciones.append({
+                    'ID_Conciliacion': id_conc,
+                    'Tipo': f'8. Caja Chica ({len(grupo)}→1)',
+                    'Similitud': round(partidas_persona[0]['similitud_nombre'], 3),
+                    'Fecha_Banco': reg_b['Fecha'] if i == 0 else None,
+                    'Concepto_Banco': reg_b['Concepto'] if i == 0 else '',
+                    'Valor_Banco': reg_b['Valor'] if i == 0 else None,
+                    'Descripcion_Banco': reg_b['Descripción'] if i == 0 else '',
+                    'Fecha_Contable': reg_c['Fecha'],
+                    'Concepto_Contable': reg_c['Concepto'],
+                    'Valor_Contable': reg_c['Valor'],
+                    'Descripcion_Contable': reg_c['Descripción'],
+                    'Diferencia': diferencia if i == 0 else None
+                })
+            
+            # Marcar como conciliadas
+            banco.loc[idx_b, 'Conciliado'] = True
+            contable.loc[indices_grupo, 'Conciliado'] = True
+            
+            contador += 1
+            id_conc += 1
+        else:
+            # Intentar conciliar sumando TODAS las reposiciones de banco para la misma persona
+            # (caso: varias transferencias que en conjunto cubren los gastos)
+            similares_banco = []
+            for idx_bb, reg_bb in banco_caja_chica.iterrows():
+                if banco.loc[idx_bb, 'Conciliado']:
+                    continue
+                nombre_bb = extraer_nombre_persona(reg_bb['Texto_Busqueda'])
+                if nombre_bb and similitud_nombres(nombre_banco, nombre_bb) >= 0.6:
+                    similares_banco.append({'index': idx_bb, 'registro': reg_bb})
+
+            if similares_banco:
+                suma_bancos = sum(b['registro']['Valor'] for b in similares_banco)
+                diff_grupal = abs(suma_bancos - suma_contable)
+                print(f"      (DEBUG) Suma reposiciones banco para {nombre_banco}: {suma_bancos:,.2f}; diff_grupal={diff_grupal:,.2f}")
+                if diff_grupal < TOLERANCIA_VALOR_AGRUPACION:
+                    print(f"      ✅ CONCILIADO COMO GRUPO - {len(similares_banco)} reposiciones suman {suma_bancos:,.2f}")
+                    # Registrar conciliaciones: map each banco y cada contable registro
+                    for i_b, binfo in enumerate(sorted(similares_banco, key=lambda x: x['registro']['Fecha'])):
+                        for i_c, (idx_c, reg_c) in enumerate(grupo.sort_values(['Fecha', 'Valor']).iterrows()):
+                            conciliaciones.append({
+                                'ID_Conciliacion': id_conc,
+                                'Tipo': f'8. Caja Chica (Grupo {len(similares_banco)}→{len(grupo)})',
+                                'Similitud': round(partidas_persona[0]['similitud_nombre'], 3) if partidas_persona else 0.0,
+                                'Fecha_Banco': binfo['registro']['Fecha'] if i_c == 0 and i_b == 0 else None,
+                                'Concepto_Banco': binfo['registro']['Concepto'] if i_c == 0 and i_b == 0 else '',
+                                'Valor_Banco': binfo['registro']['Valor'] if i_c == 0 and i_b == 0 else None,
+                                'Descripcion_Banco': binfo['registro']['Descripción'] if i_c == 0 and i_b == 0 else '',
+                                'Fecha_Contable': reg_c['Fecha'] if i_b == 0 else None,
+                                'Concepto_Contable': reg_c['Concepto'] if i_b == 0 else '',
+                                'Valor_Contable': reg_c['Valor'] if i_b == 0 else None,
+                                'Descripcion_Contable': reg_c['Descripción'] if i_b == 0 else '',
+                                'Diferencia': diff_grupal if i_b == 0 and i_c == 0 else None
+                            })
+
+                    # Marcar como conciliadas
+                    banco.loc[[b['index'] for b in similares_banco], 'Conciliado'] = True
+                    contable.loc[indices_grupo, 'Conciliado'] = True
+                    contador += 1
+                    id_conc += 1
+                else:
+                    print(f"      ⚠️  Diferencia muy alta: ${diferencia:.2f} > ${TOLERANCIA_VALOR_AGRUPACION:.2f}")
+            else:
+                print(f"      ⚠️  Diferencia muy alta: ${diferencia:.2f} > ${TOLERANCIA_VALOR_AGRUPACION:.2f}")
+    
+    print(f"\n✓ Reposiciones de caja chica conciliadas: {contador}")
+    return contador
+
+# ============================================================================
 # 🔍 DETECCIÓN DE CASOS ESPECIALES
 # ============================================================================
 
@@ -2226,6 +2666,7 @@ def aplicar_formato_profesional(ruta):
         '5': PatternFill(start_color="E1BEE7", end_color="E1BEE7", fill_type="solid"),
         '6': PatternFill(start_color="B2DFDB", end_color="B2DFDB", fill_type="solid"),
         '7': PatternFill(start_color="FFCDD2", end_color="FFCDD2", fill_type="solid"),
+        '8': PatternFill(start_color="FFF9C4", end_color="FFF9C4", fill_type="solid"),  # Amarillo claro
     }
     
     borde = Border(
@@ -2534,6 +2975,7 @@ def main():
     t5 = conciliacion_impuestos(banco, contable, conciliaciones)
     t6 = segunda_pasada_inteligente(banco, contable, conciliaciones)
     t7 = busqueda_exhaustiva_final(banco, contable, conciliaciones)
+    t8 = conciliacion_caja_chica(banco, contable, conciliaciones)
     
     casos_especiales = detectar_casos_especiales(banco, contable)
     
@@ -2564,7 +3006,7 @@ def main():
     })
     
     total_grupos = len(df_conc['ID_Conciliacion'].unique()) if len(df_conc) > 0 else 0
-    total_estrategias = t1 + t1_5 + t1_6 + t2 + t3 + t4 + t5 + t6 + t7
+    total_estrategias = t1 + t1_5 + t1_6 + t2 + t3 + t4 + t5 + t6 + t7 + t8
     
     tiempo_total = time.time() - tiempo_inicio
     
@@ -2582,14 +3024,15 @@ def main():
             '',
             '─── CONCILIACIONES POR ESTRATEGIA ───',
             '1️⃣  Monto Exacto (1:1)',
-            '1.5️⃣ Transferencias + Comisión',
-            '1.6️⃣ Comisiones Agrupadas [v6.1]',
+            '1.5 Transferencias + Comisión',
+            '1.6 Comisiones Agrupadas [v6.1]',
             '2️⃣  Agrupaciones N→1',
             '3️⃣  Agrupaciones 1→N',
             '4️⃣  Agrupaciones N↔M',
             '5️⃣  Impuestos DGII',
             '6️⃣  Segunda Pasada',
             '7️⃣  Búsqueda Exhaustiva [v6.1]',
+            '8️⃣  Reposición Caja Chica',
             '📦  TOTAL GRUPOS CONCILIADOS',
             '',
             '─── REGISTROS PROCESADOS ───',
@@ -2620,7 +3063,7 @@ def main():
             round(contable['Valor'].sum(), 2),
             '',
             '',
-            t1, t1_5, t1_6, t2, t3, t4, t5, t6, t7,
+            t1, t1_5, t1_6, t2, t3, t4, t5, t6, t7, t8,
             total_grupos,
             '',
             '',
@@ -2691,14 +3134,15 @@ def main():
     
     print(f"\n✅ Conciliaciones por Estrategia:")
     print(f"   1️⃣  Monto Exacto:             {t1:,}")
-    print(f"   1.5️⃣ Transf + Comisión:        {t1_5:,}")
-    print(f"   1.6️⃣ Comisiones Agrupadas:     {t1_6:,}")
+    print(f"   1.5 Transf + Comisión:        {t1_5:,}")
+    print(f"   1.6 Comisiones Agrupadas:     {t1_6:,}")
     print(f"   2️⃣  N→1:                      {t2:,}")
     print(f"   3️⃣  1→N:                      {t3:,}")
     print(f"   4️⃣  N↔M:                      {t4:,}")
     print(f"   5️⃣  Impuestos DGII:           {t5:,}")
     print(f"   6️⃣  Segunda Pasada:           {t6:,}")
     print(f"   7️⃣  Búsqueda Exhaustiva:      {t7:,}")
+    print(f"   8️⃣  Reposición Caja Chica:    {t8:,}")
     print(f"   {'─'*32}")
     print(f"   📦 TOTAL GRUPOS:              {total_grupos:,}")
     
