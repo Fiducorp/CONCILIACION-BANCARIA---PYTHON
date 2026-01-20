@@ -325,6 +325,15 @@ PALABRAS_COMUNES = {
 }
 
 # ============================================================================
+# 📝 PATRONES PARA CAJA CHICA (AÑADIR A LA SECCIÓN DE ALIAS)
+# ============================================================================
+
+PATRONES_CAJA_CHICA = [
+    'CAJA CHICA', 'CAJACHICA', 'REPOSICION', 'REPOSICION DE CAJA',
+    'REP CAJA', 'REPO CAJA', 'REEMBOLSO CAJA', 'CAJA MENOR'
+]
+
+# ============================================================================
 # 🔧 FUNCIONES DE NORMALIZACIÓN
 # ============================================================================
 
@@ -1098,6 +1107,7 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
     df['Es_Impuesto'] = df['Texto_Busqueda'].apply(es_patron_impuesto)
     df['Es_Comision'] = df['Texto_Busqueda'].apply(es_patron_comision)
     df['Es_TC'] = df['Texto_Busqueda'].apply(es_patron_tc)  # ← NUEVO v6.5
+    df['Es_Caja_Chica'] = df['Texto_Busqueda'].apply(es_patron_caja_chica)  # ← NUEVO v6.6
     
     # Control
     df['ID_Original'] = range(len(df))
@@ -2214,6 +2224,311 @@ def busqueda_exhaustiva_final(banco, contable, conciliaciones):
     return contador
 
 # ============================================================================
+# 🔧 FUNCIONES AUXILIARES PARA CAJA CHICA (AÑADIR DESPUÉS DE LAS FUNCIONES DE NORMALIZACIÓN)
+# ============================================================================
+
+def es_patron_caja_chica(texto):
+    """Detecta si el texto corresponde a reposición de caja chica"""
+    texto_norm = normalizar_texto(texto)
+    return any(patron in texto_norm for patron in PATRONES_CAJA_CHICA)
+
+def extraer_nombre_persona(texto):
+    """
+    Extrae el nombre completo de una persona del texto
+    Busca patrones como: "TRANSFERENCIA A JUAN PEREZ" o "MIGUEL ANGEL SANTIAGO"
+    """
+    texto_norm = normalizar_texto(texto)
+    if not texto_norm:
+        return None
+    
+    # Patrón 1: "TRANSFERENCIA A [NOMBRE]"
+    match = re.search(r'(?:TRANSFERENCIA|TRANSF|PAGO|DEBITO)\s+(?:A|PARA|DE)\s+([A-Z\s]{6,})', texto_norm)
+    if match:
+        nombre = match.group(1).strip()
+        # Eliminar tokens que no son parte del nombre (ej. REPOSICION, CAJA, CHICA)
+        ruido_tokens = set()
+        for pat in PATRONES_CAJA_CHICA:
+            for w in pat.split():
+                if len(w) >= 3:
+                    ruido_tokens.add(w)
+
+        palabras = [p for p in nombre.split() if len(p) >= 3 and p not in PALABRAS_COMUNES and p not in ruido_tokens]
+        if len(palabras) >= 2:
+            return ' '.join(palabras)
+    
+    # Patrón 2: Buscar nombres completos (2-4 palabras capitalizadas consecutivas)
+    palabras = texto_norm.split()
+    nombres_encontrados = []
+    
+    for i in range(len(palabras) - 1):
+        # Buscar secuencias de 2-4 palabras que parezcan nombres
+        for longitud in [4, 3, 2]:  # Empezar por las más largas
+            if i + longitud <= len(palabras):
+                candidato = palabras[i:i+longitud]
+                # Filtrar palabras comunes
+                candidato_limpio = [p for p in candidato if len(p) >= 3 and p not in PALABRAS_COMUNES]
+                
+                if len(candidato_limpio) >= 2:
+                    # También eliminar tokens de ruido de caja chica
+                    ruido_tokens = set()
+                    for pat in PATRONES_CAJA_CHICA:
+                        for w in pat.split():
+                            if len(w) >= 3:
+                                ruido_tokens.add(w)
+
+                    candidato_final = [p for p in candidato_limpio if p not in ruido_tokens]
+                    if len(candidato_final) >= 2:
+                        nombre_completo = ' '.join(candidato_final)
+                        # Validar que parezca un nombre (longitud razonable)
+                        if 10 <= len(nombre_completo) <= 50:
+                            nombres_encontrados.append(nombre_completo)
+    
+    # Retornar el nombre más largo encontrado (generalmente es el más completo)
+    if nombres_encontrados:
+        return max(nombres_encontrados, key=len)
+    
+    return None
+
+def similitud_nombres(nombre1, nombre2):
+    """
+    Calcula similitud entre dos nombres de persona
+    Retorna score de 0.0 a 1.0
+    """
+    if not nombre1 or not nombre2:
+        return 0.0
+    
+    n1 = normalizar_texto(nombre1)
+    n2 = normalizar_texto(nombre2)
+    
+    palabras1 = set(n1.split())
+    palabras2 = set(n2.split())
+    
+    # Si las palabras principales coinciden, es muy probable que sea la misma persona
+    coincidencias = len(palabras1 & palabras2)
+    max_palabras = max(len(palabras1), len(palabras2))
+    
+    if max_palabras == 0:
+        return 0.0
+    
+    return coincidencias / max_palabras
+
+# ============================================================================
+# 🎯 ESTRATEGIA 8: REPOSICIÓN DE CAJA CHICA [NUEVA v6.6]
+# ============================================================================
+
+def conciliacion_caja_chica(banco, contable, conciliaciones):
+    """
+    Estrategia especializada para reposiciones de caja chica
+    
+    LÓGICA:
+    1. Detecta registros de banco con patrón "REPOSICIÓN DE CAJA CHICA"
+    2. Extrae el nombre de la persona del banco
+    3. Busca TODAS las partidas contables con ese mismo nombre
+    4. Agrupa por suma de montos (los conceptos pueden ser diversos)
+    5. Concilia si la suma coincide con la reposición del banco
+    """
+    print("\n" + "="*70)
+    print("🎯 ESTRATEGIA 8: REPOSICIÓN DE CAJA CHICA")
+    print("="*70)
+    
+    contador = 0
+    id_conc = len(conciliaciones) + 1 if conciliaciones else 1
+    
+    # Buscar registros de caja chica en banco
+    banco_caja_chica = banco[
+        (~banco['Conciliado']) & 
+        (banco['Texto_Busqueda'].apply(es_patron_caja_chica))
+    ].copy()
+    
+    if len(banco_caja_chica) == 0:
+        print("⊘ No hay reposiciones de caja chica pendientes en banco")
+        return 0
+    
+    print(f"  📋 Encontradas {len(banco_caja_chica)} reposiciones de caja chica en banco")
+    
+    for idx_b, reg_b in banco_caja_chica.iterrows():
+        if banco.loc[idx_b, 'Conciliado']:
+            continue
+        
+        # PASO 1: Extraer nombre de persona del banco
+        nombre_banco = extraer_nombre_persona(reg_b['Texto_Busqueda'])
+        
+        if not nombre_banco:
+            print(f"  ⚠️  No se pudo extraer nombre de persona de: '{reg_b['Concepto']}'")
+            continue
+        
+        print(f"\n  🔍 Buscando gastos de: {nombre_banco}")
+        print(f"      Banco: {reg_b['Concepto']} - ${reg_b['Valor']:,.2f}")
+        
+        # PASO 2: Buscar TODAS las partidas contables con ese nombre
+        # Ventana de tiempo amplia (generalmente las reposiciones cubren varios días)
+        f_min = reg_b['Fecha'] - timedelta(days=VENTANA_DIAS_AGRUPACION)
+        f_max = reg_b['Fecha'] + timedelta(days=VENTANA_DIAS_AGRUPACION)
+        
+        # Excluir partidas que claramente son comisiones o impuestos;
+        # además filtrar por presencia del nombre extraído en el Texto_Busqueda
+        candidatos = contable[
+            (~contable['Conciliado']) &
+            (~contable.get('Es_Comision', False)) &
+            (~contable.get('Es_Impuesto', False)) &
+            (contable['Fecha'] >= f_min) &
+            (contable['Fecha'] <= f_max) &
+            (contable['Texto_Busqueda'].str.contains(nombre_banco))
+        ].copy()
+        
+        if len(candidatos) == 0:
+            continue
+        
+        # Buscar partidas que contengan el nombre de la persona
+        partidas_persona = []
+        # Diagnóstico: comparar con todas las partidas del periodo que contienen el nombre (sin excluir flags)
+        todas_partidas_nombre = []
+        for idx_c_all, reg_c_all in contable[(contable['Fecha'] >= f_min) & (contable['Fecha'] <= f_max)].iterrows():
+            # Incluir cualquier partida del periodo que contenga el nombre en Texto_Busqueda (no filtrar por flags aquí)
+            if nombre_banco and nombre_banco in reg_c_all['Texto_Busqueda']:
+                todas_partidas_nombre.append({'index': idx_c_all, 'registro': reg_c_all, 'Es_Comision': reg_c_all.get('Es_Comision', False), 'Es_Impuesto': reg_c_all.get('Es_Impuesto', False)})
+
+        if len(todas_partidas_nombre) != 0:
+            suma_todas = sum(r['registro']['Valor'] for r in todas_partidas_nombre)
+            excluidas = [r for r in todas_partidas_nombre if r['Es_Comision'] or r['Es_Impuesto']]
+            suma_excluidas = sum(r['registro']['Valor'] for r in excluidas) if excluidas else 0
+            print(f"      (DEBUG) Partidas totales con nombre en ventana: {len(todas_partidas_nombre)}; suma={suma_todas:,.2f}; excluidas por flag: {len(excluidas)} suma_excluidas={suma_excluidas:,.2f}")
+            # Mostrar detalles de las partidas totales (índice, valor, concepto, flags)
+            for r in todas_partidas_nombre:
+                reg = r['registro']
+                print(f"        (DBG-TOT) idx={r['index']} valor={reg['Valor']:,.2f} flag_com={r['Es_Comision']} flag_imp={r['Es_Impuesto']} concept='{reg['Concepto'][:50]}' desc='{reg['Descripción'][:40]}'")
+            if excluidas:
+                print("        (DBG-TOT) Excluidas:")
+                for e in excluidas:
+                    reg = e['registro']
+                    print(f"          - idx={e['index']} valor={reg['Valor']:,.2f} concept='{reg['Concepto'][:50]}' desc='{reg['Descripción'][:40]}'")
+        for idx_c, reg_c in candidatos.iterrows():
+            # Asegurar que no se consideren partidas marcadas como comisión/impuesto
+            if reg_c.get('Es_Comision', False) or reg_c.get('Es_Impuesto', False):
+                continue
+
+            # Si el nombre extraído del banco aparece literalmente en Texto_Busqueda, asumir match directo
+            if nombre_banco and nombre_banco in reg_c['Texto_Busqueda']:
+                partidas_persona.append({
+                    'index': idx_c,
+                    'registro': reg_c,
+                    'similitud_nombre': 1.0
+                })
+                continue
+
+            nombre_contable = extraer_nombre_persona(reg_c['Texto_Busqueda'])
+
+            if nombre_contable:
+                sim = similitud_nombres(nombre_banco, nombre_contable)
+
+                # Si hay alta similitud en nombres, es la misma persona
+                if sim >= 0.6:  # Al menos 60% de coincidencia
+                    partidas_persona.append({
+                        'index': idx_c,
+                        'registro': reg_c,
+                        'similitud_nombre': sim
+                    })
+
+        # Diagnóstico: imprimir suma de partidas_persona seleccionadas
+        if partidas_persona:
+            suma_seleccionadas = sum(p['registro']['Valor'] for p in partidas_persona)
+            print(f"      (DEBUG) Partidas seleccionadas (sin flags): {len(partidas_persona)}; suma={suma_seleccionadas:,.2f}")
+        
+        if len(partidas_persona) == 0:
+            print(f"      ❌ No se encontraron gastos de '{nombre_banco}' en contable")
+            continue
+        
+        # PASO 3: Agrupar todas las partidas de esa persona
+        indices_grupo = [p['index'] for p in partidas_persona]
+        grupo = contable.loc[indices_grupo]
+        
+        suma_contable = grupo['Valor'].sum()
+        diferencia = abs(reg_b['Valor'] - suma_contable)
+        
+        print(f"      ✓ Encontradas {len(grupo)} partidas:")
+        for _, reg in grupo.head(5).iterrows():  # Mostrar solo las primeras 5
+            print(f"        • {reg['Concepto'][:40]:40} ${reg['Valor']:>10,.2f}")
+        if len(grupo) > 5:
+            print(f"        ... y {len(grupo) - 5} partidas más")
+        print(f"      📊 Suma contable: ${suma_contable:,.2f}")
+        print(f"      📊 Diferencia:    ${diferencia:,.2f}")
+        
+        # PASO 4: Conciliar si la suma coincide
+        if diferencia < TOLERANCIA_VALOR_AGRUPACION:
+            print(f"      ✅ CONCILIADO - Diferencia aceptable: ${diferencia:.2f}")
+            
+            # Registrar conciliación
+            for i, (idx_c, reg_c) in enumerate(grupo.sort_values(['Fecha', 'Valor']).iterrows()):
+                conciliaciones.append({
+                    'ID_Conciliacion': id_conc,
+                    'Tipo': f'8. Caja Chica ({len(grupo)}→1)',
+                    'Similitud': round(partidas_persona[0]['similitud_nombre'], 3),
+                    'Fecha_Banco': reg_b['Fecha'] if i == 0 else None,
+                    'Concepto_Banco': reg_b['Concepto'] if i == 0 else '',
+                    'Valor_Banco': reg_b['Valor'] if i == 0 else None,
+                    'Descripcion_Banco': reg_b['Descripción'] if i == 0 else '',
+                    'Fecha_Contable': reg_c['Fecha'],
+                    'Concepto_Contable': reg_c['Concepto'],
+                    'Valor_Contable': reg_c['Valor'],
+                    'Descripcion_Contable': reg_c['Descripción'],
+                    'Diferencia': diferencia if i == 0 else None
+                })
+            
+            # Marcar como conciliadas
+            banco.loc[idx_b, 'Conciliado'] = True
+            contable.loc[indices_grupo, 'Conciliado'] = True
+            
+            contador += 1
+            id_conc += 1
+        else:
+            # Intentar conciliar sumando TODAS las reposiciones de banco para la misma persona
+            # (caso: varias transferencias que en conjunto cubren los gastos)
+            similares_banco = []
+            for idx_bb, reg_bb in banco_caja_chica.iterrows():
+                if banco.loc[idx_bb, 'Conciliado']:
+                    continue
+                nombre_bb = extraer_nombre_persona(reg_bb['Texto_Busqueda'])
+                if nombre_bb and similitud_nombres(nombre_banco, nombre_bb) >= 0.6:
+                    similares_banco.append({'index': idx_bb, 'registro': reg_bb})
+
+            if similares_banco:
+                suma_bancos = sum(b['registro']['Valor'] for b in similares_banco)
+                diff_grupal = abs(suma_bancos - suma_contable)
+                print(f"      (DEBUG) Suma reposiciones banco para {nombre_banco}: {suma_bancos:,.2f}; diff_grupal={diff_grupal:,.2f}")
+                if diff_grupal < TOLERANCIA_VALOR_AGRUPACION:
+                    print(f"      ✅ CONCILIADO COMO GRUPO - {len(similares_banco)} reposiciones suman {suma_bancos:,.2f}")
+                    # Registrar conciliaciones: map each banco y cada contable registro
+                    for i_b, binfo in enumerate(sorted(similares_banco, key=lambda x: x['registro']['Fecha'])):
+                        for i_c, (idx_c, reg_c) in enumerate(grupo.sort_values(['Fecha', 'Valor']).iterrows()):
+                            conciliaciones.append({
+                                'ID_Conciliacion': id_conc,
+                                'Tipo': f'8. Caja Chica (Grupo {len(similares_banco)}→{len(grupo)})',
+                                'Similitud': round(partidas_persona[0]['similitud_nombre'], 3) if partidas_persona else 0.0,
+                                'Fecha_Banco': binfo['registro']['Fecha'] if i_c == 0 and i_b == 0 else None,
+                                'Concepto_Banco': binfo['registro']['Concepto'] if i_c == 0 and i_b == 0 else '',
+                                'Valor_Banco': binfo['registro']['Valor'] if i_c == 0 and i_b == 0 else None,
+                                'Descripcion_Banco': binfo['registro']['Descripción'] if i_c == 0 and i_b == 0 else '',
+                                'Fecha_Contable': reg_c['Fecha'] if i_b == 0 else None,
+                                'Concepto_Contable': reg_c['Concepto'] if i_b == 0 else '',
+                                'Valor_Contable': reg_c['Valor'] if i_b == 0 else None,
+                                'Descripcion_Contable': reg_c['Descripción'] if i_b == 0 else '',
+                                'Diferencia': diff_grupal if i_b == 0 and i_c == 0 else None
+                            })
+
+                    # Marcar como conciliadas
+                    banco.loc[[b['index'] for b in similares_banco], 'Conciliado'] = True
+                    contable.loc[indices_grupo, 'Conciliado'] = True
+                    contador += 1
+                    id_conc += 1
+                else:
+                    print(f"      ⚠️  Diferencia muy alta: ${diferencia:.2f} > ${TOLERANCIA_VALOR_AGRUPACION:.2f}")
+            else:
+                print(f"      ⚠️  Diferencia muy alta: ${diferencia:.2f} > ${TOLERANCIA_VALOR_AGRUPACION:.2f}")
+    
+    print(f"\n✓ Reposiciones de caja chica conciliadas: {contador}")
+    return contador
+
+# ============================================================================
 # 🔍 DETECCIÓN DE CASOS ESPECIALES
 # ============================================================================
 
@@ -2344,6 +2659,7 @@ def aplicar_formato_profesional(ruta):
         '5': PatternFill(start_color="E1BEE7", end_color="E1BEE7", fill_type="solid"),
         '6': PatternFill(start_color="B2DFDB", end_color="B2DFDB", fill_type="solid"),
         '7': PatternFill(start_color="FFCDD2", end_color="FFCDD2", fill_type="solid"),
+        '8': PatternFill(start_color="FFF9C4", end_color="FFF9C4", fill_type="solid"),  # Amarillo claro
     }
     
     borde = Border(
@@ -2652,6 +2968,7 @@ def main():
     t5 = conciliacion_impuestos(banco, contable, conciliaciones)
     t6 = segunda_pasada_inteligente(banco, contable, conciliaciones)
     t7 = busqueda_exhaustiva_final(banco, contable, conciliaciones)
+    t8 = conciliacion_caja_chica(banco, contable, conciliaciones)
     
     casos_especiales = detectar_casos_especiales(banco, contable)
     
@@ -2682,7 +2999,7 @@ def main():
     })
     
     total_grupos = len(df_conc['ID_Conciliacion'].unique()) if len(df_conc) > 0 else 0
-    total_estrategias = t1 + t1_5 + t1_6 + t2 + t3 + t4 + t5 + t6 + t7
+    total_estrategias = t1 + t1_5 + t1_6 + t2 + t3 + t4 + t5 + t6 + t7 + t8
     
     tiempo_total = time.time() - tiempo_inicio
     
@@ -2700,14 +3017,15 @@ def main():
             '',
             '─── CONCILIACIONES POR ESTRATEGIA ───',
             '1️⃣  Monto Exacto (1:1)',
-            '1.5️⃣ Transferencias + Comisión',
-            '1.6️⃣ Comisiones Agrupadas [v6.1]',
+            '1.5 Transferencias + Comisión',
+            '1.6 Comisiones Agrupadas [v6.1]',
             '2️⃣  Agrupaciones N→1',
             '3️⃣  Agrupaciones 1→N',
             '4️⃣  Agrupaciones N↔M',
             '5️⃣  Impuestos DGII',
             '6️⃣  Segunda Pasada',
             '7️⃣  Búsqueda Exhaustiva [v6.1]',
+            '8️⃣  Reposición Caja Chica',
             '📦  TOTAL GRUPOS CONCILIADOS',
             '',
             '─── REGISTROS PROCESADOS ───',
@@ -2738,7 +3056,7 @@ def main():
             round(contable['Valor'].sum(), 2),
             '',
             '',
-            t1, t1_5, t1_6, t2, t3, t4, t5, t6, t7,
+            t1, t1_5, t1_6, t2, t3, t4, t5, t6, t7, t8,
             total_grupos,
             '',
             '',
@@ -2809,14 +3127,15 @@ def main():
     
     print(f"\n✅ Conciliaciones por Estrategia:")
     print(f"   1️⃣  Monto Exacto:             {t1:,}")
-    print(f"   1.5️⃣ Transf + Comisión:        {t1_5:,}")
-    print(f"   1.6️⃣ Comisiones Agrupadas:     {t1_6:,}")
+    print(f"   1.5 Transf + Comisión:        {t1_5:,}")
+    print(f"   1.6 Comisiones Agrupadas:     {t1_6:,}")
     print(f"   2️⃣  N→1:                      {t2:,}")
     print(f"   3️⃣  1→N:                      {t3:,}")
     print(f"   4️⃣  N↔M:                      {t4:,}")
     print(f"   5️⃣  Impuestos DGII:           {t5:,}")
     print(f"   6️⃣  Segunda Pasada:           {t6:,}")
     print(f"   7️⃣  Búsqueda Exhaustiva:      {t7:,}")
+    print(f"   8️⃣  Reposición Caja Chica:    {t8:,}")
     print(f"   {'─'*32}")
     print(f"   📦 TOTAL GRUPOS:              {total_grupos:,}")
     
