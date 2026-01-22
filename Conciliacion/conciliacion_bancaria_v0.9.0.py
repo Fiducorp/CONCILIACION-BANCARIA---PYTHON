@@ -29,6 +29,7 @@ MOTOR DEFINITIVO = v0.6 (completo) + v0.6.1 (estrategias 1.6 y 7) + OPTIMIZACION
 """
 
 import pandas as pd
+import csv
 import numpy as np
 from datetime import datetime, timedelta
 import os
@@ -129,7 +130,8 @@ BANCOS_SOPORTADOS = {
     'SANTA_CRUZ': ['SANTA CRUZ', 'SANTACRUZ', 'BANCO SANTA CRUZ', 'BSC'],
     'ADEMI': ['ADEMI', 'BANCO ADEMI'],
     'LOPEZ_DE_HARO': ['LOPEZ DE HARO', 'LOPEZDEHARO', 'BANCO LOPEZ'],
-    'BELLBANK': ['BELLBANK', 'BELL BANK']
+    'BELLBANK': ['BELLBANK', 'BELL BANK'],
+    'APAP': ['APAP', 'BANCO APAP', 'ASOCIACION POPULAR DE AHORROS Y PRESTAMOS', 'ASOCIACION POPULAR']
 }
 
 def normalizar_nombre_banco(texto):
@@ -448,47 +450,244 @@ def es_patron_transferencia(texto):
 
 def limpiar_banco_popular(df_original):
     """
-    Limpieza específica para BANCO POPULAR
+    Limpieza específica para POPULAR en formato EXCEL
     
-    INSTRUCCIONES PARA CONFIGURAR:
-    1. Abre un archivo real de Banco Popular
-    2. Identifica:
-       - ¿En qué fila empiezan los datos reales? (después de encabezados)
-       - ¿Cómo se llaman las columnas de Fecha, Concepto/Descripción?
-       - ¿Hay columnas separadas de Débito y Crédito? ¿O una sola de Valor?
-       - ¿Hay filas de totales al final que debemos ignorar?
-    3. Configura esta función según lo que observes
+    Estructura esperada (sin headers):
+    Fecha de Posteo; Descripcion Corta (CONCEPTO); MONTO; USELESS; USELESS; USELESS; Descripcion
+    
+    Las primeras 10 filas deben ignorarse.
     """
-    print("\n   Aplicando limpieza: BANCO POPULAR")
-    print("     ESTA FUNCIÓN NECESITA SER CONFIGURADA CON DATOS REALES")
-    
+    print("\n   Aplicando limpieza: POPULAR")
     df = df_original.copy()
-    
-    # EJEMPLO - AJUSTAR SEGÚN FORMATO REAL:
-    # ---------------------------------------
-    
-    # 1. Eliminar filas de encabezado (si hay varias filas antes de los datos)
-    # df = df.iloc[5:]  # Por ejemplo, si los datos empiezan en la fila 6
-    
-    # 2. Resetear índice
     df = df.reset_index(drop=True)
-    
-    # 3. Eliminar filas completamente vacías
+    # Eliminar filas completamente vacías
     df = df.dropna(how='all')
-    
-    # 4. Identificar y renombrar columnas
-    # OPCIÓN A: Si tiene Débito y Crédito separados
-    """
-    df = df.rename(columns={
-        'FECHA': 'Fecha',
-        'DESCRIPCION': 'Concepto',
-        'DEBITO': 'Debito',
-        'CREDITO': 'Credito',
-        'REFERENCIA': 'Descripción'
-    })
-    """
-    
+
+    # Buscar fila de cabecera en las primeras N filas
+    header_row = None
+    max_search = min(25, len(df))
+    for i in range(max_search):
+        vals = ' '.join([str(x) for x in df.iloc[i].values if pd.notna(x)])
+        up = quitar_acentos(vals).upper()
+        if 'FECHA POSTEO' in up and ("DESCRIPCION CORTA" in up or 'DESCRIPCION' in up or 'MONTO' in up or 'MONTO TRANSACCION' in up or 'TRANSACCION' in up):
+            header_row = i
+            break
+
+    # Fallback: buscar solo 'FECHA'
+    if header_row is None:
+        for i in range(max_search):
+            vals = ' '.join([str(x) for x in df.iloc[i].values if pd.notna(x)])
+            up = quitar_acentos(vals).upper()
+            if 'FECHA' in up:
+                header_row = i
+                break
+
+    if header_row is None:
+        # No se detectó cabecera; devolver df con filas vacías eliminadas
+        return df
+
+    # Aplicar la fila encontrada como cabecera y devolver solo las filas de datos
+    raw_header = df.iloc[header_row].astype(str).tolist()
+    df = df.iloc[header_row + 1 :].reset_index(drop=True)
+    df.columns = raw_header
+
+    # ===== Detectar segunda cabecera (inicio de Débitos) =====
+    header_norm = [quitar_acentos(str(c)).upper() for c in raw_header]
+
+    idx_separador = None
+
+    for i in range(len(df)):
+        fila_norm = [
+            quitar_acentos(str(x)).upper()
+            for x in df.iloc[i].values
+            if pd.notna(x)
+        ]
+
+        # Si la fila contiene TODAS las columnas de cabecera → es cabecera repetida
+        if all(any(h in v for v in fila_norm) for h in header_norm):
+            idx_separador = i
+            break
+
+    if idx_separador is not None:
+        print(f"  🔀 Segunda cabecera detectada en fila: {idx_separador}")
+    else:
+        print("  ⚠️ No se detectó segunda cabecera (Débitos)")
+
+    # Normalizar nombres de columnas mínimamente (sin cambiar valores)
+    rename_map = {}
+    for col in list(df.columns):
+        key = quitar_acentos(str(col)).upper()
+        if 'FECHA POSTEO' in key:
+            rename_map[col] = 'Fecha'
+        elif 'DESCRIPCION CORTA' in key:
+            rename_map[col] = 'Concepto'
+        elif any(k in key for k in ['DETALLE', 'OBSERV', 'DESCRIPCIÓN']):
+            rename_map[col] = 'Descripción'
+        elif any(k in key for k in ['VALOR', 'MONTO', 'IMPORTE', 'AMOUNT']):
+            rename_map[col] = 'Valor'
+
+    if rename_map:
+        df = df.rename(columns=rename_map)
+
+    # Convertir Valor
+    df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce')
+
+    # Aplicar signo: Débitos negativos
+    if idx_separador is not None:
+        df.loc[idx_separador + 1 :, 'Valor'] *= -1
+
+    # Quitar filas de totales u otros rótulos (líneas que contienen 'TOTAL' u 'NETO')
+    mask_tot = df.apply(lambda r: any('TOTAL' in str(x).upper() or 'NETO' in str(x).upper() for x in r.values), axis=1)
+    if mask_tot.any():
+        df = df[~mask_tot].reset_index(drop=True)
+
+    # Eliminar filas vacías residuales
+    df = df.dropna(how='all').reset_index(drop=True)
+
     return df
+
+def detectar_delimitador_popular(ruta_archivo):
+    with open(ruta_archivo, 'r', encoding='latin1') as f:
+        for line in f:
+            up = quitar_acentos(line).upper()
+            if 'FECHA POSTEO' in up and 'MONTO' in up:
+                return ';' if line.count(';') > line.count(',') else ','
+    raise ValueError("No se pudo detectar el delimitador")
+
+
+def detectar_headers_en_df(df):
+    """
+    Devuelve una lista de índices donde aparece la cabecera
+    (Créditos, Débitos, etc.)
+    """
+    headers = []
+    for i in range(len(df)):
+        txt = ' '.join(str(x) for x in df.iloc[i].values if pd.notna(x))
+        up = quitar_acentos(txt).upper()
+        if 'FECHA' in up and 'MONTO' in up:
+            headers.append(i)
+    return headers
+
+from io import StringIO
+def read_dirty_csv_popular(ruta_archivo, sep):
+    """
+    Reads a bank CSV embedded in garbage text.
+    Keeps ONLY lines that contain the delimiter.
+    """
+    good_lines = []
+
+    with open(ruta_archivo, 'r', encoding='latin1') as f:
+        for line in f:
+            if sep in line:
+                good_lines.append(line)
+
+    if not good_lines:
+        raise ValueError("No se encontraron líneas con delimitador")
+
+    return pd.read_csv(
+        StringIO(''.join(good_lines)),
+        sep=sep,
+        header=None,
+        engine='python',
+        dtype=str
+    )
+
+
+def limpiar_banco_popular_csv(ruta_archivo):
+
+    print("\n   Aplicando limpieza: POPULAR (CSV)")
+
+    try:
+        # ─────────────────────────────────────────────
+        # 1. Detectar delimitador
+        # ─────────────────────────────────────────────
+        sep = detectar_delimitador_popular(ruta_archivo)
+        print(f"  🔍 Delimitador detectado: '{sep}'")
+
+        # ─────────────────────────────────────────────
+        # 2. Leer archivo CSV ignorando basura
+        # ─────────────────────────────────────────────
+        df = read_dirty_csv_popular(ruta_archivo, sep)
+
+
+        print(f"  📊 CSV cargado: {df.shape[0]} filas × {df.shape[1]} columnas")
+
+        # ─────────────────────────────────────────────
+        # 3. Detectar cabeceras dentro del DF
+        # ─────────────────────────────────────────────
+        headers = detectar_headers_en_df(df)
+
+        if len(headers) == 0:
+            raise ValueError("No se detectó ninguna tabla")
+
+        idx_creditos = headers[0]
+        idx_debitos = headers[1] if len(headers) > 1 else None
+
+        print(f"  🔍 Inicio Créditos: fila {idx_creditos}")
+        if idx_debitos is not None:
+            print(f"  🔍 Inicio Débitos: fila {idx_debitos}")
+
+        # ─────────────────────────────────────────────
+        # 4. Recortar DF a partir de Créditos
+        # ─────────────────────────────────────────────
+        df = df.iloc[idx_creditos + 1:].reset_index(drop=True)
+
+        df.columns = [f'col_{i}' for i in range(df.shape[1])]
+
+        # ─────────────────────────────────────────────
+        # 5. Construir DF limpio
+        # ─────────────────────────────────────────────
+        df_limpio = pd.DataFrame({
+            'Fecha': df['col_0'],
+            'Concepto': df['col_1'],
+            'Valor': df['col_2'],
+            'Descripción': df['col_6'],
+        })
+
+        # ─────────────────────────────────────────────
+        # 6. Detectar cabecera Débitos (ya alineada)
+        # ─────────────────────────────────────────────
+        idx_debitos_df = None
+        for i in range(len(df)):
+            txt = ' '.join(str(x) for x in df.iloc[i].values if pd.notna(x))
+            up = quitar_acentos(txt).upper()
+            if 'FECHA' in up and 'MONTO' in up:
+                idx_debitos_df = i
+                break
+
+        # ─────────────────────────────────────────────
+        # 7. Tipos
+        # ─────────────────────────────────────────────
+        df_limpio['Fecha'] = pd.to_datetime(
+            df_limpio['Fecha'].str.strip(),
+            errors='coerce',
+            dayfirst=True
+        )
+
+        df_limpio['Valor'] = pd.to_numeric(
+            df_limpio['Valor'].str.strip(),
+            errors='coerce'
+        )
+
+        # ─────────────────────────────────────────────
+        # 8. Aplicar signo Débitos
+        # ─────────────────────────────────────────────
+        if idx_debitos_df is not None:
+            print(f"  🔀 Aplicando Débitos desde fila {idx_debitos_df}")
+            df_limpio.loc[idx_debitos_df + 1:, 'Valor'] *= -1
+            df_limpio = df_limpio.drop(index=idx_debitos_df).reset_index(drop=True)
+
+        # ─────────────────────────────────────────────
+        # 9. Limpieza final
+        # ─────────────────────────────────────────────
+        df_limpio = df_limpio.dropna(subset=['Valor']).reset_index(drop=True)
+
+        print(f"  ✅ Limpieza POPULAR CSV completada: {df_limpio.shape[0]} filas")
+        return df_limpio
+
+    except Exception as e:
+        print(f"  ❌ Error al limpiar CSV de POPULAR: {e}")
+        raise
 
 def limpiar_banreservas(df_original):
     """Limpieza ligera para BANRESERVAS.
@@ -621,30 +820,6 @@ def limpiar_bhd_csv(ruta_archivo):
         print(f"  ❌ Error al limpiar CSV de BHD: {e}")
         raise
 
-def limpiar_banesco(df_original):
-    """Limpieza específica para BANESCO"""
-    print("\n   Aplicando limpieza: BANESCO")
-    df = df_original.copy()
-    df = df.reset_index(drop=True)
-    df = df.dropna(how='all')
-    return df
-
-def limpiar_scotiabank(df_original):
-    """Limpieza específica para SCOTIABANK"""
-    print("\n   Aplicando limpieza: SCOTIABANK")
-    df = df_original.copy()
-    df = df.reset_index(drop=True)
-    df = df.dropna(how='all')
-    return df
-
-def limpiar_promerica(df_original):
-    """Limpieza específica para PROMERICA"""
-    print("\n   Aplicando limpieza: PROMERICA")
-    df = df_original.copy()
-    df = df.reset_index(drop=True)
-    df = df.dropna(how='all')
-    return df
-
 def limpiar_santa_cruz(df_original):
     """Limpieza ligera para SANTA CRUZ.
 
@@ -737,6 +912,74 @@ def limpiar_santa_cruz(df_original):
 
     return df
 
+def limpiar_apap(df_original):
+    """Limpieza ligera para APAP.
+
+    Objetivo: eliminar filas arriba de la tabla de datos (texto libre, títulos,
+    metadatos) para que pandas pueda leer correctamente la tabla. NO debe
+    transformar o combinar columnas (p.ej. Debito/Credito) — eso lo hace el
+    loader universal posteriormente.
+    """
+    print("\n   Aplicando limpieza: APAP (solo remover encabezados no-datos)")
+    df = df_original.copy()
+    df = df.reset_index(drop=True)
+    # Eliminar filas completamente vacías
+    df = df.dropna(how='all')
+
+    # Buscar fila de cabecera en las primeras N filas
+    header_row = None
+    max_search = min(25, len(df))
+    for i in range(max_search):
+        vals = ' '.join([str(x) for x in df.iloc[i].values if pd.notna(x)])
+        up = quitar_acentos(vals).upper()
+        if 'FECHA' in up and ("REFER" in up or 'CONCEP' in up or 'NO DE REFERENCIA' in up or 'NO.' in up or 'DESC' in up):
+            header_row = i
+            break
+
+    # Fallback: buscar solo 'FECHA'
+    if header_row is None:
+        for i in range(max_search):
+            vals = ' '.join([str(x) for x in df.iloc[i].values if pd.notna(x)])
+            up = quitar_acentos(vals).upper()
+            if 'FECHA' in up:
+                header_row = i
+                break
+
+    if header_row is None:
+        # No se detectó cabecera; devolver df con filas vacías eliminadas
+        return df
+
+    # Aplicar la fila encontrada como cabecera y devolver solo las filas de datos
+    raw_header = df.iloc[header_row].astype(str).tolist()
+    df = df.iloc[header_row + 1 :].reset_index(drop=True)
+    df.columns = raw_header
+
+    # Normalizar nombres de columnas mínimamente (sin cambiar valores)
+    rename_map = {}
+    for col in list(df.columns):
+        key = quitar_acentos(str(col)).upper()
+        if 'FECHA DE ENTRADA' in key:
+            rename_map[col] = 'Fecha'
+        elif 'NO. DE REFERENCIA' in key:
+            rename_map[col] = 'Concepto'
+        elif any(k in key for k in ['DESCRIP', 'DETALLE', 'OBSERV', 'DESCRIPCIÓN']):
+            rename_map[col] = 'Descripción'
+        elif any(k in key for k in ['VALOR', 'MONTO', 'IMPORTE', 'AMOUNT']):
+            rename_map[col] = 'Valor'
+
+    if rename_map:
+        df = df.rename(columns=rename_map)
+
+    # Quitar filas de totales u otros rótulos (líneas que contienen 'TOTAL' u 'NETO')
+    mask_tot = df.apply(lambda r: any('TOTAL' in str(x).upper() or 'NETO' in str(x).upper() for x in r.values), axis=1)
+    if mask_tot.any():
+        df = df[~mask_tot].reset_index(drop=True)
+
+    # Eliminar filas vacías residuales
+    df = df.dropna(how='all').reset_index(drop=True)
+
+    return df
+
 def limpiar_ademi(df_original):
     """Limpieza específica para ADEMI"""
     print("\n   Aplicando limpieza: ADEMI")
@@ -761,6 +1004,30 @@ def limpiar_bellbank(df_original):
     df = df.dropna(how='all')
     return df
 
+def limpiar_banesco(df_original):
+    """Limpieza específica para BANESCO"""
+    print("\n   Aplicando limpieza: BANESCO")
+    df = df_original.copy()
+    df = df.reset_index(drop=True)
+    df = df.dropna(how='all')
+    return df
+
+def limpiar_scotiabank(df_original):
+    """Limpieza específica para SCOTIABANK"""
+    print("\n   Aplicando limpieza: SCOTIABANK")
+    df = df_original.copy()
+    df = df.reset_index(drop=True)
+    df = df.dropna(how='all')
+    return df
+
+def limpiar_promerica(df_original):
+    """Limpieza específica para PROMERICA"""
+    print("\n   Aplicando limpieza: PROMERICA")
+    df = df_original.copy()
+    df = df.reset_index(drop=True)
+    df = df.dropna(how='all')
+    return df
+
 # Mapeo de bancos a funciones de limpieza
 FUNCIONES_LIMPIEZA_BANCO = {
     'POPULAR': limpiar_banco_popular,
@@ -772,77 +1039,14 @@ FUNCIONES_LIMPIEZA_BANCO = {
     'SANTA_CRUZ': limpiar_santa_cruz,
     'ADEMI': limpiar_ademi,
     'LOPEZ_DE_HARO': limpiar_lopez_de_haro,
-    'BELLBANK': limpiar_bellbank
+    'BELLBANK': limpiar_bellbank,
+    'APAP': limpiar_apap
 }
 
-def limpiar_archivo_banco(ruta_archivo, codigo_banco):
-    """
-    Carga y limpia el archivo del banco según su código
-    Soporta archivos Excel y CSV (especialmente para BHD)
-    """
-    print(f"\n  📂 Cargando archivo de {codigo_banco}...")
-    
-    try:
-        # Detectar si es un archivo CSV (especialmente para BHD)
-        if ruta_archivo.lower().endswith('.csv'):
-            if codigo_banco == 'BHD':
-                print(f"  📋 Detectado archivo CSV para BHD")
-                df_limpio = limpiar_bhd_csv(ruta_archivo)
-            else:
-                print(f"  ⚠️  Archivo CSV para {codigo_banco} no soportado aún")
-                return None
-        else:
-            # Leer archivo Excel completo (sin procesar)
-            df_crudo = pd.read_excel(ruta_archivo)
-            print(f"  📊 Dimensiones originales: {df_crudo.shape[0]} filas × {df_crudo.shape[1]} columnas")
-            print(f"  📋 Columnas originales: {list(df_crudo.columns)}")
-            
-            # Aplicar limpieza específica del banco
-            if codigo_banco in FUNCIONES_LIMPIEZA_BANCO:
-                df_limpio = FUNCIONES_LIMPIEZA_BANCO[codigo_banco](df_crudo)
-            else:
-                print(f"  ⚠️  No hay función de limpieza para {codigo_banco}")
-                df_limpio = df_crudo
-        
-        # Validar que tengamos las 4 columnas necesarias
-        columnas_requeridas = ['Fecha', 'Concepto', 'Valor', 'Descripción']
-        columnas_presentes = [col for col in columnas_requeridas if col in df_limpio.columns]
-        
-        # Para CSV de BHD, buscar Debito/Credito en lugar de Valor
-        if ruta_archivo.lower().endswith('.csv') and codigo_banco == 'BHD':
-            columnas_requeridas = ['Fecha', 'Concepto', 'Debito', 'Credito', 'Descripción']
-            columnas_presentes = [col for col in columnas_requeridas if col in df_limpio.columns]
-            
-            if len(columnas_presentes) < 4:
-                print(f"\n  ❌ ERROR: El archivo CSV limpio no tiene las columnas necesarias")
-                print(f"     Requeridas: {columnas_requeridas}")
-                print(f"     Presentes:  {columnas_presentes}")
-                return None
-            
-            # Para Debito/Credito, necesitamos crear una columna Valor
-            df_final = df_limpio[['Fecha', 'Concepto', 'Descripción']].copy()
-            # Usar Debito si existe, sino Credito
-            df_final['Valor'] = df_limpio['Debito'].fillna(0) + df_limpio['Credito'].fillna(0)
-            df_final['Debito'] = df_limpio['Debito']
-            df_final['Credito'] = df_limpio['Credito']
-        else:
-            if len(columnas_presentes) != 4:
-                print(f"\n  ❌ ERROR: El archivo limpio no tiene las 4 columnas necesarias")
-                print(f"     Requeridas: {columnas_requeridas}")
-                print(f"     Presentes:  {columnas_presentes}")
-                print(f"     Columnas actuales: {list(df_limpio.columns)}")
-                print(f"\n  💡 Debes configurar la función de limpieza para {codigo_banco}")
-                return None
-            
-            # Seleccionar solo las 4 columnas en el orden correcto
-            df_final = df_limpio[columnas_requeridas].copy()
-        
-        print(f"  ✅ Limpieza completada: {df_final.shape[0]} filas × {df_final.shape[1]} columnas")
-        return df_final
-        
-    except Exception as e:
-        print(f"  ❌ Error al limpiar archivo: {e}")
-        return None
+FUNCIONES_LIMPIEZA_BANCO_CSV = {
+    'BHD': limpiar_bhd_csv,
+    'POPULAR': limpiar_banco_popular_csv
+}
 
 # ============================================================================
 # 🏦 PASO 2B: LIMPIEZA DEL ARCHIVO CONTABLE (UNIVERSAL)
@@ -950,9 +1154,10 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
         # Detectar si es CSV o Excel basado en la extensión del archivo
         if ruta.lower().endswith('.csv'):
             print(f"  📋 Detectado archivo CSV")
-            # Para BHD CSV, usar la función de limpieza específica
-            if codigo_banco == 'BHD':
-                df = limpiar_bhd_csv(ruta)
+            # Aplicar limpieza específica si existe para CSV
+            if codigo_banco and codigo_banco in FUNCIONES_LIMPIEZA_BANCO_CSV:
+                print(f"  🧹 Aplicando limpieza específica para {codigo_banco} (CSV)...")
+                df = FUNCIONES_LIMPIEZA_BANCO_CSV[codigo_banco](ruta)
             else:
                 # Para otros CSVs, cargar directamente
                 df = pd.read_csv(ruta)
@@ -966,7 +1171,7 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
         # Si se indicó un código de banco y existe una función de limpieza,
         # aplicar la limpieza específica antes del mapeo automático.
         # (Para CSV de BHD, la limpieza ya se aplicó arriba)
-        if codigo_banco and codigo_banco in FUNCIONES_LIMPIEZA_BANCO and not (ruta.lower().endswith('.csv') and codigo_banco == 'BHD'):
+        if codigo_banco and codigo_banco in FUNCIONES_LIMPIEZA_BANCO and not (ruta.lower().endswith('.csv')):
             try:
                 print(f"  🧹 Aplicando limpieza específica para {codigo_banco}...")
                 df = FUNCIONES_LIMPIEZA_BANCO[codigo_banco](df)
@@ -3090,7 +3295,7 @@ def main():
     print("\n" + "="*70)
     print("💾 EXPORTANDO RESULTADOS")
     print("="*70)
-    
+
     # Obtener ruta única (si existe, agrega (1), (2), etc.)
     RUTA_SALIDA = obtener_ruta_unica(RUTA_BASE_SALIDA)
     
