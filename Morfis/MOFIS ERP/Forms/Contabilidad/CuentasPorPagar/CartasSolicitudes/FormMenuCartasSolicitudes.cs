@@ -27,7 +27,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         private int MENU_ANCHO_CONTRAIDO = 100;
         private int BOTON_ANCHO_EXPANDIDO = 360;
         private int BOTON_ANCHO_CONTRAIDO = 70;
-        private int BOTON_ALTO = 65;
+        // private int BOTON_ALTO = 65; // Altura fija para todos los botones (No se usa)
 
         // Tamaños de fuente (TUS MEDIDAS)
         private readonly float FUENTE_BOTON_EXPANDIDO = 16f;
@@ -45,7 +45,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         // CONFIGURACIÓN DE VELOCIDADES (AJUSTA A TU GUSTO)
         // ═══════════════════════════════════════════════════════════════
         private readonly int VELOCIDAD_MENU_MS = 50;           // Duración animación menú
-        private readonly int VELOCIDAD_HOVER_MS = 50;          // Duración animación hover
+        // private readonly int VELOCIDAD_HOVER_MS = 50;          // Duración animación hover (No se usa)
         private readonly int VELOCIDAD_FADE_MS = 50;           // Duración fade in/out
         private readonly int DELAY_CASCADA_MS = 5;             // Delay entre cada botón en cascada
         private readonly int INTERVALO_ANIMACION = 5;          // Intervalo del timer (más bajo = más suave)
@@ -570,8 +570,41 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         private void BtnSolicitud_Click(object sender, EventArgs e)
         {
             SeleccionarBoton(btnSolicitud);
-            MarcarPrimeraSeleccion();
-            MostrarEnAreaTrabajo("📝", "Solicitud de Pago", "Formulario en desarrollo...");
+
+            AnimarFadeOutBienvenida(() =>
+            {
+                picLogoBienvenida.Visible = false;
+                lblTituloBienvenida.Visible = false;
+                lblBienvenidaUsuario.Visible = false;
+                panelResumen.Visible = false;
+                panelAccesos.Visible = false;
+                lblFechaHora.Visible = false;
+
+                for (int i = panelAreaTrabajo.Controls.Count - 1; i >= 0; i--)
+                {
+                    Control control = panelAreaTrabajo.Controls[i];
+                    if (control is Form)
+                    {
+                        panelAreaTrabajo.Controls.Remove(control);
+                        control.Dispose();
+                    }
+                }
+
+                FormSolicitudPago formSolicitud = new FormSolicitudPago();
+                formSolicitud.TopLevel = false;
+                formSolicitud.FormBorderStyle = FormBorderStyle.None;
+                formSolicitud.Dock = DockStyle.Fill;
+
+                // Manejar cuando se cierra el formulario
+                formSolicitud.FormClosed += (s, args) =>
+                {
+                    MostrarPantallaBienvenida();
+                };
+
+                panelAreaTrabajo.Controls.Add(formSolicitud);
+                formSolicitud.BringToFront();
+                formSolicitud.Show();
+            });
         }
 
         private void BtnCertificado_Click(object sender, EventArgs e)
@@ -717,11 +750,15 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
         private void MostrarPantallaBienvenida()
         {
-            // Ocultar placeholder
-            Label lblPlaceholder = panelAreaTrabajo.Controls["lblPlaceholder"] as Label;
-            if (lblPlaceholder != null)
+            // Limpiar formularios cargados en el panel
+            for (int i = panelAreaTrabajo.Controls.Count - 1; i >= 0; i--)
             {
-                lblPlaceholder.Visible = false;
+                Control control = panelAreaTrabajo.Controls[i];
+                if (control is Form)
+                {
+                    panelAreaTrabajo.Controls.Remove(control);
+                    control.Dispose();
+                }
             }
 
             // Mostrar controles de bienvenida
@@ -731,6 +768,14 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             panelResumen.Visible = true;
             panelAccesos.Visible = true;
             lblFechaHora.Visible = true;
+
+            // Aplicar fade in
+            AnimarFadeIn(picLogoBienvenida);
+            AnimarFadeIn(lblTituloBienvenida);
+            AnimarFadeIn(lblBienvenidaUsuario);
+            AnimarFadeIn(panelResumen);
+            AnimarFadeIn(panelAccesos);
+            AnimarFadeIn(lblFechaHora);
         }
 
         private void CargarEnPanel(Form formulario)
