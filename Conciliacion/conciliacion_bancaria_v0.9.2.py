@@ -46,11 +46,25 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # ============================================================================
-# ⚙️ CONFIGURACIÓN DE RUTAS
+# ⚙️ CONFIGURACIÓN DE RUTAS Y ARCHIVOS RESULTADO
 # ============================================================================
 
-# Guardar en el mismo directorio del script
-RUTA_BASE_SALIDA = str(Path(__file__).resolve().parent / "Conciliacion_Resultados.xlsx")
+import calendar
+def generar_nombre_conciliacion(codigo_banco, df_banco):
+    """
+    Genera nombre tipo:
+    Conciliacion_POPULAR_Marzo_2024.xlsx
+    """
+    # Tomar la primera fecha válida del banco
+    fecha_ref = df_banco['Fecha'].dropna().iloc[0]
+
+    mes_nombre = calendar.month_name[fecha_ref.month]
+    anio = fecha_ref.year
+
+    # Capitalizar mes (March -> Marzo si luego quieres traducir)
+    mes_nombre = mes_nombre.capitalize()
+
+    return f"Conciliacion_{codigo_banco}_{mes_nombre}_{anio}.xlsx"
 
 def obtener_ruta_unica(ruta_base):
     """
@@ -118,6 +132,13 @@ MAX_COMBINACIONES_EXHAUSTIVA = 100000
 
 # Obtener la carpeta donde está el script
 CARPETA_TRABAJO = os.path.dirname(os.path.abspath(__file__))
+CARPETA_BANCOS = os.path.join(CARPETA_TRABAJO, 'Archivos Banco')
+CARPETA_CONTABLE = os.path.join(CARPETA_TRABAJO, 'Archivos Libro Contable')
+
+# Verificar que las carpetas existen
+for carpeta in [CARPETA_BANCOS, CARPETA_CONTABLE]:
+    if not os.path.isdir(carpeta):
+        raise FileNotFoundError(f"No existe la carpeta requerida: {carpeta}")
 
 # Lista de bancos dominicanos soportados
 BANCOS_SOPORTADOS = {
@@ -159,127 +180,96 @@ def detectar_banco_en_nombre_archivo(nombre_archivo):
 
 def buscar_archivos_en_carpeta():
     """
-    Busca automáticamente los archivos de banco y contable en la carpeta del script
-    Permite al usuario seleccionar qué banco usar si hay múltiples archivos
-    Retorna: (ruta_banco, ruta_contable, codigo_banco, nombre_banco_detectado)
+    Busca archivos de banco en 'Archivos Banco'
+    y libro contable en 'Archivos Libro Contable'
     """
+
     print("\n" + "="*70)
-    print("🔍 PASO 1: BUSCANDO ARCHIVOS EN LA CARPETA")
+    print("🔍 PASO 1: BUSCANDO ARCHIVOS")
     print("="*70)
-    print(f"📁 Carpeta de trabajo: {CARPETA_TRABAJO}\n")
-    
-    # Buscar todos los archivos Excel y CSV
-    archivos_excel = []
-    for extension in ['*.xlsx', '*.xls', '*.xlsm', '*.csv']:
-        archivos_excel.extend(glob.glob(os.path.join(CARPETA_TRABAJO, extension)))
-    
-    if not archivos_excel:
-        print("❌ No se encontraron archivos Excel (.xlsx, .xls) o CSV (.csv) en la carpeta")
-        return None, None, None, None
-    
-    print(f"📋 Archivos encontrados: {len(archivos_excel)}")
-    for archivo in archivos_excel:
-        print(f"   • {os.path.basename(archivo)}")
-    
-    # Lista para almacenar múltiples archivos de banco y contable
-    archivos_contable = []
+
+    print(f"🏦 Carpeta Bancos:   {CARPETA_BANCOS}")
+    print(f"📖 Carpeta Contable: {CARPETA_CONTABLE}\n")
+
+    # ─────────────────────────────────────────────
+    # Buscar archivos de BANCO
+    # ─────────────────────────────────────────────
     archivos_banco = []
-    
-    # Analizar cada archivo
-    for ruta_archivo in archivos_excel:
-        nombre_archivo = os.path.basename(ruta_archivo)
-        nombre_sin_extension = os.path.splitext(nombre_archivo)[0]
-        
-        # Verificar si es el archivo CONTABLE
-        nombre_norm = normalizar_nombre_banco(nombre_sin_extension)
-        # Verificar si contiene palabras clave del contable (como se hace con bancos)
-        if any(keyword in nombre_norm for keyword in ['CONTABLE', 'LIBROCONTABLE', 'LIBRO', 'ACCOUNTINGBOOK']):
-            archivos_contable.append((ruta_archivo, 'CONTABLE', 'Libro Contable', nombre_archivo))
-            print(f"\n✅ CONTABLE identificado: {nombre_archivo}")
-        # Verificar si es un archivo de BANCO
-        else:
-            banco_det, nombre_det = detectar_banco_en_nombre_archivo(nombre_sin_extension)
+    for extension in ['*.xlsx', '*.xls', '*.xlsm', '*.csv']:
+        for ruta_archivo in glob.glob(os.path.join(CARPETA_BANCOS, extension)):
+            nombre_archivo = os.path.basename(ruta_archivo)
+            nombre_sin_ext = os.path.splitext(nombre_archivo)[0]
+
+            banco_det, nombre_det = detectar_banco_en_nombre_archivo(nombre_sin_ext)
             if banco_det:
                 archivos_banco.append((ruta_archivo, banco_det, nombre_det, nombre_archivo))
-                print(f"\n✅ BANCO identificado: {nombre_archivo}")
+                print(f"✅ BANCO identificado: {nombre_archivo}")
                 print(f"   🏦 Banco: {banco_det} ({nombre_det})")
-    
-    print("\n" + "─"*70)
-    
-    # Validar resultados
-    if not archivos_banco:
-        print("\n❌ ERROR: No se encontró archivo de banco")
-        print("   El nombre del archivo debe contener el nombre del banco")
-        print(f"   Bancos soportados: {', '.join(BANCOS_SOPORTADOS.keys())}")
-        return None, None, None, None
-    
-    if not archivos_contable:
-        print("\n❌ ERROR: No se encontró archivo CONTABLE")
-        print("   El archivo debe llamarse 'CONTABLE.xlsx' o similar")
-        return None, None, None, None
-    
-    # Si hay múltiples archivos de banco, permitir al usuario seleccionar
-    if len(archivos_banco) > 1:
-        print("\n❗ SE ENCONTRARON MÚLTIPLES ARCHIVOS DE BANCO:\n")
-        for idx, (ruta, codigo, nombre, archivo_nombre) in enumerate(archivos_banco, 1):
-            print(f"   {idx}) {archivo_nombre}")
-            print(f"      🏦 Banco: {codigo} ({nombre})\n")
-        
-        valid = False
-        while not valid:
-            try:
-                entrada = input(f"Selecciona el número del banco a usar (1-{len(archivos_banco)}): ").strip()
-                if entrada.isdigit():
-                    seleccion = int(entrada)
-                    if 1 <= seleccion <= len(archivos_banco):
-                        valid = True
-                        archivo_banco, codigo_banco, nombre_banco, _ = archivos_banco[seleccion - 1]
-                    else:
-                        print(f"❌ Ingresa un número entre 1 y {len(archivos_banco)}")
-                else:
-                    print(f"❌ Entrada inválida. Ingresa un número")
-            except KeyboardInterrupt:
-                print("\n❌ Operación cancelada")
-                return None, None, None, None
-        
-        print(f"\n✅ Banco seleccionado: {archivos_banco[seleccion - 1][3]}")
-    else:
-        # Si hay solo un archivo de banco, seleccionarlo automáticamente
-        archivo_banco, codigo_banco, nombre_banco, nombre_archivo_banco = archivos_banco[0]
-    
-    # Si hay múltiples archivos del libro contable, permitir al usuario seleccionar
-    if len(archivos_contable) > 1:
-        print("\n❗ SE ENCONTRARON MÚLTIPLES ARCHIVOS DEL LIBRO CONTABLE:\n")
-        for idx, (ruta, codigo, nombre, archivo_nombre) in enumerate(archivos_contable, 1):
-            print(f"   {idx}) {archivo_nombre}")
-            print(f"      📖 Libro Contable: {codigo} ({nombre})\n")
-        
-        valid = False
-        while not valid:
-            try:
-                entrada = input(f"Selecciona el número del libro contable a usar (1-{len(archivos_contable)}): ").strip()
-                if entrada.isdigit():
-                    seleccion = int(entrada)
-                    if 1 <= seleccion <= len(archivos_contable):
-                        valid = True
-                        archivo_contable, _, _, _ = archivos_contable[seleccion - 1]
-                    else:
-                        print(f"❌ Ingresa un número entre 1 y {len(archivos_contable)}")
-                else:
-                    print(f"❌ Entrada inválida. Ingresa un número")
-            except KeyboardInterrupt:
-                print("\n❌ Operación cancelada")
-                return None, None, None, None
 
-        print(f"\n✅ Libro contable seleccionado: {archivos_contable[seleccion - 1][3]}")
+    # ─────────────────────────────────────────────
+    # Buscar archivo CONTABLE
+    # ─────────────────────────────────────────────
+    archivos_contable = []
+    for extension in ['*.xlsx', '*.xls', '*.xlsm', '*.csv']:
+        for ruta_archivo in glob.glob(os.path.join(CARPETA_CONTABLE, extension)):
+            nombre_archivo = os.path.basename(ruta_archivo)
+            archivos_contable.append((ruta_archivo, 'CONTABLE', 'Libro Contable', nombre_archivo))
+            print(f"✅ CONTABLE identificado: {nombre_archivo}")
+
+    print("\n" + "─"*70)
+
+    # ─────────────────────────────────────────────
+    # Validaciones
+    # ─────────────────────────────────────────────
+    if not archivos_banco:
+        print("❌ ERROR: No se encontraron archivos de banco")
+        return None, None, None, None
+
+    if not archivos_contable:
+        print("❌ ERROR: No se encontró archivo del libro contable")
+        return None, None, None, None
+
+    # ─────────────────────────────────────────────
+    # Selección BANCO
+    # ─────────────────────────────────────────────
+    if len(archivos_banco) > 1:
+        print("\n❗ MÚLTIPLES ARCHIVOS DE BANCO:\n")
+        for i, (_, codigo, nombre, archivo) in enumerate(archivos_banco, 1):
+            print(f"   {i}) {archivo} — {codigo} ({nombre})")
+
+        while True:
+            entrada = input(f"\nSelecciona banco (1-{len(archivos_banco)}): ").strip()
+            if entrada.isdigit() and 1 <= int(entrada) <= len(archivos_banco):
+                archivo_banco, codigo_banco, nombre_banco, _ = archivos_banco[int(entrada) - 1]
+                break
+            print("❌ Selección inválida")
     else:
-        # Si hay solo un archivo del libro contable, seleccionarlo automáticamente
+        archivo_banco, codigo_banco, nombre_banco, _ = archivos_banco[0]
+
+    # ─────────────────────────────────────────────
+    # Selección CONTABLE
+    # ─────────────────────────────────────────────
+    if len(archivos_contable) > 1:
+        print("\n❗ MÚLTIPLES ARCHIVOS CONTABLES:\n")
+        for i, (_, _, _, archivo) in enumerate(archivos_contable, 1):
+            print(f"   {i}) {archivo}")
+
+        while True:
+            entrada = input(f"\nSelecciona libro contable (1-{len(archivos_contable)}): ").strip()
+            if entrada.isdigit() and 1 <= int(entrada) <= len(archivos_contable):
+                archivo_contable, _, _, _ = archivos_contable[int(entrada) - 1]
+                break
+            print("❌ Selección inválida")
+    else:
         archivo_contable, _, _, _ = archivos_contable[0]
 
+    # ─────────────────────────────────────────────
+    # Resultado final
+    # ─────────────────────────────────────────────
     print("\n✅ Archivos validados correctamente")
     print(f"   🏦 Banco:    {os.path.basename(archivo_banco)}")
     print(f"   📖 Contable: {os.path.basename(archivo_contable)}")
-    
+
     return archivo_banco, archivo_contable, codigo_banco, nombre_banco
 
 # ============================================================================
@@ -554,7 +544,6 @@ def detectar_delimitador_popular(ruta_archivo):
                 return ';' if line.count(';') > line.count(',') else ','
     raise ValueError("No se pudo detectar el delimitador")
 
-
 def detectar_headers_en_df(df):
     """
     Devuelve una lista de índices donde aparece la cabecera
@@ -591,7 +580,6 @@ def read_dirty_csv_popular(ruta_archivo, sep):
         engine='python',
         dtype=str
     )
-
 
 def limpiar_banco_popular_csv(ruta_archivo):
 
@@ -3145,17 +3133,14 @@ def main():
         return
         
     # Carga de Contable
-    
-    valid = False
-    usa_dolares = False
-    while valid == False:
+    while True:
         op = input("¿Está utilizando dólares? (s/n): ").strip().lower()
         if op == 's':   
             usa_dolares = True
         elif op == 'n':
             usa_dolares = False
         if op in ['s', 'n']:
-            valid = True
+            break
         else:
             print(f"❌ Entrada inválida.")
             
@@ -3296,8 +3281,17 @@ def main():
     print("💾 EXPORTANDO RESULTADOS")
     print("="*70)
 
-    # Obtener ruta única (si existe, agrega (1), (2), etc.)
+    # ─────────────────────────────────────────────
+    # Generar nombre dinámico del archivo de salida
+    # ─────────────────────────────────────────────
+    CARPETA_RESULTADOS = Path(__file__).resolve().parent / "Resultados"
+
+    nombre_archivo = generar_nombre_conciliacion(codigo_banco, banco)
+    RUTA_BASE_SALIDA = str(CARPETA_RESULTADOS / nombre_archivo)
+
+    # Mantener lógica de nombre único
     RUTA_SALIDA = obtener_ruta_unica(RUTA_BASE_SALIDA)
+
     
     with pd.ExcelWriter(RUTA_SALIDA, engine='openpyxl') as writer:
         resumen.to_excel(writer, sheet_name='RESUMEN', index=False)
