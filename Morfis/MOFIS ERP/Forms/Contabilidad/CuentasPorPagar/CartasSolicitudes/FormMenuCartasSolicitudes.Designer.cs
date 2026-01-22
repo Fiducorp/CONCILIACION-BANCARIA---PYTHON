@@ -349,7 +349,7 @@
             this.panelAreaTrabajo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelAreaTrabajo.Location = new System.Drawing.Point(391, 0);
             this.panelAreaTrabajo.Name = "panelAreaTrabajo";
-            this.panelAreaTrabajo.Padding = new System.Windows.Forms.Padding(20);
+            this.panelAreaTrabajo.Padding = new System.Windows.Forms.Padding(20, 20, 20, 0);
             this.panelAreaTrabajo.Size = new System.Drawing.Size(1534, 1000);
             this.panelAreaTrabajo.TabIndex = 1;
             // 

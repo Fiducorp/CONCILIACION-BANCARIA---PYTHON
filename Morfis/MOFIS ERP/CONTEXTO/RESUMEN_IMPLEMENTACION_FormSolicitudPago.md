@@ -428,19 +428,19 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
 ### 7.1 FASE 2: Conexión con FormMenuCartasSolicitudes
 
-- [ ] Modificar `BtnSolicitud_Click` en FormMenuCartasSolicitudes para cargar FormSolicitudPago
-- [ ] Implementar carga del formulario en panelAreaTrabajo
-- [ ] Manejar el estado del menú lateral al cargar el formulario
+- [X] Modificar `BtnSolicitud_Click` en FormMenuCartasSolicitudes para cargar FormSolicitudPago
+- [X] Implementar carga del formulario en panelAreaTrabajo
+- [X] Manejar el estado del menú lateral al cargar el formulario
 
 ### 7.2 FASE 3: Carga de Datos desde BD (Combos)
 
-- [ ] Cargar TiposPago en cboTipoPago
-- [ ] Cargar Monedas en cboMoneda
-- [ ] Cargar TiposComprobante en cboTipoComprobante
-- [ ] Cargar TiposNCF en cboTipoNCF
-- [ ] Cargar porcentajes ITBIS en cboITBISPorcentaje (0%, 16%, 18%)
-- [ ] Cargar porcentajes Ret. ITBIS en cboRetITBIS (0%, 30%, 100%)
-- [ ] Cargar porcentajes Ret. ISR en cboRetISR (0%, 2%, 10%, 27%)
+- [X] Cargar TiposPago en cboTipoPago
+- [X] Cargar Monedas en cboMoneda
+- [X] Cargar TiposComprobante en cboTipoComprobante
+- [X] Cargar TiposNCF en cboTipoNCF
+- [X] Cargar porcentajes ITBIS en cboITBISPorcentaje (0%, 16%, 18%)
+- [X] Cargar porcentajes Ret. ITBIS en cboRetITBIS (0%, 30%, 100%)
+- [X] Cargar porcentajes Ret. ISR en cboRetISR (0%, 2%, 10%, 27%)
 - [ ] Cargar Firmas del usuario en cboFirma
 
 ### 7.3 FASE 4: Autocompletado Fideicomiso y Proveedor
@@ -455,7 +455,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 ### 7.4 FASE 5: Gestión de Comprobantes
 
 - [ ] Implementar agregar comprobante a lstComprobantes
-- [ ] Validar formato NCF (Serie B: 11 chars, Serie E: 13 chars)
+- [X] Validar formato NCF (Serie B: 11 chars, Serie E: 13 chars)
 - [ ] Validar NCF no duplicado
 - [ ] Implementar eliminar comprobante de la lista
 - [ ] Limitar a máximo 10 comprobantes (configurable)
@@ -473,8 +473,8 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
 ### 7.6 FASE 7: Contadores de Caracteres
 
-- [ ] Implementar contador para txtConcepto → lblContadorConcepto
-- [ ] Implementar contador para txtObservaciones → lblContadorObservaciones
+- [X] Implementar contador para txtConcepto → lblContadorConcepto
+- [X] Implementar contador para txtObservaciones → lblContadorObservaciones
 
 ### 7.7 FASE 8: Cálculos Automáticos
 
@@ -513,7 +513,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
 ### 7.10 FASE 11: Sistema de Firmas
 
-- [ ] Habilitar cboFirma cuando chkIncluirFirma está marcado
+- [X] Habilitar cboFirma cuando chkIncluirFirma está marcado
 - [ ] Cargar firmas del usuario actual
 - [ ] Incluir firma en impresión/exportación
 
@@ -632,7 +632,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 ### 10.1 Metodología de Desarrollo
 - Todos los controles se crean **manualmente desde el diseñador** de Visual Studio
 - No se genera código automático (problemas de renderizado previos)
-- Claude instruye paso a paso, Cysero implementa
+- IA instruye paso a paso, Cysero implementa
 
 ### 10.2 Convenciones de Nombres
 
