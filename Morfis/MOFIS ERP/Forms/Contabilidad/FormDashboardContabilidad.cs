@@ -59,37 +59,58 @@ namespace MOFIS_ERP.Forms.Contabilidad
             btnVolver.Click += BtnVolver_Click;
             panelPrincipal.Controls.Add(btnVolver);
 
-            // Logo centrado arriba
+            // Logo centrado arriba (carga desde Resources, con fallback)
             PictureBox picLogo = null;
             try
             {
-                string logoPath = System.IO.Path.Combine(Application.StartupPath, "Resources", "MOFIS ERP -LOGO.png");
+                Image logoImage = null;
 
-                if (System.IO.File.Exists(logoPath))
+                // Intentar la propiedad fuertemente tipada
+                try { logoImage = Properties.Resources.LOGO as Image; } catch { logoImage = null; }
+
+                // Fallback: buscar por nombre en ResourceManager (variantes)
+                if (logoImage == null)
+                {
+                    try
+                    {
+                        object obj = Properties.Resources.ResourceManager.GetObject("LOGO", Properties.Resources.Culture)
+                                     ?? Properties.Resources.ResourceManager.GetObject("logo", Properties.Resources.Culture);
+                        logoImage = obj as Image;
+                    }
+                    catch { logoImage = null; }
+                }
+
+                // Último fallback: recurso conocido existente
+                if (logoImage == null)
+                {
+                    try { logoImage = Properties.Resources.icon_Adv as Image; } catch { logoImage = null; }
+                }
+
+                if (logoImage != null)
                 {
                     picLogo = new PictureBox
                     {
-                        Image = Image.FromFile(logoPath),
+                        Image = logoImage,
                         SizeMode = PictureBoxSizeMode.Zoom,
                         Size = new Size(400, 250),
                         BackColor = Color.Transparent,
                         Anchor = AnchorStyles.Top
                     };
-                    this.Controls.Add(picLogo);
+                    panelPrincipal.Controls.Add(picLogo);
                     picLogo.BringToFront();
 
-                    // Centrar horizontalmente
-                    picLogo.Location = new Point((this.ClientSize.Width - picLogo.Width) / 2, -40);
-
-                    // Recentrar cuando se redimensione la ventana
-                    this.Resize += (s, e) =>
+                    // Centrar horizontalmente y mantener en resize (igual que en los otros dashboards)
+                    panelPrincipal.Resize += (s, e) =>
                     {
                         if (picLogo != null)
-                            picLogo.Location = new Point((this.ClientSize.Width - picLogo.Width) / 2, -40);
+                            picLogo.Location = new Point((panelPrincipal.ClientSize.Width - picLogo.Width) / 2, -40);
                     };
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error cargando logo desde Resources: {ex.Message}");
+            }   
 
             // Contenedor centralizado
             Panel panelCentral = new Panel

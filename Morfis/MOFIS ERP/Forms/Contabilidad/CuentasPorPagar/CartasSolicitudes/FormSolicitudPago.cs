@@ -157,9 +157,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 chkIncluirFirma.CheckedChanged += ChkIncluirFirma_CheckedChanged;
             }
 
-            // Botón Volver
-            btnVolver.Click += BtnVolver_Click;
-
             // Evento de tipo NCF (placeholder inteligente)
             cboTipoNCF.SelectedIndexChanged += CboTipoNCF_SelectedIndexChanged;
             txtNumeroNCF.Enter += TxtNumeroNCF_Enter;
@@ -1303,22 +1300,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             }
 
             return null;
-        }
-
-        private void BtnVolver_Click(object sender, EventArgs e)
-        {
-            // Verificar si hay cambios sin guardar
-            DialogResult result = MessageBox.Show(
-                "¿Está seguro que desea volver? Los cambios no guardados se perderán.",
-                "Confirmar",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
-
-            if (result == DialogResult.Yes)
-            {
-                // Cerrar este formulario (volverá a mostrar la pantalla de bienvenida)
-                this.Close();
-            }
         }
 
         private void ChkRetSFS_CheckedChanged(object sender, EventArgs e)

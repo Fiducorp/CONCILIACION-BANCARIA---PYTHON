@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMenuCartasSolicitudes));
             this.panelMenu = new System.Windows.Forms.Panel();
             this.panelInferior = new System.Windows.Forms.Panel();
@@ -72,6 +73,11 @@
             this.lblBienvenidaUsuario = new System.Windows.Forms.Label();
             this.lblTituloBienvenida = new System.Windows.Forms.Label();
             this.picLogoBienvenida = new System.Windows.Forms.PictureBox();
+            this.panelCargando = new System.Windows.Forms.Panel();
+            this.picLoadingIcon = new System.Windows.Forms.PictureBox();
+            this.lblCargando = new System.Windows.Forms.Label();
+            this.lblNombreFormulario = new System.Windows.Forms.Label();
+            this.timerCarga = new System.Windows.Forms.Timer(this.components);
             this.panelMenu.SuspendLayout();
             this.panelInferior.SuspendLayout();
             this.panelBotones.SuspendLayout();
@@ -81,6 +87,8 @@
             this.panelAccesos.SuspendLayout();
             this.panelResumen.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picLogoBienvenida)).BeginInit();
+            this.panelCargando.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picLoadingIcon)).BeginInit();
             this.SuspendLayout();
             // 
             // panelMenu
@@ -89,7 +97,6 @@
             this.panelMenu.Controls.Add(this.panelInferior);
             this.panelMenu.Controls.Add(this.panelBotones);
             this.panelMenu.Controls.Add(this.panelEncabezado);
-            this.panelMenu.Dock = System.Windows.Forms.DockStyle.Left;
             this.panelMenu.Location = new System.Drawing.Point(0, 0);
             this.panelMenu.Name = "panelMenu";
             this.panelMenu.Size = new System.Drawing.Size(391, 1000);
@@ -341,16 +348,19 @@
             // 
             // panelAreaTrabajo
             // 
+            this.panelAreaTrabajo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelAreaTrabajo.Controls.Add(this.panelCargando);
             this.panelAreaTrabajo.Controls.Add(this.panelAccesos);
             this.panelAreaTrabajo.Controls.Add(this.panelResumen);
             this.panelAreaTrabajo.Controls.Add(this.lblBienvenidaUsuario);
             this.panelAreaTrabajo.Controls.Add(this.lblTituloBienvenida);
             this.panelAreaTrabajo.Controls.Add(this.picLogoBienvenida);
-            this.panelAreaTrabajo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelAreaTrabajo.Location = new System.Drawing.Point(391, 0);
+            this.panelAreaTrabajo.Location = new System.Drawing.Point(100, 0);
             this.panelAreaTrabajo.Name = "panelAreaTrabajo";
             this.panelAreaTrabajo.Padding = new System.Windows.Forms.Padding(20, 20, 20, 0);
-            this.panelAreaTrabajo.Size = new System.Drawing.Size(1534, 1000);
+            this.panelAreaTrabajo.Size = new System.Drawing.Size(1925, 1000);
             this.panelAreaTrabajo.TabIndex = 1;
             // 
             // panelAccesos
@@ -363,7 +373,7 @@
             this.panelAccesos.Controls.Add(this.lblFechaHora);
             this.panelAccesos.Controls.Add(this.btnNuevaSolicitud);
             this.panelAccesos.Controls.Add(this.lblTituloAccesos);
-            this.panelAccesos.Location = new System.Drawing.Point(126, 827);
+            this.panelAccesos.Location = new System.Drawing.Point(307, 839);
             this.panelAccesos.Name = "panelAccesos";
             this.panelAccesos.Size = new System.Drawing.Size(1327, 150);
             this.panelAccesos.TabIndex = 4;
@@ -485,7 +495,7 @@
             this.panelResumen.Controls.Add(this.lblSolicitudesNumero);
             this.panelResumen.Controls.Add(this.lblSolicitudesTexto);
             this.panelResumen.Controls.Add(this.lblTituloResumen);
-            this.panelResumen.Location = new System.Drawing.Point(482, 418);
+            this.panelResumen.Location = new System.Drawing.Point(663, 430);
             this.panelResumen.Name = "panelResumen";
             this.panelResumen.Size = new System.Drawing.Size(615, 381);
             this.panelResumen.TabIndex = 3;
@@ -663,7 +673,7 @@
             this.lblBienvenidaUsuario.AutoSize = true;
             this.lblBienvenidaUsuario.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblBienvenidaUsuario.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(110)))));
-            this.lblBienvenidaUsuario.Location = new System.Drawing.Point(687, 334);
+            this.lblBienvenidaUsuario.Location = new System.Drawing.Point(868, 346);
             this.lblBienvenidaUsuario.Name = "lblBienvenidaUsuario";
             this.lblBienvenidaUsuario.Size = new System.Drawing.Size(210, 30);
             this.lblBienvenidaUsuario.TabIndex = 2;
@@ -674,7 +684,7 @@
             this.lblTituloBienvenida.AutoSize = true;
             this.lblTituloBienvenida.Font = new System.Drawing.Font("Segoe UI Black", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTituloBienvenida.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(24)))), ((int)(((byte)(32)))));
-            this.lblTituloBienvenida.Location = new System.Drawing.Point(565, 290);
+            this.lblTituloBienvenida.Location = new System.Drawing.Point(746, 302);
             this.lblTituloBienvenida.Name = "lblTituloBienvenida";
             this.lblTituloBienvenida.Size = new System.Drawing.Size(444, 37);
             this.lblTituloBienvenida.TabIndex = 1;
@@ -683,12 +693,63 @@
             // picLogoBienvenida
             // 
             this.picLogoBienvenida.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.picLogoBienvenida.Location = new System.Drawing.Point(587, 12);
+            this.picLogoBienvenida.Location = new System.Drawing.Point(768, 24);
             this.picLogoBienvenida.Name = "picLogoBienvenida";
             this.picLogoBienvenida.Size = new System.Drawing.Size(393, 250);
             this.picLogoBienvenida.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picLogoBienvenida.TabIndex = 0;
             this.picLogoBienvenida.TabStop = false;
+            // 
+            // panelCargando
+            // 
+            this.panelCargando.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(12)))), ((int)(((byte)(35)))), ((int)(((byte)(66)))));
+            this.panelCargando.Controls.Add(this.lblNombreFormulario);
+            this.panelCargando.Controls.Add(this.lblCargando);
+            this.panelCargando.Controls.Add(this.picLoadingIcon);
+            this.panelCargando.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelCargando.Location = new System.Drawing.Point(20, 20);
+            this.panelCargando.Name = "panelCargando";
+            this.panelCargando.Size = new System.Drawing.Size(1885, 980);
+            this.panelCargando.TabIndex = 5;
+            this.panelCargando.Visible = false;
+            // 
+            // picLoadingIcon
+            // 
+            this.picLoadingIcon.BackColor = System.Drawing.Color.Transparent;
+            this.picLoadingIcon.Location = new System.Drawing.Point(839, 391);
+            this.picLoadingIcon.Name = "picLoadingIcon";
+            this.picLoadingIcon.Size = new System.Drawing.Size(80, 80);
+            this.picLoadingIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.picLoadingIcon.TabIndex = 0;
+            this.picLoadingIcon.TabStop = false;
+            // 
+            // lblCargando
+            // 
+            this.lblCargando.AutoSize = true;
+            this.lblCargando.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCargando.ForeColor = System.Drawing.Color.White;
+            this.lblCargando.Location = new System.Drawing.Point(808, 474);
+            this.lblCargando.Name = "lblCargando";
+            this.lblCargando.Size = new System.Drawing.Size(146, 32);
+            this.lblCargando.TabIndex = 1;
+            this.lblCargando.Text = "Cargando...";
+            this.lblCargando.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // lblNombreFormulario
+            // 
+            this.lblNombreFormulario.AutoSize = true;
+            this.lblNombreFormulario.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblNombreFormulario.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(210)))));
+            this.lblNombreFormulario.Location = new System.Drawing.Point(767, 518);
+            this.lblNombreFormulario.Name = "lblNombreFormulario";
+            this.lblNombreFormulario.Size = new System.Drawing.Size(213, 32);
+            this.lblNombreFormulario.TabIndex = 1;
+            this.lblNombreFormulario.Text = "Solicitud de Pago";
+            this.lblNombreFormulario.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // timerCarga
+            // 
+            this.timerCarga.Interval = 30;
             // 
             // FormMenuCartasSolicitudes
             // 
@@ -715,6 +776,9 @@
             this.panelResumen.ResumeLayout(false);
             this.panelResumen.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picLogoBienvenida)).EndInit();
+            this.panelCargando.ResumeLayout(false);
+            this.panelCargando.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picLoadingIcon)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -764,5 +828,10 @@
         private System.Windows.Forms.Button btnReporteRapido;
         private System.Windows.Forms.Button btnExportar;
         private System.Windows.Forms.Button btnToggleMenu;
+        private System.Windows.Forms.Panel panelCargando;
+        private System.Windows.Forms.PictureBox picLoadingIcon;
+        private System.Windows.Forms.Label lblNombreFormulario;
+        private System.Windows.Forms.Label lblCargando;
+        private System.Windows.Forms.Timer timerCarga;
     }
 }

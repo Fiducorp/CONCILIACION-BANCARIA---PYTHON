@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using MOFIS_ERP.Controls;
 using MOFIS_ERP.Classes;
 
-
 namespace MOFIS_ERP.Forms
 {
     public partial class FormDashboardCategorias : Form
@@ -41,13 +40,13 @@ namespace MOFIS_ERP.Forms
             PictureBox picLogo = null;
             try
             {
-                string logoPath = System.IO.Path.Combine(Application.StartupPath, "Resources", "MOFIS ERP -LOGO.png");
-
-                if (System.IO.File.Exists(logoPath))
+                // Usar la imagen embebida en Resources (nombre: LOGO)
+                var logoImage = Properties.Resources.LOGO as Image;
+                if (logoImage != null)
                 {
                     picLogo = new PictureBox
                     {
-                        Image = Image.FromFile(logoPath),
+                        Image = logoImage,
                         SizeMode = PictureBoxSizeMode.Zoom,
                         Size = new Size(400, 250), // Más grande
                         BackColor = Color.Transparent,
@@ -67,7 +66,10 @@ namespace MOFIS_ERP.Forms
                     };
                 }
             }
-            catch { }
+            catch
+            {
+                // No interrumpir UI si falla la carga del logo
+            }
 
             // Panel principal con scroll (con margen superior para el logo)
             Panel panelPrincipal = new Panel
@@ -127,12 +129,12 @@ namespace MOFIS_ERP.Forms
             // Definir las 5 categorías
             var categorias = new[]
             {
-        new { Nombre = "SISTEMA", Icono = "⚙️", Descripcion = "Configuración y Usuarios" },
-        new { Nombre = "CONTABILIDAD", Icono = "📊", Descripcion = "Gestión Contable" },
-        new { Nombre = "GERENCIA FINANCIERA", Icono = "💼", Descripcion = "Análisis Financiero" },
-        new { Nombre = "GERENCIA LEGAL", Icono = "⚖️", Descripcion = "Gestión Legal" },
-        new { Nombre = "DESARROLLO", Icono = "🚀", Descripcion = "Módulos Futuros" }
-    };
+                new { Nombre = "SISTEMA", Icono = "\u2699\ufe0f", Descripcion = "Configuración y Usuarios" },
+                new { Nombre = "CONTABILIDAD", Icono = "\ud83d\udcca", Descripcion = "Gestión Contable" },
+                new { Nombre = "GERENCIA FINANCIERA", Icono = "\ud83d\udcbc", Descripcion = "Análisis Financiero" },
+                new { Nombre = "GERENCIA LEGAL", Icono = "\u2696\ufe0f", Descripcion = "Gestión Legal" },
+                new { Nombre = "DESARROLLO", Icono = "\ud83d\ude80", Descripcion = "Módulos Futuros" }
+            };
 
             // Crear una card por cada categoría
             foreach (var categoria in categorias)
@@ -216,6 +218,7 @@ namespace MOFIS_ERP.Forms
         {
             switch (nombreCategoria.ToUpper())
             {
+
                 case "SISTEMA":
                     AbrirDashboardSistema();
                     break;

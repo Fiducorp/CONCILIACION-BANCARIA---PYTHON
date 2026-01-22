@@ -21,6 +21,10 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         private bool animacionEnProgreso = false;
         private Button botonSeleccionado = null;
 
+        // Variables para pantalla de carga
+        private int loadingDots = 0;
+        private Form formularioPendiente = null;
+
 
         // Dimensiones del menú (TUS MEDIDAS)
         private int MENU_ANCHO_EXPANDIDO = 391;
@@ -79,6 +83,12 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         {
             this.Dock = DockStyle.Fill;
 
+            // IMPORTANTE: Traer el menú al frente para que quede sobre el área de trabajo
+            panelMenu.BringToFront();
+
+            // NUEVO: Configurar posición inicial del área de trabajo
+            ConfigurarAreaTrabajo();
+
             // Cargar nombre del usuario
             lblBienvenidaUsuario.Text = $"Bienvenido, {ObtenerNombreUsuario()}";
 
@@ -87,7 +97,128 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
             // Cargar logos
             CargarLogos();
+
+            // NUEVO: Configurar timer de carga
+            if (timerCarga != null)
+            {
+                timerCarga.Tick += TimerCarga_Tick;
+            }
         }
+
+        // ═══════════════════════════════════════════════════════════════
+        // CONFIGURAR ÁREA DE TRABAJO (respeta espacio del menú contraído)
+        // ═══════════════════════════════════════════════════════════════
+        private void ConfigurarAreaTrabajo()
+        {
+            // Establecer margen izquierdo igual al ancho del menú contraído
+            panelAreaTrabajo.Left = MENU_ANCHO_CONTRAIDO;
+            panelAreaTrabajo.Top = 0;
+            panelAreaTrabajo.Width = this.ClientSize.Width - MENU_ANCHO_CONTRAIDO;
+            panelAreaTrabajo.Height = this.ClientSize.Height;
+
+            // Anchor para que se ajuste al redimensionar
+            panelAreaTrabajo.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // ANIMACIÓN DE PANTALLA DE CARGA
+        // ═══════════════════════════════════════════════════════════════
+        private void TimerCarga_Tick(object sender, EventArgs e)
+        {
+            loadingDots++;
+            if (loadingDots > 3) loadingDots = 0;
+
+            string dots = new string('.', loadingDots);
+            lblCargando.Text = $"Cargando{dots}";
+
+            // Rotar el ícono de carga (opcional, si tienes una imagen)
+            if (picLoadingIcon.Image != null)
+            {
+                picLoadingIcon.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                picLoadingIcon.Refresh();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // MOSTRAR PANTALLA DE CARGA
+        // ═══════════════════════════════════════════════════════════════
+        private void MostrarPantallaCarga(string nombreFormulario)
+        {
+            if (panelCargando == null) return;
+
+            // Configurar texto
+            lblNombreFormulario.Text = nombreFormulario;
+            lblCargando.Text = "Cargando";
+            loadingDots = 0;
+
+            // Centrar controles
+            CentrarControlesCarga();
+
+            // Mostrar panel y traer al frente
+            panelCargando.Visible = true;
+            panelCargando.BringToFront();
+
+            // Iniciar animación
+            if (timerCarga != null)
+            {
+                timerCarga.Start();
+            }
+
+            // Forzar actualización visual
+            panelCargando.Refresh();
+            Application.DoEvents();
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // OCULTAR PANTALLA DE CARGA
+        // ═══════════════════════════════════════════════════════════════
+        private void OcultarPantallaCarga()
+        {
+            if (timerCarga != null)
+            {
+                timerCarga.Stop();
+            }
+
+            if (panelCargando != null)
+            {
+                panelCargando.Visible = false;
+                panelCargando.SendToBack();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // CENTRAR CONTROLES DE CARGA
+        // ═══════════════════════════════════════════════════════════════
+        private void CentrarControlesCarga()
+        {
+            if (panelCargando == null) return;
+
+            int centerX = panelCargando.Width / 2;
+            int centerY = panelCargando.Height / 2;
+
+            // Centrar ícono
+            if (picLoadingIcon != null)
+            {
+                picLoadingIcon.Left = centerX - (picLoadingIcon.Width / 2);
+                picLoadingIcon.Top = centerY - 120;
+            }
+
+            // Centrar label "Cargando..."
+            if (lblCargando != null)
+            {
+                lblCargando.Left = centerX - (lblCargando.Width / 2);
+                lblCargando.Top = centerY - 30;
+            }
+
+            // Centrar label nombre formulario
+            if (lblNombreFormulario != null)
+            {
+                lblNombreFormulario.Left = centerX - (lblNombreFormulario.Width / 2);
+                lblNombreFormulario.Top = centerY + 20;
+            }
+        }
+
+
 
         // ═══════════════════════════════════════════════════════════════
         // MENÚ CONTRAÍBLE
@@ -550,6 +681,25 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         }
 
         // ═══════════════════════════════════════════════════════════════
+        // LIMPIAR FORMULARIOS ANTERIORES (evita memoria y animaciones rotas)
+        // ═══════════════════════════════════════════════════════════════
+        private void LimpiarFormulariosAnteriores()
+        {
+            // Recorrer desde el final para evitar problemas de índice
+            for (int i = panelAreaTrabajo.Controls.Count - 1; i >= 0; i--)
+            {
+                Control control = panelAreaTrabajo.Controls[i];
+
+                // Si es un Form, removerlo y liberarlo
+                if (control is Form)
+                {
+                    panelAreaTrabajo.Controls.Remove(control);
+                    control.Dispose();
+                }
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
         // ACCIONES - BOTONES MENÚ
         // ═══════════════════════════════════════════════════════════════
         private void BtnInicio_Click(object sender, EventArgs e)
@@ -571,8 +721,19 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         {
             SeleccionarBoton(btnSolicitud);
 
+            // PRIMERO: Contraer el menú si está expandido
+            if (menuExpandido)
+            {
+                ContraerMenu();
+            }
+
+            // SEGUNDO: Mostrar pantalla de carga
+            MostrarPantallaCarga("Solicitud de Pago");
+
+            // TERCERO: Fade out de la bienvenida
             AnimarFadeOutBienvenida(() =>
             {
+                // Ocultar controles de bienvenida
                 picLogoBienvenida.Visible = false;
                 lblTituloBienvenida.Visible = false;
                 lblBienvenidaUsuario.Visible = false;
@@ -580,16 +741,10 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 panelAccesos.Visible = false;
                 lblFechaHora.Visible = false;
 
-                for (int i = panelAreaTrabajo.Controls.Count - 1; i >= 0; i--)
-                {
-                    Control control = panelAreaTrabajo.Controls[i];
-                    if (control is Form)
-                    {
-                        panelAreaTrabajo.Controls.Remove(control);
-                        control.Dispose();
-                    }
-                }
+                // CUARTO: Limpiar formularios anteriores
+                LimpiarFormulariosAnteriores();
 
+                // QUINTO: Crear formulario en segundo plano
                 FormSolicitudPago formSolicitud = new FormSolicitudPago();
                 formSolicitud.TopLevel = false;
                 formSolicitud.FormBorderStyle = FormBorderStyle.None;
@@ -601,15 +756,38 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                     MostrarPantallaBienvenida();
                 };
 
+                // SEXTO: Agregar al panel pero mantenerlo oculto
+                formSolicitud.Visible = false;
                 panelAreaTrabajo.Controls.Add(formSolicitud);
-                formSolicitud.BringToFront();
-                formSolicitud.Show();
+
+                // SÉPTIMO: Esperar a que se cargue completamente
+                Timer timerEspera = new Timer();
+                timerEspera.Interval = 300; // Dar tiempo a que se renderice
+                timerEspera.Tick += (s, args) =>
+                {
+                    timerEspera.Stop();
+                    timerEspera.Dispose();
+
+                    // Mostrar formulario
+                    formSolicitud.Visible = true;
+                    formSolicitud.BringToFront();
+                    formSolicitud.Show();
+
+                    // Ocultar pantalla de carga
+                    OcultarPantallaCarga();
+                };
+                timerEspera.Start();
             });
         }
 
         private void BtnCertificado_Click(object sender, EventArgs e)
         {
             SeleccionarBoton(btnCertificado);
+            // Contraer menú si está expandido
+            if (menuExpandido)
+            {
+                ContraerMenu();
+            }
             MarcarPrimeraSeleccion();
             MostrarEnAreaTrabajo("📄", "Certificado de Retención", "Formulario en desarrollo...");
         }
@@ -617,6 +795,11 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         private void BtnRelacionPago_Click(object sender, EventArgs e)
         {
             SeleccionarBoton(btnRelacionPago);
+            // Contraer menú si está expandido
+            if (menuExpandido)
+            {
+                ContraerMenu();
+            }
             MarcarPrimeraSeleccion();
             MostrarEnAreaTrabajo("💳", "Relación de Pago", "Formulario en desarrollo...");
         }
@@ -624,6 +807,11 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         private void BtnAnticipos_Click(object sender, EventArgs e)
         {
             SeleccionarBoton(btnAnticipos);
+            // Contraer menú si está expandido
+            if (menuExpandido)
+            {
+                ContraerMenu();
+            }
             MarcarPrimeraSeleccion();
             MostrarEnAreaTrabajo("💰", "Relación de Anticipos", "Formulario en desarrollo...");
         }
@@ -631,6 +819,11 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         private void BtnDesistimiento_Click(object sender, EventArgs e)
         {
             SeleccionarBoton(btnDesistimiento);
+            // Contraer menú si está expandido
+            if (menuExpandido)
+            {
+                ContraerMenu();
+            }
             MarcarPrimeraSeleccion();
             MostrarEnAreaTrabajo("✉️", "Carta de Desistimiento", "Formulario en desarrollo...");
         }
@@ -638,6 +831,11 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         private void BtnConsulta_Click(object sender, EventArgs e)
         {
             SeleccionarBoton(btnConsulta);
+            // Contraer menú si está expandido
+            if (menuExpandido)
+            {
+                ContraerMenu();
+            }
             MarcarPrimeraSeleccion();
             MostrarEnAreaTrabajo("🔍", "Consulta de Solicitudes", "Formulario en desarrollo...");
         }
@@ -645,6 +843,11 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         private void BtnConfiguracion_Click(object sender, EventArgs e)
         {
             SeleccionarBoton(btnConfiguracion);
+            // Contraer menú si está expandido
+            if (menuExpandido)
+            {
+                ContraerMenu();
+            }
             MarcarPrimeraSeleccion();
             MostrarEnAreaTrabajo("⚙️", "Configuración", "Formulario en desarrollo...");
         }
@@ -723,9 +926,15 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
         private void MostrarEnAreaTrabajo(string icono, string titulo, string mensaje)
         {
+            // Mostrar pantalla de carga
+            MostrarPantallaCarga(titulo);
+
             // Fade out suave de la pantalla de bienvenida
             AnimarFadeOutBienvenida(() =>
             {
+                // LIMPIAR formularios anteriores
+                LimpiarFormulariosAnteriores();
+
                 // Mostrar placeholder del formulario
                 Label lblPlaceholder = panelAreaTrabajo.Controls["lblPlaceholder"] as Label;
 
@@ -743,23 +952,30 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 }
 
                 lblPlaceholder.Text = $"{icono}\n\n{titulo}\n\n{mensaje}";
-                lblPlaceholder.Visible = true;
-                lblPlaceholder.BringToFront();
+                lblPlaceholder.Visible = false; // Oculto inicialmente
+
+                // Esperar antes de mostrar
+                Timer timerEspera = new Timer();
+                timerEspera.Interval = 200;
+                timerEspera.Tick += (s, args) =>
+                {
+                    timerEspera.Stop();
+                    timerEspera.Dispose();
+
+                    lblPlaceholder.Visible = true;
+                    lblPlaceholder.BringToFront();
+
+                    // Ocultar pantalla de carga
+                    OcultarPantallaCarga();
+                };
+                timerEspera.Start();
             });
         }
 
         private void MostrarPantallaBienvenida()
         {
-            // Limpiar formularios cargados en el panel
-            for (int i = panelAreaTrabajo.Controls.Count - 1; i >= 0; i--)
-            {
-                Control control = panelAreaTrabajo.Controls[i];
-                if (control is Form)
-                {
-                    panelAreaTrabajo.Controls.Remove(control);
-                    control.Dispose();
-                }
-            }
+            // LIMPIAR formularios cargados en el panel
+            LimpiarFormulariosAnteriores();
 
             // Mostrar controles de bienvenida
             picLogoBienvenida.Visible = true;
@@ -776,6 +992,12 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             AnimarFadeIn(panelResumen);
             AnimarFadeIn(panelAccesos);
             AnimarFadeIn(lblFechaHora);
+
+            // Expandir el menú si estaba contraído
+            if (!menuExpandido)
+            {
+                ExpandirMenu();
+            }
         }
 
         private void CargarEnPanel(Form formulario)
@@ -1025,6 +1247,23 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         }
 
         // ═══════════════════════════════════════════════════════════════
+        // MANEJAR REDIMENSIONAMIENTO
+        // ═══════════════════════════════════════════════════════════════
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+
+            // Reconfigurar área de trabajo al redimensionar
+            ConfigurarAreaTrabajo();
+
+            // Recentrar controles de carga
+            if (panelCargando != null && panelCargando.Visible)
+            {
+                CentrarControlesCarga();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
         // LIMPIEZA
         // ═══════════════════════════════════════════════════════════════
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -1033,6 +1272,8 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             timerReloj?.Dispose();
             timerAnimacion?.Stop();
             timerAnimacion?.Dispose();
+            timerCarga?.Stop(); // NUEVO
+            timerCarga?.Dispose(); // NUEVO
             base.OnFormClosing(e);
         }
     }

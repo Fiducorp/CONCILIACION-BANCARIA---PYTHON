@@ -60,17 +60,38 @@ namespace MOFIS_ERP.Forms.Sistema.GestionRoles
             btnVolver.Click += BtnVolver_Click;
             panelPrincipal.Controls.Add(btnVolver);
 
-            // Logo centrado arriba
+            // Logo centrado arriba (usar recurso embebido)
             PictureBox picLogo = null;
             try
             {
-                string logoPath = System.IO.Path.Combine(Application.StartupPath, "Resources", "MOFIS ERP -LOGO.png");
+                Image logoImage = null;
 
-                if (System.IO.File.Exists(logoPath))
+                // Intentar la propiedad fuertemente tipada
+                try { logoImage = Properties.Resources.LOGO as Image; } catch { logoImage = null; }
+
+                // Fallback: buscar por nombre en ResourceManager
+                if (logoImage == null)
+                {
+                    try
+                    {   
+                        object obj = Properties.Resources.ResourceManager.GetObject("LOGO", Properties.Resources.Culture)
+                                     ?? Properties.Resources.ResourceManager.GetObject("logo", Properties.Resources.Culture);
+                        logoImage = obj as Image;
+                    }
+                    catch { logoImage = null; }
+                }
+
+                // Último fallback
+                if (logoImage == null)
+                {
+                    try { logoImage = Properties.Resources.icon_Adv as Image; } catch { logoImage = null; }
+                }
+
+                if (logoImage != null)
                 {
                     picLogo = new PictureBox
                     {
-                        Image = Image.FromFile(logoPath),
+                        Image = logoImage,
                         SizeMode = PictureBoxSizeMode.Zoom,
                         Size = new Size(400, 250),
                         BackColor = Color.Transparent,
@@ -79,8 +100,8 @@ namespace MOFIS_ERP.Forms.Sistema.GestionRoles
                     this.Controls.Add(picLogo);
                     picLogo.BringToFront();
 
+                    // Mantengo la misma lógica de centrado existente en el archivo
                     picLogo.Location = new Point((this.ClientSize.Width - picLogo.Width) / 2, -40);
-
                     this.Resize += (s, e) =>
                     {
                         if (picLogo != null)

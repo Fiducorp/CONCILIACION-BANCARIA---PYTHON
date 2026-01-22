@@ -58,17 +58,38 @@ namespace MOFIS_ERP.Forms.Sistema
             btnVolver.Click += BtnVolver_Click;
             panelPrincipal.Controls.Add(btnVolver);
 
-            // AGREGAR ESTO: Logo centrado arriba
+            // Logo centrado arriba (usar recurso embebido)
             PictureBox picLogo = null;
             try
             {
-                string logoPath = System.IO.Path.Combine(Application.StartupPath, "Resources", "MOFIS ERP -LOGO.png");
+                Image logoImage = null;
 
-                if (System.IO.File.Exists(logoPath))
+                // Intentar la propiedad fuertemente tipada (si se regeneró Resources.Designer)
+                try { logoImage = Properties.Resources.LOGO as Image; } catch { logoImage = null; }
+
+                // Fallback: buscar por nombre en ResourceManager
+                if (logoImage == null)
+                {
+                    try
+                    {
+                        object obj = Properties.Resources.ResourceManager.GetObject("LOGO", Properties.Resources.Culture)
+                                      ?? Properties.Resources.ResourceManager.GetObject("logo", Properties.Resources.Culture);
+                        logoImage = obj as Image;
+                    }
+                    catch { logoImage = null; }
+                }
+
+                // Último fallback: recurso conocido que ya existe en tu resx
+                if (logoImage == null)
+                {
+                    try { logoImage = Properties.Resources.icon_Adv as Image; } catch { logoImage = null; }
+                }
+
+                if (logoImage != null)
                 {
                     picLogo = new PictureBox
                     {
-                        Image = Image.FromFile(logoPath),
+                        Image = logoImage,
                         SizeMode = PictureBoxSizeMode.Zoom,
                         Size = new Size(400, 250),
                         BackColor = Color.Transparent,
@@ -80,7 +101,6 @@ namespace MOFIS_ERP.Forms.Sistema
                     // Centrar horizontalmente
                     picLogo.Location = new Point((this.ClientSize.Width - picLogo.Width) / 2, -40);
 
-                    // Recentrar cuando se redimensione la ventana
                     this.Resize += (s, e) =>
                     {
                         if (picLogo != null)
@@ -237,7 +257,7 @@ namespace MOFIS_ERP.Forms.Sistema
         private void AbrirGestionUsuarios()
         {
             // Abrir el formulario de Gestión de Usuarios
-            GestionUsuarios.FormGestionUsuarios formGestionUsuarios = new GestionUsuarios.FormGestionUsuarios(formPrincipal);
+           GestionUsuarios.FormGestionUsuarios formGestionUsuarios = new GestionUsuarios.FormGestionUsuarios(formPrincipal);
             formPrincipal.CargarContenidoPanel(formGestionUsuarios);
         }
 
