@@ -38,7 +38,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
         // Variables para pantalla de carga
         private int loadingDots = 0;
-        private Form formularioPendiente = null;
 
 
         // Dimensiones del menú (TUS MEDIDAS)

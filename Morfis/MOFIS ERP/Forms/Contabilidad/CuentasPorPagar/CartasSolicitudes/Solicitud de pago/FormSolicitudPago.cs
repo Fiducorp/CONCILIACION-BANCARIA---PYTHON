@@ -1,12 +1,13 @@
-﻿using System;
+﻿using MOFIS_ERP.Classes;
+using MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicitud_de_pago;
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using MOFIS_ERP.Classes;
-using System.Globalization;
 
 namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 {
@@ -261,22 +262,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             monedaSimbolo = monedaSimbolo ?? string.Empty;
         }
 
-        // Formatea un decimal con separadores y opcionalmente con símbolo
-        private string FormatDecimalForDisplay(decimal value, int minDecimalDigits = 2)
-        {
-            // Usar monedaNumberFormat (grouping "," y decimal ".")
-            var nfi = monedaNumberFormat ?? BuildNumberFormat();
-
-            // Formatear con al menos minDecimalDigits (N2 por defecto) pero eliminar ceros si el
-            // valor tiene decimales distintos de 0 y el caller no quiere forzar 2 decimales.
-            string formatted = value.ToString("N" + minDecimalDigits, nfi);
-
-            if (!string.IsNullOrEmpty(monedaSimbolo))
-                return monedaSimbolo + " " + formatted;
-
-            return formatted;
-        }
-
         // Formatea número (sin símbolo) con grouping y punto decimal. Conserva la cantidad de decimales
         // provista en decimalPartLength si > 0, o forza 2 si = 0.
         private string FormatNumericPart(string integerPart, string decimalPart)
@@ -474,6 +459,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             lbl.Text = newText;
         }
 
+        // ═══════════════════════════════════════════════════════════════
+        // CARGA DE DATOS INICIALES
+        // ═══════════════════════════════════════════════════════════════
         private void CargarDatosIniciales()
         {
             try
@@ -509,6 +497,10 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        // ═══════════════════════════════════════════════════════════════
+        // SELECCIÓN DE VALORES POR DEFECTO
+        // ═══════════════════════════════════════════════════════════════
         private void SeleccionarValoresPorDefecto()
         {
             // Seleccionar DOP como moneda por defecto
@@ -616,6 +608,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
         #region Carga de Combos
 
+        // Cargar Tipos de Pago
         private void CargarTiposPago()
         {
             try
@@ -643,7 +636,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 System.Diagnostics.Debug.WriteLine($"Error cargando tipos de pago: {ex.Message}");
             }
         }
-
+        // Cargar Monedas
         private void CargarMonedas()
         {
             try
@@ -671,7 +664,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 System.Diagnostics.Debug.WriteLine($"Error cargando monedas: {ex.Message}");
             }
         }
-
+        // Cargar Tipos de Comprobante
         private void CargarTiposComprobante()
         {
             try
@@ -699,7 +692,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 System.Diagnostics.Debug.WriteLine($"Error cargando tipos de comprobante: {ex.Message}");
             }
         }
-
+        // Cargar Tipos de NCF
         private void CargarTiposNCF()
         {
             try
@@ -734,7 +727,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 System.Diagnostics.Debug.WriteLine($"Error cargando tipos NCF: {ex.Message}");
             }
         }
-
+        // Cargar Porcentajes de ITBIS
         private void CargarPorcentajesITBIS()
         {
             cboITBISPorcentaje.Items.Clear();
@@ -743,7 +736,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             cboITBISPorcentaje.Items.Add("18%");
             cboITBISPorcentaje.SelectedIndex = -1;
         }
-
+        // Cargar Porcentajes de Retenciones
         private void CargarPorcentajesRetenciones()
         {
             // Retención ITBIS
@@ -786,6 +779,12 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                     dtFideicomisos = new DataTable();
                     da.Fill(dtFideicomisos);
                 }
+
+                cboFideicomiso.DataSource = null;
+                cboFideicomiso.DisplayMember = "Nombre";
+                cboFideicomiso.ValueMember = "FideicomisoID";
+                cboFideicomiso.DataSource = dtFideicomisos;
+                cboFideicomiso.SelectedIndex = -1;
             }
             catch (Exception ex)
             {
@@ -1525,6 +1524,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 tb.SelectionStart = tb.Text.Length;
             }
         }
+
         #endregion
     }
 }

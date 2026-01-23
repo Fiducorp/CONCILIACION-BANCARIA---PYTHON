@@ -173,10 +173,22 @@
     <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\FormMenuCartasSolicitudes.Designer.cs">
       <DependentUpon>FormMenuCartasSolicitudes.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\FormSolicitudPago.cs">
+    <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormAgregarFideicomiso.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\FormSolicitudPago.Designer.cs">
+    <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormAgregarFideicomiso.Designer.cs">
+      <DependentUpon>FormAgregarFideicomiso.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormAgregarProveedor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormAgregarProveedor.Designer.cs">
+      <DependentUpon>FormAgregarProveedor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormSolicitudPago.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormSolicitudPago.Designer.cs">
       <DependentUpon>FormSolicitudPago.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Contabilidad\CuentasPorPagar\FormDashboardCuentasPorPagar.cs">
@@ -341,7 +353,13 @@
     <EmbeddedResource Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\FormMenuCartasSolicitudes.resx">
       <DependentUpon>FormMenuCartasSolicitudes.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\FormSolicitudPago.resx">
+    <EmbeddedResource Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormAgregarFideicomiso.resx">
+      <DependentUpon>FormAgregarFideicomiso.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormAgregarProveedor.resx">
+      <DependentUpon>FormAgregarProveedor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormSolicitudPago.resx">
       <DependentUpon>FormSolicitudPago.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormMain.resx">
