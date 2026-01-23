@@ -1095,6 +1095,39 @@ def limpiar_archivo_contable(ruta_archivo, moneda='RD$'):
 # 📂 CARGA DE DATOS OPTIMIZADA (SOLO FILAS VÁLIDAS)
 # ============================================================================
 
+def parse_fecha_ddmmyyyy(series):
+    """
+    Robust date parser:
+    - Reads ANY reasonable date format
+    - Fixes MM/DD/YYYY accidentally parsed as DD/MM/YYYY
+    - Guarantees final Fecha is DD/MM/YYYY logic
+    """
+
+    s = series.astype(str).str.strip()
+
+    # First: flexible parse (allows Excel, CSV, cleaned files)
+    fechas = pd.to_datetime(
+        s,
+        errors='coerce',
+        infer_datetime_format=True,
+        dayfirst=False  # IMPORTANT: allow pandas to read US-style too
+    )
+
+    # Detect impossible dates under DD/MM/YYYY logic
+    # If day > 12 AND month <= 12, it was flipped
+    mask_flip = (
+        fechas.notna() &
+        (fechas.dt.day <= 12) &
+        (fechas.dt.month > 12)
+    )
+
+    # Swap day/month ONLY for those rows
+    fechas.loc[mask_flip] = fechas.loc[mask_flip].apply(
+        lambda d: d.replace(day=d.month, month=d.day)
+    )
+
+    return fechas
+
 # Carga de Archivos
 def cargar_banco(ruta, nombre="", codigo_banco=None):
     """Carga datos - OPTIMIZACIÓN: solo lee filas con Fecha Y Valor válidos
@@ -1261,7 +1294,7 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
         raise ValueError(msg)
     
     # Convertir tipos y combinar Debito/Credito si es necesario
-    df['Fecha'] = pd.to_datetime(df['Fecha'], errors='coerce')
+    df['Fecha'] = parse_fecha_ddmmyyyy(df['Fecha'])
     df['Concepto'] = df['Concepto'].fillna('').astype(str)
     df['Descripción'] = df['Descripción'].fillna('').astype(str)
     
@@ -1372,20 +1405,25 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
             columnas_map['Natu'] = col
 
         # Detectar "Valor Moneda Extranjera" para USD (tiene signos ya aplicados)
-        if usa_dolares:
-            if 'EXTRANJERA' in col_upper and 'Valor_USD' not in columnas_map:
+        elif 'EXTRANJERA' in col_upper and 'Valor_USD' not in columnas_map:
                 columnas_map['Valor_USD'] = col
-            elif any(x in col_upper for x in ['VALOR', 'MONTO', 'IMPORTE', 'AMOUNT', 'AMT']) and 'Valor_USD' not in columnas_map:
-                columnas_map['Valor_USD'] = col
-
 
         # Valor (único) - detecta nombres comunes (incluye variantes en inglés)
         elif any(x in col_upper for x in ['VALOR', 'MONTO', 'IMPORTE', 'AMOUNT', 'AMT']) and 'Valor' not in columnas_map:
             columnas_map['Valor'] = col
+        
+        # Descripción
         elif any(x in col_upper for x in ['DESCRIP', 'DETALLE', 'OBSERV', 'REFERENCIA', 'BENEFICIARIO', 'BENEF']) and 'Descripción' not in columnas_map:
             columnas_map['Descripción'] = col
     
-    # Detectar si hay columna de naturaleza (Natu) y si hay Valor en USD
+    # Detectar libro contable YA LIMPIO
+    es_limpio = (
+        'Valor' in df.columns and
+        'Natu' not in df.columns and
+        'Valor_USD' not in df.columns
+    )
+
+    # Detectar si hay columna de naturaleza (Natu)
     tiene_natu = 'Natu' in columnas_map
 
     # Si no hay Descripción, crearla vacía
@@ -1428,12 +1466,16 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
         df = df.drop(columns=['Estado'], errors='ignore')  # Eliminar la columna Estado después de filtrar
     
     # Convertir tipos y combinar/ajustar columnas según formato
-    df['Fecha'] = pd.to_datetime(df['Fecha'], errors='coerce')
+    df['Fecha'] = parse_fecha_ddmmyyyy(df['Fecha'])
     df['Concepto'] = df['Concepto'].fillna('').astype(str)
     df['Descripción'] = df['Descripción'].fillna('').astype(str)
 
     # Procesar Valor según moneda detectada
-    if usa_dolares == True and 'Valor_USD' in df.columns:
+    if es_limpio:
+        print("  🧼 Libro contable ya limpio — usando Valor directamente")
+        df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce')
+    
+    elif usa_dolares == True and 'Valor_USD' in df.columns:
         # USD: usar Valor Moneda Extranjera directamente (ya tiene signos correctos)
         print("  💵 Detectada moneda USD - usando 'Valor Moneda Extranjera'")
         # Descartar columnas RD primero
@@ -1444,6 +1486,7 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
         # Luego usar USD como Valor
         df['Valor'] = pd.to_numeric(df['Valor_USD'], errors='coerce')
         df = df.drop(columns=['Valor_USD'], errors='ignore')
+    
     elif tiene_natu == True and 'Valor' in df.columns:
         # RD: usar Valor aplicando interpretación de NATU
         print("  Detectada moneda RD - usando 'Valor' interpretando 'Natu'")
