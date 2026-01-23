@@ -2,12 +2,27 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using System.Linq;
 using MOFIS_ERP.Forms;
 
 namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 {
     public partial class FormMenuCartasSolicitudes : Form
     {
+        // --- NUEVO CAMPO: clave del contenido actualmente mostrado
+        private string contenidoActualKey = null;
+
+        // --- NUEVAS FUNCIONES AUXILIARES
+        private bool EsContenidoActual(string key)
+        {
+            return !string.IsNullOrEmpty(key) && string.Equals(contenidoActualKey, key, StringComparison.Ordinal);
+        }
+
+        private bool EstaFormularioAbierto(Type tipo)
+        {
+            if (panelAreaTrabajo == null || tipo == null) return false;
+            return panelAreaTrabajo.Controls.OfType<Form>().Any(f => f.GetType() == tipo && f.Visible);
+        }
 
         // ═══════════════════════════════════════════════════════════════
         // CONFIGURACIÓN DE ESTILOS (AJUSTA A TU GUSTO)
@@ -151,9 +166,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             lblCargando.Text = "Cargando";
             loadingDots = 0;
 
-            // Centrar controles
-            CentrarControlesCarga();
-
             // Mostrar panel y traer al frente
             panelCargando.Visible = true;
             panelCargando.BringToFront();
@@ -185,40 +197,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 panelCargando.SendToBack();
             }
         }
-
-        // ═══════════════════════════════════════════════════════════════
-        // CENTRAR CONTROLES DE CARGA
-        // ═══════════════════════════════════════════════════════════════
-        private void CentrarControlesCarga()
-        {
-            if (panelCargando == null) return;
-
-            int centerX = panelCargando.Width / 2;
-            int centerY = panelCargando.Height / 2;
-
-            // Centrar ícono
-            if (picLoadingIcon != null)
-            {
-                picLoadingIcon.Left = centerX - (picLoadingIcon.Width / 2);
-                picLoadingIcon.Top = centerY - 120;
-            }
-
-            // Centrar label "Cargando..."
-            if (lblCargando != null)
-            {
-                lblCargando.Left = centerX - (lblCargando.Width / 2);
-                lblCargando.Top = centerY - 30;
-            }
-
-            // Centrar label nombre formulario
-            if (lblNombreFormulario != null)
-            {
-                lblNombreFormulario.Left = centerX - (lblNombreFormulario.Width / 2);
-                lblNombreFormulario.Top = centerY + 20;
-            }
-        }
-
-
 
         // ═══════════════════════════════════════════════════════════════
         // MENÚ CONTRAÍBLE
@@ -704,10 +682,16 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         // ═══════════════════════════════════════════════════════════════
         private void BtnInicio_Click(object sender, EventArgs e)
         {
-            // Ir al dashboard principal de categorías
+            // Evitar recargar si ya está seleccionado y el dashboard ya está activo
+            string key = typeof(FormDashboardCategorias).FullName;
+            if (botonSeleccionado == btnInicio && EsContenidoActual(key) && EstaFormularioAbierto(typeof(FormDashboardCategorias)))
+                return;
+
             try
             {
                 var dashboard = new FormDashboardCategorias(formPrincipal);
+                // Marcar contenido actual antes de delegar
+                contenidoActualKey = dashboard.GetType().FullName;
                 CargarEnPanel(dashboard);
             }
             catch (Exception ex)
@@ -719,6 +703,10 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
         private void BtnSolicitud_Click(object sender, EventArgs e)
         {
+            // Si ya está seleccionado y el formulario está abierto, no recargar
+            if (botonSeleccionado == btnSolicitud && EsContenidoActual(typeof(FormSolicitudPago).FullName) && EstaFormularioAbierto(typeof(FormSolicitudPago)))
+                return;
+
             SeleccionarBoton(btnSolicitud);
 
             // PRIMERO: Contraer el menú si está expandido
@@ -760,6 +748,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 formSolicitud.Visible = false;
                 panelAreaTrabajo.Controls.Add(formSolicitud);
 
+                // MARCAR contenido actual (antes de mostrarlo)
+                contenidoActualKey = formSolicitud.GetType().FullName;
+
                 // SÉPTIMO: Esperar a que se cargue completamente
                 Timer timerEspera = new Timer();
                 timerEspera.Interval = 300; // Dar tiempo a que se renderice
@@ -782,150 +773,103 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
         private void BtnCertificado_Click(object sender, EventArgs e)
         {
+            string titulo = "Certificado de Retención";
+            if (botonSeleccionado == btnCertificado && EsContenidoActual(titulo))
+                return;
+
             SeleccionarBoton(btnCertificado);
-            // Contraer menú si está expandido
             if (menuExpandido)
             {
                 ContraerMenu();
             }
             MarcarPrimeraSeleccion();
-            MostrarEnAreaTrabajo("📄", "Certificado de Retención", "Formulario en desarrollo...");
+            MostrarEnAreaTrabajo("📄", titulo, "Formulario en desarrollo...");
         }
 
         private void BtnRelacionPago_Click(object sender, EventArgs e)
         {
+            string titulo = "Relación de Pago";
+            if (botonSeleccionado == btnRelacionPago && EsContenidoActual(titulo))
+                return;
+
             SeleccionarBoton(btnRelacionPago);
-            // Contraer menú si está expandido
             if (menuExpandido)
             {
                 ContraerMenu();
             }
             MarcarPrimeraSeleccion();
-            MostrarEnAreaTrabajo("💳", "Relación de Pago", "Formulario en desarrollo...");
+            MostrarEnAreaTrabajo("💳", titulo, "Formulario en desarrollo...");
         }
 
         private void BtnAnticipos_Click(object sender, EventArgs e)
         {
+            string titulo = "Relación de Anticipos";
+            if (botonSeleccionado == btnAnticipos && EsContenidoActual(titulo))
+                return;
+
             SeleccionarBoton(btnAnticipos);
-            // Contraer menú si está expandido
             if (menuExpandido)
             {
                 ContraerMenu();
             }
             MarcarPrimeraSeleccion();
-            MostrarEnAreaTrabajo("💰", "Relación de Anticipos", "Formulario en desarrollo...");
+            MostrarEnAreaTrabajo("💰", titulo, "Formulario en desarrollo...");
         }
 
         private void BtnDesistimiento_Click(object sender, EventArgs e)
         {
+            string titulo = "Carta de Desistimiento";
+            if (botonSeleccionado == btnDesistimiento && EsContenidoActual(titulo))
+                return;
+
             SeleccionarBoton(btnDesistimiento);
-            // Contraer menú si está expandido
             if (menuExpandido)
             {
                 ContraerMenu();
             }
             MarcarPrimeraSeleccion();
-            MostrarEnAreaTrabajo("✉️", "Carta de Desistimiento", "Formulario en desarrollo...");
+            MostrarEnAreaTrabajo("✉️", titulo, "Formulario en desarrollo...");
         }
 
         private void BtnConsulta_Click(object sender, EventArgs e)
         {
+            string titulo = "Consulta de Solicitudes";
+            if (botonSeleccionado == btnConsulta && EsContenidoActual(titulo))
+                return;
+
             SeleccionarBoton(btnConsulta);
-            // Contraer menú si está expandido
             if (menuExpandido)
             {
                 ContraerMenu();
             }
             MarcarPrimeraSeleccion();
-            MostrarEnAreaTrabajo("🔍", "Consulta de Solicitudes", "Formulario en desarrollo...");
+            MostrarEnAreaTrabajo("🔍", titulo, "Formulario en desarrollo...");
         }
 
         private void BtnConfiguracion_Click(object sender, EventArgs e)
         {
+            string titulo = "Configuración";
+            if (botonSeleccionado == btnConfiguracion && EsContenidoActual(titulo))
+                return;
+
             SeleccionarBoton(btnConfiguracion);
-            // Contraer menú si está expandido
             if (menuExpandido)
             {
                 ContraerMenu();
             }
             MarcarPrimeraSeleccion();
-            MostrarEnAreaTrabajo("⚙️", "Configuración", "Formulario en desarrollo...");
-        }
-
-        private void BtnVolver_Click(object sender, EventArgs e)
-        {
-            // Volver al dashboard de Cuentas por Pagar
-            try
-            {
-                var dashboard = new FormDashboardCuentasPorPagar(formPrincipal);
-                CargarEnPanel(dashboard);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al volver:\n{ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // ACCIONES - BOTONES ACCESO RÁPIDO
-        // ═══════════════════════════════════════════════════════════════
-        private void BtnNuevaSolicitud_Click(object sender, EventArgs e)
-        {
-            BtnSolicitud_Click(sender, e);
-        }
-
-        private void BtnBuscar_Click(object sender, EventArgs e)
-        {
-            BtnConsulta_Click(sender, e);
-        }
-
-        private void BtnActividadHoy_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Actividad de Hoy\n\nEsta función mostrará un resumen de todas las acciones realizadas hoy en el módulo Cuentas por Pagar.\n\n(Próximamente)",
-                "Actividad de Hoy", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void BtnReporteRapido_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Reporte Rápido\n\nEsta función generará un reporte resumido de las solicitudes de pago.\n\n(Próximamente)",
-                "Reporte Rápido", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void BtnExportar_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Exportar\n\nEsta función permitirá exportar datos a Excel o PDF.\n\n(Próximamente)",
-                "Exportar", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // MÉTODOS AUXILIARES
-        // ═══════════════════════════════════════════════════════════════
-        private void MarcarPrimeraSeleccion()
-        {
-            if (!primeraSeleccion)
-            {
-                primeraSeleccion = true;
-                btnToggleMenu.Visible = true;
-            }
-
-            // Contraer el menú después de un pequeño delay para que los botones se configuren primero
-            if (menuExpandido)
-            {
-                Timer timerContraer = new Timer();
-                timerContraer.Interval = 50;
-                timerContraer.Tick += (s, e) =>
-                {
-                    timerContraer.Stop();
-                    timerContraer.Dispose();
-                    ContraerMenu();
-                };
-                timerContraer.Start();
-            }
+            MostrarEnAreaTrabajo("⚙️", titulo, "Formulario en desarrollo...");
         }
 
         private void MostrarEnAreaTrabajo(string icono, string titulo, string mensaje)
         {
+            // Evitar recargar si ya es el contenido actual
+            if (EsContenidoActual(titulo))
+                return;
+
+            // Marcar contenido actual antes de mostrar
+            contenidoActualKey = titulo;
+
             // Mostrar pantalla de carga
             MostrarPantallaCarga(titulo);
 
@@ -977,6 +921,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             // LIMPIAR formularios cargados en el panel
             LimpiarFormulariosAnteriores();
 
+            // Resetear clave de contenido (bienvenida)
+            contenidoActualKey = null;
+
             // Mostrar controles de bienvenida
             picLogoBienvenida.Visible = true;
             lblTituloBienvenida.Visible = true;
@@ -1006,6 +953,10 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
             try
             {
+                // Marcar contenido actual antes de invocar
+                if (formulario != null)
+                    contenidoActualKey = formulario.GetType().FullName;
+
                 var metodo = formPrincipal.GetType().GetMethod("CargarContenidoPanel");
                 if (metodo != null)
                 {
@@ -1056,7 +1007,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             animacionEnProgreso = true;
 
             int anchoInicial = panelMenu.Width;
-            int diferencia = anchoObjetivo - anchoInicial;
+            int diferencias = anchoObjetivo - anchoInicial;
             int totalPasos = VELOCIDAD_MENU_MS / INTERVALO_ANIMACION;
             int pasoActual = 0;
 
@@ -1070,7 +1021,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 double progreso = (double)pasoActual / totalPasos;
                 double easing = 1 - Math.Pow(1 - progreso, 3);
 
-                panelMenu.Width = anchoInicial + (int)(diferencia * easing);
+                panelMenu.Width = anchoInicial + (int)(diferencias * easing);
 
                 if (pasoActual >= totalPasos)
                 {
@@ -1256,11 +1207,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             // Reconfigurar área de trabajo al redimensionar
             ConfigurarAreaTrabajo();
 
-            // Recentrar controles de carga
-            if (panelCargando != null && panelCargando.Visible)
-            {
-                CentrarControlesCarga();
-            }
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -1275,6 +1221,74 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             timerCarga?.Stop(); // NUEVO
             timerCarga?.Dispose(); // NUEVO
             base.OnFormClosing(e);
+        }
+
+        private void BtnVolver_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var dashboard = new FormDashboardCuentasPorPagar(formPrincipal);
+                CargarEnPanel(dashboard);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al volver:\n{ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void BtnNuevaSolicitud_Click(object sender, EventArgs e)
+        {
+            BtnSolicitud_Click(sender, e);
+        }
+
+        private void BtnBuscar_Click(object sender, EventArgs e)
+        {
+            BtnConsulta_Click(sender, e);
+        }
+
+        private void BtnActividadHoy_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "Actividad de Hoy\n\nEsta función mostrará un resumen de todas las acciones realizadas hoy en el módulo Cuentas por Pagar.\n\n(Próximamente)",
+                "Actividad de Hoy", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void BtnReporteRapido_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "Reporte Rápido\n\nEsta función generará un reporte resumido de las solicitudes de pago.\n\n(Próximamente)",
+                "Reporte Rápido", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void BtnExportar_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "Exportar\n\nEsta función permitirá exportar datos a Excel o PDF.\n\n(Próximamente)",
+                "Exportar", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void MarcarPrimeraSeleccion()
+        {
+            if (!primeraSeleccion)
+            {
+                primeraSeleccion = true;
+                btnToggleMenu.Visible = true;
+            }
+
+            // Contraer el menú después de un pequeño delay para que los botones se configuren primero
+            if (menuExpandido)
+            {
+                Timer timerContraer = new Timer();
+                timerContraer.Interval = 50;
+                timerContraer.Tick += (s, e) =>
+                {
+                    timerContraer.Stop();
+                    timerContraer.Dispose();
+                    ContraerMenu();
+                };
+                timerContraer.Start();
+            }
         }
     }
 }

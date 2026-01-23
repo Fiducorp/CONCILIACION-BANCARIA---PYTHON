@@ -48,6 +48,10 @@
             this.lblTitulo = new System.Windows.Forms.Label();
             this.picLogo = new System.Windows.Forms.PictureBox();
             this.panelAreaTrabajo = new System.Windows.Forms.Panel();
+            this.panelCargando = new System.Windows.Forms.Panel();
+            this.lblNombreFormulario = new System.Windows.Forms.Label();
+            this.lblCargando = new System.Windows.Forms.Label();
+            this.picLoadingIcon = new System.Windows.Forms.PictureBox();
             this.panelAccesos = new System.Windows.Forms.Panel();
             this.btnReporteRapido = new System.Windows.Forms.Button();
             this.btnActividadHoy = new System.Windows.Forms.Button();
@@ -73,10 +77,6 @@
             this.lblBienvenidaUsuario = new System.Windows.Forms.Label();
             this.lblTituloBienvenida = new System.Windows.Forms.Label();
             this.picLogoBienvenida = new System.Windows.Forms.PictureBox();
-            this.panelCargando = new System.Windows.Forms.Panel();
-            this.picLoadingIcon = new System.Windows.Forms.PictureBox();
-            this.lblCargando = new System.Windows.Forms.Label();
-            this.lblNombreFormulario = new System.Windows.Forms.Label();
             this.timerCarga = new System.Windows.Forms.Timer(this.components);
             this.panelMenu.SuspendLayout();
             this.panelInferior.SuspendLayout();
@@ -84,11 +84,11 @@
             this.panelEncabezado.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picLogo)).BeginInit();
             this.panelAreaTrabajo.SuspendLayout();
+            this.panelCargando.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picLoadingIcon)).BeginInit();
             this.panelAccesos.SuspendLayout();
             this.panelResumen.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picLogoBienvenida)).BeginInit();
-            this.panelCargando.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picLoadingIcon)).BeginInit();
             this.SuspendLayout();
             // 
             // panelMenu
@@ -362,6 +362,54 @@
             this.panelAreaTrabajo.Padding = new System.Windows.Forms.Padding(20, 20, 20, 0);
             this.panelAreaTrabajo.Size = new System.Drawing.Size(1925, 1000);
             this.panelAreaTrabajo.TabIndex = 1;
+            // 
+            // panelCargando
+            // 
+            this.panelCargando.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(12)))), ((int)(((byte)(35)))), ((int)(((byte)(66)))));
+            this.panelCargando.Controls.Add(this.lblNombreFormulario);
+            this.panelCargando.Controls.Add(this.lblCargando);
+            this.panelCargando.Controls.Add(this.picLoadingIcon);
+            this.panelCargando.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelCargando.Location = new System.Drawing.Point(20, 20);
+            this.panelCargando.Name = "panelCargando";
+            this.panelCargando.Size = new System.Drawing.Size(1885, 980);
+            this.panelCargando.TabIndex = 5;
+            this.panelCargando.Visible = false;
+            // 
+            // lblNombreFormulario
+            // 
+            this.lblNombreFormulario.AutoSize = true;
+            this.lblNombreFormulario.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblNombreFormulario.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(210)))));
+            this.lblNombreFormulario.Location = new System.Drawing.Point(767, 526);
+            this.lblNombreFormulario.Name = "lblNombreFormulario";
+            this.lblNombreFormulario.Size = new System.Drawing.Size(213, 32);
+            this.lblNombreFormulario.TabIndex = 1;
+            this.lblNombreFormulario.Text = "Solicitud de Pago";
+            this.lblNombreFormulario.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // lblCargando
+            // 
+            this.lblCargando.AutoSize = true;
+            this.lblCargando.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCargando.ForeColor = System.Drawing.Color.White;
+            this.lblCargando.Location = new System.Drawing.Point(818, 467);
+            this.lblCargando.Name = "lblCargando";
+            this.lblCargando.Size = new System.Drawing.Size(146, 32);
+            this.lblCargando.TabIndex = 1;
+            this.lblCargando.Text = "Cargando...";
+            this.lblCargando.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // picLoadingIcon
+            // 
+            this.picLoadingIcon.BackColor = System.Drawing.Color.Transparent;
+            this.picLoadingIcon.Image = global::MOFIS_ERP.Properties.Resources.LOGO_CARGA;
+            this.picLoadingIcon.Location = new System.Drawing.Point(814, 309);
+            this.picLoadingIcon.Name = "picLoadingIcon";
+            this.picLoadingIcon.Size = new System.Drawing.Size(140, 140);
+            this.picLoadingIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.picLoadingIcon.TabIndex = 0;
+            this.picLoadingIcon.TabStop = false;
             // 
             // panelAccesos
             // 
@@ -700,53 +748,6 @@
             this.picLogoBienvenida.TabIndex = 0;
             this.picLogoBienvenida.TabStop = false;
             // 
-            // panelCargando
-            // 
-            this.panelCargando.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(12)))), ((int)(((byte)(35)))), ((int)(((byte)(66)))));
-            this.panelCargando.Controls.Add(this.lblNombreFormulario);
-            this.panelCargando.Controls.Add(this.lblCargando);
-            this.panelCargando.Controls.Add(this.picLoadingIcon);
-            this.panelCargando.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelCargando.Location = new System.Drawing.Point(20, 20);
-            this.panelCargando.Name = "panelCargando";
-            this.panelCargando.Size = new System.Drawing.Size(1885, 980);
-            this.panelCargando.TabIndex = 5;
-            this.panelCargando.Visible = false;
-            // 
-            // picLoadingIcon
-            // 
-            this.picLoadingIcon.BackColor = System.Drawing.Color.Transparent;
-            this.picLoadingIcon.Location = new System.Drawing.Point(839, 391);
-            this.picLoadingIcon.Name = "picLoadingIcon";
-            this.picLoadingIcon.Size = new System.Drawing.Size(80, 80);
-            this.picLoadingIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.picLoadingIcon.TabIndex = 0;
-            this.picLoadingIcon.TabStop = false;
-            // 
-            // lblCargando
-            // 
-            this.lblCargando.AutoSize = true;
-            this.lblCargando.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCargando.ForeColor = System.Drawing.Color.White;
-            this.lblCargando.Location = new System.Drawing.Point(808, 474);
-            this.lblCargando.Name = "lblCargando";
-            this.lblCargando.Size = new System.Drawing.Size(146, 32);
-            this.lblCargando.TabIndex = 1;
-            this.lblCargando.Text = "Cargando...";
-            this.lblCargando.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // lblNombreFormulario
-            // 
-            this.lblNombreFormulario.AutoSize = true;
-            this.lblNombreFormulario.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblNombreFormulario.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(210)))));
-            this.lblNombreFormulario.Location = new System.Drawing.Point(767, 518);
-            this.lblNombreFormulario.Name = "lblNombreFormulario";
-            this.lblNombreFormulario.Size = new System.Drawing.Size(213, 32);
-            this.lblNombreFormulario.TabIndex = 1;
-            this.lblNombreFormulario.Text = "Solicitud de Pago";
-            this.lblNombreFormulario.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // timerCarga
             // 
             this.timerCarga.Interval = 30;
@@ -771,14 +772,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.picLogo)).EndInit();
             this.panelAreaTrabajo.ResumeLayout(false);
             this.panelAreaTrabajo.PerformLayout();
+            this.panelCargando.ResumeLayout(false);
+            this.panelCargando.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picLoadingIcon)).EndInit();
             this.panelAccesos.ResumeLayout(false);
             this.panelAccesos.PerformLayout();
             this.panelResumen.ResumeLayout(false);
             this.panelResumen.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picLogoBienvenida)).EndInit();
-            this.panelCargando.ResumeLayout(false);
-            this.panelCargando.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picLoadingIcon)).EndInit();
             this.ResumeLayout(false);
 
         }

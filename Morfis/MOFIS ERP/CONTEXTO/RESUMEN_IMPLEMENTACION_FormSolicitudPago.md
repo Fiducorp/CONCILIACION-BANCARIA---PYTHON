@@ -683,8 +683,8 @@ form.MdiParent = this.MdiParent;
 
 ## 📝 PRÓXIMOS PASOS SUGERIDOS
 
-1. **Conectar con FormMenuCartasSolicitudes** - Hacer que el botón "Solicitud de Pago" cargue el formulario
-2. **Cargar combos desde BD** - Implementar la carga de datos en todos los ComboBox
+1. **Conectar con FormMenuCartasSolicitudes** - Hacer que el botón "Solicitud de Pago" cargue el formulario (COMPLETO)
+2. **Cargar combos desde BD** - Implementar la carga de datos en todos los ComboBox (COMPLETO)
 3. **Implementar autocompletado** - Fideicomiso y Proveedor
 4. **Implementar cálculos** - ITBIS y retenciones en tiempo real
 5. **Implementar guardado** - Guardar en base de datos con auditoría
