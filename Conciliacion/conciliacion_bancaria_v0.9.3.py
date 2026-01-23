@@ -1372,8 +1372,13 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
             columnas_map['Natu'] = col
 
         # Detectar "Valor Moneda Extranjera" para USD (tiene signos ya aplicados)
-        elif 'EXTRANJERA' in col_upper and 'Valor_USD' not in columnas_map:
-            columnas_map['Valor_USD'] = col
+        if usa_dolares:
+            if 'EXTRANJERA' in col_upper and 'Valor_USD' not in columnas_map:
+                columnas_map['Valor_USD'] = col
+            elif any(x in col_upper for x in ['VALOR', 'MONTO', 'IMPORTE', 'AMOUNT', 'AMT']) and 'Valor_USD' not in columnas_map:
+                columnas_map['Valor_USD'] = col
+
+
         # Valor (único) - detecta nombres comunes (incluye variantes en inglés)
         elif any(x in col_upper for x in ['VALOR', 'MONTO', 'IMPORTE', 'AMOUNT', 'AMT']) and 'Valor' not in columnas_map:
             columnas_map['Valor'] = col
