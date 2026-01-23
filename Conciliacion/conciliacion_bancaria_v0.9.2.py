@@ -46,6 +46,44 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # ============================================================================
+# ⚙️ PARÁMETROS AJUSTABLES
+# ============================================================================
+
+# 💰 TOLERANCIAS DE VALOR
+TOLERANCIA_VALOR_EXACTA = 0.01
+TOLERANCIA_VALOR_AGRUPACION = 1.00
+TOLERANCIA_PORCENTAJE_PARCIAL = 0.02
+
+# 📅 VENTANAS DE TIEMPO
+VENTANA_DIAS_EXACTA = 10
+VENTANA_DIAS_AGRUPACION = 20
+VENTANA_DIAS_FLEXIBLE = 30
+VENTANA_DIAS_COMISIONES = 45
+
+# 🎯 UMBRALES DE SIMILITUD
+UMBRAL_SIMILITUD_BAJA = 0.05
+UMBRAL_SIMILITUD_MEDIA = 0.20
+UMBRAL_SIMILITUD_ALTA = 0.40
+
+# 🔧 CONFIGURACIÓN AVANZADA
+PERMITIR_SOLO_MONTO = True
+USAR_FECHAS_PARA_DESAMBIGUAR = True
+DETECTAR_CASOS_ESPECIALES = True
+APLICAR_FORMATO_PROFESIONAL = True
+EJECUTAR_SEGUNDA_PASADA = True
+EJECUTAR_BUSQUEDA_EXHAUSTIVA = True
+
+# 💵 COMISIONES BANCARIAS
+COMISION_TRANSFERENCIA_USD = 7.00
+DETECTAR_COMISIONES = True
+
+# ⚡ LÍMITES DE RENDIMIENTO (OPTIMIZACIÓN)
+MAX_PARTIDAS_AGRUPACION = 30        # Reducido de 100 a 15 para velocidad
+MAX_COMBINACIONES_POR_BUSQUEDA = 10000  # Límite por cada búsqueda individual
+UMBRAL_PARTIDAS_EXHAUSTIVA = 25     # Aumentado de 20 a 25
+MAX_COMBINACIONES_EXHAUSTIVA = 100000
+
+# ============================================================================
 # ⚙️ CONFIGURACIÓN DE RUTAS Y ARCHIVOS RESULTADO
 # ============================================================================
 
@@ -87,44 +125,6 @@ def obtener_ruta_unica(ruta_base):
         if not nueva_ruta.exists():
             return str(nueva_ruta)
         contador += 1
-
-# ============================================================================
-# ⚙️ PARÁMETROS AJUSTABLES
-# ============================================================================
-
-# 💰 TOLERANCIAS DE VALOR
-TOLERANCIA_VALOR_EXACTA = 0.01
-TOLERANCIA_VALOR_AGRUPACION = 1.00
-TOLERANCIA_PORCENTAJE_PARCIAL = 0.02
-
-# 📅 VENTANAS DE TIEMPO
-VENTANA_DIAS_EXACTA = 10
-VENTANA_DIAS_AGRUPACION = 20
-VENTANA_DIAS_FLEXIBLE = 30
-VENTANA_DIAS_COMISIONES = 45
-
-# 🎯 UMBRALES DE SIMILITUD
-UMBRAL_SIMILITUD_BAJA = 0.05
-UMBRAL_SIMILITUD_MEDIA = 0.20
-UMBRAL_SIMILITUD_ALTA = 0.40
-
-# 🔧 CONFIGURACIÓN AVANZADA
-PERMITIR_SOLO_MONTO = True
-USAR_FECHAS_PARA_DESAMBIGUAR = True
-DETECTAR_CASOS_ESPECIALES = True
-APLICAR_FORMATO_PROFESIONAL = True
-EJECUTAR_SEGUNDA_PASADA = True
-EJECUTAR_BUSQUEDA_EXHAUSTIVA = True
-
-# 💵 COMISIONES BANCARIAS
-COMISION_TRANSFERENCIA_USD = 7.00
-DETECTAR_COMISIONES = True
-
-# ⚡ LÍMITES DE RENDIMIENTO (OPTIMIZACIÓN)
-MAX_PARTIDAS_AGRUPACION = 30        # Reducido de 100 a 15 para velocidad
-MAX_COMBINACIONES_POR_BUSQUEDA = 10000  # Límite por cada búsqueda individual
-UMBRAL_PARTIDAS_EXHAUSTIVA = 25     # Aumentado de 20 a 25
-MAX_COMBINACIONES_EXHAUSTIVA = 100000
 
 # ============================================================================
 # 🏦 PASO 1: SISTEMA DE RECONOCIMIENTO AUTOMÁTICO DE BANCOS
