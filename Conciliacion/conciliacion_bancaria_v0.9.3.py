@@ -1364,9 +1364,9 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
     columnas_map = {}
     for col in df.columns:
         col_upper = str(col).upper().strip()
-        if 'F.COMP' in col_upper and 'Fecha' not in columnas_map:
+        if any(x in col_upper for x in ['F.COMP', 'FECHA']) and 'Fecha' not in columnas_map:
             columnas_map['Fecha'] = col
-        elif 'DETALLE' in col_upper and 'Concepto' not in columnas_map:
+        elif any(x in col_upper for x in ['DETALLE', 'CONCEPTO', 'CONCEP', 'OBSERV', 'REFERENCIA', 'BENEFICIARIO', 'BENEF']) and 'Concepto' not in columnas_map:
             columnas_map['Concepto'] = col
         elif 'NATU' in col_upper and 'Natu' not in columnas_map:
             columnas_map['Natu'] = col
@@ -1393,9 +1393,12 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
     if usa_dolares:
         # USD: solo necesita Valor_USD
         requeridas = ['Fecha', 'Concepto', 'Valor_USD']
-    else:
+    elif tiene_natu:
         # RD: necesita Valor y Natu
         requeridas = ['Fecha', 'Concepto', 'Valor', 'Natu']
+    else: # Chequeo de documento limpiado
+        # Sin Natu: necesita solo Valor
+        requeridas = ['Fecha', 'Concepto', 'Valor']
     
     faltantes = [r for r in requeridas if r not in columnas_map]
     if faltantes:
@@ -1436,7 +1439,7 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
         # Luego usar USD como Valor
         df['Valor'] = pd.to_numeric(df['Valor_USD'], errors='coerce')
         df = df.drop(columns=['Valor_USD'], errors='ignore')
-    else:
+    elif tiene_natu == True and 'Valor' in df.columns:
         # RD: usar Valor aplicando interpretación de NATU
         print("  Detectada moneda RD - usando 'Valor' interpretando 'Natu'")
         df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce')
