@@ -1095,39 +1095,6 @@ def limpiar_archivo_contable(ruta_archivo, moneda='RD$'):
 # 📂 CARGA DE DATOS OPTIMIZADA (SOLO FILAS VÁLIDAS)
 # ============================================================================
 
-def parse_fecha_ddmmyyyy(series):
-    """
-    Robust date parser:
-    - Reads ANY reasonable date format
-    - Fixes MM/DD/YYYY accidentally parsed as DD/MM/YYYY
-    - Guarantees final Fecha is DD/MM/YYYY logic
-    """
-
-    s = series.astype(str).str.strip()
-
-    # First: flexible parse (allows Excel, CSV, cleaned files)
-    fechas = pd.to_datetime(
-        s,
-        errors='coerce',
-        infer_datetime_format=True,
-        dayfirst=False  # IMPORTANT: allow pandas to read US-style too
-    )
-
-    # Detect impossible dates under DD/MM/YYYY logic
-    # If day > 12 AND month <= 12, it was flipped
-    mask_flip = (
-        fechas.notna() &
-        (fechas.dt.day <= 12) &
-        (fechas.dt.month > 12)
-    )
-
-    # Swap day/month ONLY for those rows
-    fechas.loc[mask_flip] = fechas.loc[mask_flip].apply(
-        lambda d: d.replace(day=d.month, month=d.day)
-    )
-
-    return fechas
-
 # Carga de Archivos
 def cargar_banco(ruta, nombre="", codigo_banco=None):
     """Carga datos - OPTIMIZACIÓN: solo lee filas con Fecha Y Valor válidos
@@ -1224,9 +1191,9 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
     tiene_debito_credito = False
     for col in df.columns:
         col_upper = str(col).upper().strip()
-        if any(x in col_upper for x in ['FECHA', 'DATE','EFECTIVA']) and 'Fecha' not in columnas_map:
+        if any(x in col_upper for x in ['FECHA', 'DATE', 'EFECTIVA']) and 'Fecha' not in columnas_map:
             columnas_map['Fecha'] = col
-        elif any(x in col_upper for x in ['CONCEPTO', 'REFERENCIA']) and 'Concepto' not in columnas_map:
+        elif any(x in col_upper for x in ['CONCEPTO', 'REFERENCIA', 'CO', 'CEPTO']) and 'Concepto' not in columnas_map:
             columnas_map['Concepto'] = col
         elif any(x in col_upper for x in ['DÉBITO', 'DEBITO', 'RETIRO', 'RETIROS']) and 'Debito' not in columnas_map:
             columnas_map['Debito'] = col
@@ -1294,7 +1261,7 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
         raise ValueError(msg)
     
     # Convertir tipos y combinar Debito/Credito si es necesario
-    df['Fecha'] = parse_fecha_ddmmyyyy(df['Fecha'])
+    df['Fecha'] = pd.to_datetime(df['Fecha'], errors='coerce')
     df['Concepto'] = df['Concepto'].fillna('').astype(str)
     df['Descripción'] = df['Descripción'].fillna('').astype(str)
     
@@ -1399,7 +1366,7 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
         col_upper = str(col).upper().strip()
         if any(x in col_upper for x in ['F.COMP', 'FECHA']) and 'Fecha' not in columnas_map:
             columnas_map['Fecha'] = col
-        elif any(x in col_upper for x in ['DETALLE', 'CONCEPTO', 'CONCEP', 'OBSERV', 'REFERENCIA', 'BENEFICIARIO', 'BENEF']) and 'Concepto' not in columnas_map:
+        elif any(x in col_upper for x in ['DETALLE', 'CONCEPTO', 'CONCEP', 'OBSERV', 'REFERENCIA', 'BENEFICIARIO', 'BENEF', 'CO', 'CEPTO']) and 'Concepto' not in columnas_map:
             columnas_map['Concepto'] = col
         elif 'NATU' in col_upper and 'Natu' not in columnas_map:
             columnas_map['Natu'] = col
@@ -1433,7 +1400,7 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
         print("  ⚠️ Columna 'Descripción' no encontrada - creada vacía")
     
     # Verificar columnas requeridas según moneda
-    if usa_dolares:
+    if usa_dolares and 'Valor_USD' in columnas_map:
         # USD: solo necesita Valor_USD
         requeridas = ['Fecha', 'Concepto', 'Valor_USD']
     elif tiene_natu:
@@ -1466,7 +1433,7 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
         df = df.drop(columns=['Estado'], errors='ignore')  # Eliminar la columna Estado después de filtrar
     
     # Convertir tipos y combinar/ajustar columnas según formato
-    df['Fecha'] = parse_fecha_ddmmyyyy(df['Fecha'])
+    df['Fecha'] = pd.to_datetime(df['Fecha'], errors='coerce')
     df['Concepto'] = df['Concepto'].fillna('').astype(str)
     df['Descripción'] = df['Descripción'].fillna('').astype(str)
 
