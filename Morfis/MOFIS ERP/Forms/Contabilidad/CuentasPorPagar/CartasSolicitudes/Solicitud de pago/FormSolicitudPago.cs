@@ -129,6 +129,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             // Evento de Observaciones (contador de caracteres)
             txtObservaciones.TextChanged += TxtObservaciones_TextChanged;
 
+            // Evento del botón Agregar Fideicomiso
+            btnAgregarFideicomiso.Click += BtnAgregarFideicomiso_Click;
+
             // Evento maestro: activar/desactivar cálculo automático del ITBIS
             if (chkCalcularITBIS != null)
             {
@@ -763,6 +766,24 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
         #region Autocompletado Fideicomiso
 
+        // Función auxiliar para dar formato (x-xx-xxxxx-x o xxx-xxxxxxx-x)
+        private string FormatearRNC(string rnc)
+        {
+            if (string.IsNullOrEmpty(rnc)) return "";
+
+            string limpio = rnc.Replace("-", "").Trim();
+
+            // RNC de Empresa (9 dígitos)
+            if (limpio.Length == 9)
+                return Convert.ToInt64(limpio).ToString("0-00-00000-0");
+
+            // Cédula / Persona Física (11 dígitos)
+            if (limpio.Length == 11)
+                return Convert.ToInt64(limpio).ToString("000-0000000-0");
+
+            return rnc; // Retorna original si no cumple formato
+        }
+
         private void CargarFideicomisos()
         {
             try
@@ -821,12 +842,13 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
             if (rows.Length > 0)
             {
-                // Encuentraodo - seleccionar en el combo
+                // Encontrado - seleccionar en el combo
                 int fideicomisoID = Convert.ToInt32(rows[0]["FideicomisoID"]);
                 cboFideicomiso.SelectedValue = fideicomisoID;
 
-                // Mostrar RNC
-                lblRNCFideicomiso.Text = $"RNC: {rows[0]["RNC"]}";
+                // CAMBIO APLICADO AQUÍ: Formatear RNC
+                string rncRaw = rows[0]["RNC"].ToString();
+                lblRNCFideicomiso.Text = $"RNC: {FormatearRNC(rncRaw)}";
             }
             else
             {
@@ -848,9 +870,11 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                     // Actualizar código
                     txtCodigoFideicomiso.Text = drv["Codigo"].ToString();
 
-                    // Actualizar RNC
+                    // CAMBIO APLICADO AQUÍ: Actualizar y Formatear RNC
                     string rnc = drv["RNC"].ToString();
-                    lblRNCFideicomiso.Text = string.IsNullOrEmpty(rnc) ? "RNC: ---" : $"RNC: {rnc}";
+                    lblRNCFideicomiso.Text = string.IsNullOrEmpty(rnc)
+                        ? "RNC: ---"
+                        : $"RNC: {FormatearRNC(rnc)}";
                 }
             }
             else
@@ -1526,5 +1550,42 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         }
 
         #endregion
+
+        // ═══════════════════════════════════════════════════════════════
+        // ABRIR MINI-FORM AGREGAR FIDEICOMISO
+        // ═══════════════════════════════════════════════════════════════
+        private void BtnAgregarFideicomiso_Click(object sender, EventArgs e)
+        {
+            using (FormAgregarFideicomiso form = new FormAgregarFideicomiso(this))
+            {
+                if (form.ShowDialog() == DialogResult.OK)
+                {
+                    // El mini-form ya refrescó los datos y seleccionó el fideicomiso
+                    // No es necesario hacer nada adicional aquí
+                }
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // REFRESCAR FIDEICOMISOS DESDE MINI-FORM
+        // ═══════════════════════════════════════════════════════════════
+        public void RefrescarFideicomisos(int? fideicomisoIDSeleccionar)
+        {
+            // Recargar datos desde BD
+            CargarFideicomisos();
+
+            // Si se especificó un ID, seleccionarlo
+            if (fideicomisoIDSeleccionar.HasValue)
+            {
+                cboFideicomiso.SelectedValue = fideicomisoIDSeleccionar.Value;
+            }
+            else
+            {
+                // Limpiar selección (por ejemplo, si se eliminó el fideicomiso actual)
+                txtCodigoFideicomiso.Text = string.Empty;
+                cboFideicomiso.SelectedIndex = -1;
+                lblRNCFideicomiso.Text = "RNC: ---";
+            }
+        }
     }
 }

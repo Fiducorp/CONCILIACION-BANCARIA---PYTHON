@@ -132,7 +132,7 @@
             this.btnGuardarFideicomiso.ForeColor = System.Drawing.Color.White;
             this.btnGuardarFideicomiso.Location = new System.Drawing.Point(114, 238);
             this.btnGuardarFideicomiso.Name = "btnGuardarFideicomiso";
-            this.btnGuardarFideicomiso.Size = new System.Drawing.Size(123, 39);
+            this.btnGuardarFideicomiso.Size = new System.Drawing.Size(154, 47);
             this.btnGuardarFideicomiso.TabIndex = 3;
             this.btnGuardarFideicomiso.Text = "💾 Guardar";
             this.btnGuardarFideicomiso.UseVisualStyleBackColor = false;
@@ -146,7 +146,7 @@
             this.btnCancelarFideicomiso.ForeColor = System.Drawing.Color.White;
             this.btnCancelarFideicomiso.Location = new System.Drawing.Point(626, 238);
             this.btnCancelarFideicomiso.Name = "btnCancelarFideicomiso";
-            this.btnCancelarFideicomiso.Size = new System.Drawing.Size(123, 39);
+            this.btnCancelarFideicomiso.Size = new System.Drawing.Size(123, 47);
             this.btnCancelarFideicomiso.TabIndex = 3;
             this.btnCancelarFideicomiso.Text = "✖ Cancelar";
             this.btnCancelarFideicomiso.UseVisualStyleBackColor = false;
