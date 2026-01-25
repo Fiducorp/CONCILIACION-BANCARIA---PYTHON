@@ -3,6 +3,7 @@
 ## General Guidelines
 - Modify only the logo loading lines in forms; do not alter the rest of the file.
 - Avoid conditional expressions (ternary) directly within string interpolations; calculate values (e.g., clean IDs or results of Regex.Replace) in variables before constructing the string to prevent syntax errors and complex escapes.
+- Convert the content of `txtNombre` in `FormAgregarFideicomiso` and `txtNombreProv` in `FormAgregarProveedor` to uppercase when saving or modifying (use `ToUpperInvariant()` before inserting/updating in the database).
 
 ## UI Formatting
 - Use ProveedorID formatted as PRV-{ProveedorID:D6} in the UI (txtCodigoProveedor); do not rely on the 'Codigo' column in the Proveedores table. This is the preferred method for displaying provider IDs. Ensure that forms are checked and adapted to display/use PRV-{ProveedorID:D6} and do not fail if the 'Codigo' column does not exist.

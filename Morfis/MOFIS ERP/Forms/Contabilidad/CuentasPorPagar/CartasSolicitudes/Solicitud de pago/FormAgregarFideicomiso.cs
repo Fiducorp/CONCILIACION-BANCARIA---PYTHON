@@ -236,7 +236,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             try
             {
                 string codigo = txtCodigo.Text.Trim();
-                string nombre = txtNombre.Text.Trim();
+                string nombre = txtNombre.Text.Trim().ToUpperInvariant();
                 string rnc = Regex.Replace(txtRNC.Text, @"\D", string.Empty);
                 int? tipoFideicomisoID = cboTipoFideicomiso.SelectedIndex >= 0
                     ? (int?)cboTipoFideicomiso.SelectedValue
@@ -305,7 +305,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             try
             {
                 string codigo = txtCodigo.Text.Trim();
-                string nombre = txtNombre.Text.Trim();
+                string nombre = txtNombre.Text.Trim().ToUpperInvariant();
                 string rnc = Regex.Replace(txtRNC.Text, @"\D", string.Empty);
                 int? tipoFideicomisoID = cboTipoFideicomiso.SelectedIndex >= 0
                     ? (int?)cboTipoFideicomiso.SelectedValue

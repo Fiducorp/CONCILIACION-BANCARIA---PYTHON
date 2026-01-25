@@ -355,7 +355,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
         {
             if (errProviderProveedor != null) errProviderProveedor.Clear();
 
-            string nombre = (txtNombreProv.Text ?? string.Empty).Trim();
+            string nombre = (txtNombreProv.Text ?? string.Empty).Trim().ToUpperInvariant();
             string telefonoClean = Regex.Replace(txtTelefonoProv.Text ?? string.Empty, @"\D", string.Empty);
             string email = (txtEmailProv.Text ?? string.Empty).Trim();
             string numeroClean = Regex.Replace(txtNumeroDocumento.Text ?? string.Empty, @"\D", string.Empty);
