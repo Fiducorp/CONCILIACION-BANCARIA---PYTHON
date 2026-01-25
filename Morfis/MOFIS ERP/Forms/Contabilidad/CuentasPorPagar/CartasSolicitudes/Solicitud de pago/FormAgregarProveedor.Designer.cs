@@ -37,7 +37,7 @@
             this.lblNombreProv = new System.Windows.Forms.Label();
             this.txtNumeroDocumento = new System.Windows.Forms.TextBox();
             this.lblNumeroDoc = new System.Windows.Forms.Label();
-            this.txtCodigoProveedor = new System.Windows.Forms.TextBox();
+            this.txtIdProveedor = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.lblCodigoProveedor = new System.Windows.Forms.Label();
             this.lblTelefonoProv = new System.Windows.Forms.Label();
@@ -136,15 +136,15 @@
             this.lblNumeroDoc.TabIndex = 6;
             this.lblNumeroDoc.Text = "RNC / Cédula:";
             // 
-            // txtCodigoProveedor
+            // txtIdProveedor
             // 
-            this.txtCodigoProveedor.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtCodigoProveedor.Location = new System.Drawing.Point(187, 83);
-            this.txtCodigoProveedor.MaxLength = 20;
-            this.txtCodigoProveedor.Name = "txtCodigoProveedor";
-            this.txtCodigoProveedor.ReadOnly = true;
-            this.txtCodigoProveedor.Size = new System.Drawing.Size(187, 33);
-            this.txtCodigoProveedor.TabIndex = 11;
+            this.txtIdProveedor.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtIdProveedor.Location = new System.Drawing.Point(187, 83);
+            this.txtIdProveedor.MaxLength = 20;
+            this.txtIdProveedor.Name = "txtIdProveedor";
+            this.txtIdProveedor.ReadOnly = true;
+            this.txtIdProveedor.Size = new System.Drawing.Size(187, 33);
+            this.txtIdProveedor.TabIndex = 11;
             // 
             // label1
             // 
@@ -257,10 +257,13 @@
             this.Controls.Add(this.lblTelefonoProv);
             this.Controls.Add(this.txtNumeroDocumento);
             this.Controls.Add(this.lblNumeroDoc);
-            this.Controls.Add(this.txtCodigoProveedor);
+            this.Controls.Add(this.txtIdProveedor);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lblCodigoProveedor);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.MaximizeBox = false;
             this.Name = "FormAgregarProveedor";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FormAgregarProveedor";
             ((System.ComponentModel.ISupportInitialize)(this.errProviderProveedor)).EndInit();
             this.ResumeLayout(false);
@@ -278,7 +281,7 @@
         private System.Windows.Forms.Label lblNombreProv;
         private System.Windows.Forms.TextBox txtNumeroDocumento;
         private System.Windows.Forms.Label lblNumeroDoc;
-        private System.Windows.Forms.TextBox txtCodigoProveedor;
+        private System.Windows.Forms.TextBox txtIdProveedor;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblCodigoProveedor;
         private System.Windows.Forms.Label lblTelefonoProv;

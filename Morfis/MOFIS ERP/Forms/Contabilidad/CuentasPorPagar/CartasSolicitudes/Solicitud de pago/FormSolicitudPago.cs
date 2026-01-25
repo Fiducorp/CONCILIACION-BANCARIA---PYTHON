@@ -13,9 +13,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 {
     public partial class FormSolicitudPago : Form
     {
-        // ═══════════════════════════════════════════════════════════════
+        // =========================================================
         // CAMPOS PRIVADOS
-        // ═══════════════════════════════════════════════════════════════
+        // =========================================================
         private FormMain formPrincipal;
         private bool esNuevoRegistro = true;
         private int solicitudPagoID = 0;
@@ -37,9 +37,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         private int tasaIntegerDigits = 2;
         private int tasaDecimalDigits = 6;
 
-        // ═══════════════════════════════════════════════════════════════
-        // CONSTRUCTOR CON PARÁMETRO (para navegación)
-        // ═══════════════════════════════════════════════════════════════
+        // =========================================================
+        // CONSTRUCTORES
+        // =========================================================
         public FormSolicitudPago(FormMain principal)
         {
             InitializeComponent();
@@ -48,9 +48,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             CargarDatosIniciales();
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        // CONSTRUCTOR SIN PARÁMETROS (para el diseñador y carga directa)
-        // ═══════════════════════════════════════════════════════════════
         public FormSolicitudPago()
         {
             InitializeComponent();
@@ -58,9 +55,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             CargarDatosIniciales();
         }
 
-        // ═══════════════════════════════════════════════════════════════
+        // =========================================================
         // CONFIGURACIÓN INICIAL
-        // ═══════════════════════════════════════════════════════════════
+        // =========================================================
         private void ConfigurarFormulario()
         {
             this.Dock = DockStyle.Fill;
@@ -95,14 +92,11 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             monedaNumberFormat = BuildNumberFormat();
         }
 
-        // Permite parametrizar la interpretación de txtTasa:
-        // integerDigits = número máximo de dígitos en la parte entera
-        // decimalDigits = número máximo de dígitos en la parte decimal (hasta 6 según tus requerimientos)
         private void SetTasaFormat(int integerDigits, int decimalDigits)
         {
             if (integerDigits < 0) integerDigits = 0;
             if (decimalDigits < 0) decimalDigits = 0;
-            if (decimalDigits > 18) decimalDigits = 18; // protección
+            if (decimalDigits > 18) decimalDigits = 18;
             if (integerDigits > 18) integerDigits = 18;
 
             tasaIntegerDigits = integerDigits;
@@ -131,6 +125,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
             // Evento del botón Agregar Fideicomiso
             btnAgregarFideicomiso.Click += BtnAgregarFideicomiso_Click;
+
+            // Evento del botón Agregar Proveedor (mini-form)
+            btnAgregarProveedor.Click += BtnAgregarProveedor_Click;
 
             // Evento maestro: activar/desactivar cálculo automático del ITBIS
             if (chkCalcularITBIS != null)
@@ -185,15 +182,12 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 if (tb == null) return;
                 tb.KeyPress += NumericDecimal_KeyPress;
 
-                // Para los TextBoxes de montos (currencyTextBoxes) vamos a controlar el formateo
-                // en Enter/Leave para preservar comas de miles; no adjuntamos el sanitizador genérico.
                 if (!currencyTextBoxes.Contains(tb) && tb != txtTasa)
                 {
                     tb.TextChanged += (s, e) => SanitizeDecimalTextBox(tb);
                 }
             };
 
-            // No usar attachDecimal para txtTasa — tendrá comportamiento especial
             attachDecimal(txtExento);
             attachDecimal(txtDireccionTecnica);
             attachDecimal(txtDescuento);
@@ -207,10 +201,10 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             attachDecimal(txtRetAFP);
             attachDecimal(txtRetSFS);
 
-            // Manejadores especiales para txtTasa: solo dígitos, punto automático y hasta N decimales
+            // Manejadores especiales para txtTasa
             txtTasa.KeyPress += Tasa_KeyPress;
             txtTasa.TextChanged += Tasa_TextChanged;
-            txtTasa.Enter += (s, e) => { /* mantener caret al final */ txtTasa.SelectionStart = txtTasa.Text.Length; };
+            txtTasa.Enter += (s, e) => { txtTasa.SelectionStart = txtTasa.Text.Length; };
 
             // Adjuntar manejadores de formato moneda (Enter/Leave) a los TextBoxes listados
             foreach (var tb in currencyTextBoxes)
@@ -230,20 +224,15 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             return nfi;
         }
 
-        // Obtiene el símbolo de moneda seleccionado (ej. "RD$") y actualiza monedaNumberFormat
         private void UpdateMonedaFormatFromCombo()
         {
             monedaSimbolo = string.Empty;
-
-            // Base con separadores fijos: miles "," y decimal "." según requisito
             monedaNumberFormat = BuildNumberFormat();
 
             if (cboMoneda != null && cboMoneda.SelectedItem is DataRowView drv)
             {
                 monedaSimbolo = (drv["Simbolo"] ?? string.Empty).ToString();
 
-                // Ajuste de dígitos decimales por moneda si la información está disponible
-                // Intentamos leer una columna "CodigoISO" para excepciones (ej. JPY sin decimales)
                 try
                 {
                     string iso = (drv["CodigoISO"] ?? string.Empty).ToString().ToUpper();
@@ -265,18 +254,15 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             monedaSimbolo = monedaSimbolo ?? string.Empty;
         }
 
-        // Formatea número (sin símbolo) con grouping y punto decimal. Conserva la cantidad de decimales
-        // provista en decimalPartLength si > 0, o forza 2 si = 0.
         private string FormatNumericPart(string integerPart, string decimalPart)
         {
             var nfi = monedaNumberFormat ?? BuildNumberFormat();
 
-            // Formatear la parte entera con grouping
             long intVal = 0;
             string intFormatted = integerPart;
             if (long.TryParse(integerPart, out intVal))
             {
-                intFormatted = intVal.ToString("N0", nfi); // sin decimales
+                intFormatted = intVal.ToString("N0", nfi);
             }
 
             if (!string.IsNullOrEmpty(decimalPart))
@@ -284,11 +270,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 return intFormatted + "." + decimalPart;
             }
 
-            // Forzar .00
             return intFormatted + ".00";
         }
 
-        // Evento Enter de los TextBoxes de moneda: quitar símbolo y dejar número (con comas si había)
         private void CurrencyTextBox_Enter(object sender, EventArgs e)
         {
             var tb = sender as TextBox;
@@ -301,23 +285,17 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 return;
             }
 
-            // Eliminar cualquier caracter que no sea dígito, coma, punto o signo menos
             string cleaned = Regex.Replace(text, "[^0-9,\\.\\-]", string.Empty);
-
-            // Si viene con comas de miles, mantenerlas (usuario quiere verlas), pero KeyPress bloquea la coma;
-            // el TextChanged sanitizador no está adjuntado para estos TBs, así que las comas se preservan.
             tb.Text = cleaned;
             tb.SelectionStart = tb.Text.Length;
         }
 
-        // Evento Leave de los TextBoxes de moneda: aplicar formato con símbolo y separadores
         private void CurrencyTextBox_Leave(object sender, EventArgs e)
         {
             var tb = sender as TextBox;
             if (tb == null) return;
 
             string text = tb.Text ?? string.Empty;
-            // Limpiar: mantener dígitos y punto decimal
             string cleaned = Regex.Replace(text, @"[^0-9.\-]", string.Empty);
 
             if (string.IsNullOrWhiteSpace(cleaned))
@@ -326,12 +304,10 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 return;
             }
 
-            // Separar parte entera y decimal según '.'
             string[] parts = cleaned.Split('.');
             string intPart = parts.Length > 0 ? parts[0] : "0";
             string decPart = parts.Length > 1 ? parts[1] : null;
 
-            // Quitar ceros a la izquierda en la parte entera (pero dejar "0" si vacío)
             intPart = intPart.TrimStart('0');
             if (string.IsNullOrEmpty(intPart)) intPart = "0";
 
@@ -343,30 +319,24 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 tb.Text = numericFormatted;
         }
 
-        // Actualiza todos los labels y textboxes formateados cuando cambia la moneda
         private void UpdateAllCurrencyDisplays()
         {
             UpdateMonedaFormatFromCombo();
 
-            // Re-formatear los TextBoxes si ya tienen valor
             foreach (var tb in currencyTextBoxes)
             {
                 if (tb == null) continue;
-                // Simular Leave para aplicar formato si tiene texto
                 if (!string.IsNullOrWhiteSpace(tb.Text))
                 {
                     CurrencyTextBox_Leave(tb, EventArgs.Empty);
                 }
             }
 
-            // Panel impuestos: estos labels contienen solo el número calculado
-            // Si hay valores parseables, los re-formateamos. Si están en texto vacio o no parseable, los dejamos.
             ReformatLabelNumberIfPossible(lblITBISCalculado);
             ReformatLabelNumberIfPossible(lblITBISDiferencia);
             ReformatLabelNumberIfPossible(lblRetITBISMonto);
             ReformatLabelNumberIfPossible(lblRetISRMonto);
 
-            // Panel totales: reemplazar sólo la parte numérica en cada label
             ReformatAmountPortionInLabel(lblTotalSubtotalTitulo);
             ReformatAmountPortionInLabel(lblTotalITBISTitulo);
             ReformatAmountPortionInLabel(lblTotalExentoTitulo);
@@ -378,12 +348,10 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             ReformatAmountPortionInLabel(lblTotalAPagar);
         }
 
-        // Intenta parsear el texto completo del label como número y lo formatea con símbolo
         private void ReformatLabelNumberIfPossible(Label lbl)
         {
             if (lbl == null) return;
             string text = lbl.Text ?? string.Empty;
-            // Limpiar posibles símbolos y espacios
             string cleaned = Regex.Replace(text, @"[^0-9.\-]", string.Empty);
             if (string.IsNullOrWhiteSpace(cleaned)) return;
 
@@ -394,20 +362,17 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             }
         }
 
-        // Reemplaza la porción numérica (última coincidencia) dentro del texto del label por el número formateado
         private void ReformatAmountPortionInLabel(Label lbl)
         {
             if (lbl == null) return;
             string text = lbl.Text ?? string.Empty;
 
-            // Buscar la última secuencia de dígitos, comas o puntos
             var matches = Regex.Matches(text, @"[0-9][0-9,\.]*");
             if (matches.Count == 0) return;
 
             var last = matches[matches.Count - 1];
             string numericPortion = last.Value;
 
-            // Limpiar la porción numérica para parsear
             string cleaned = numericPortion.Replace(",", string.Empty);
 
             decimal val;
@@ -416,34 +381,27 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 return;
             }
 
-            // Formatear la porción numérica (sin símbolo) usando los decimales configurados
             string formattedNumeric = val.ToString("N" + (monedaNumberFormat?.NumberDecimalDigits ?? 2), monedaNumberFormat ?? BuildNumberFormat());
 
-            // Determinar si existe un símbolo inmediatamente antes de la porción numérica
             string before = text.Substring(0, last.Index);
             string after = text.Substring(last.Index + last.Length);
 
-            // Buscar el último token no vacío antes del número
             var m = Regex.Match(before, @"(\S+)\s*$");
             string newBefore;
             if (m.Success)
             {
                 string token = m.Groups[1].Value;
-                // Si el token contiene caracteres no numéricos (ej. '$' o letras), considerarlo símbolo y reemplazar
                 bool tokenIsSymbol = token.Any(c => !char.IsDigit(c) && c != ':' && c != '\\' && c != '\n');
 
                 if (tokenIsSymbol)
                 {
-                    // Reemplazamos ese token por el símbolo actual (si existe) seguido de un espacio
                     string prefix = string.Empty;
                     if (!string.IsNullOrEmpty(monedaSimbolo))
                         prefix = monedaSimbolo + " ";
-
                     newBefore = before.Substring(0, m.Index) + prefix;
                 }
                 else
                 {
-                    // No hay token símbolo: insertar símbolo si existe
                     newBefore = before;
                     if (!string.IsNullOrEmpty(monedaSimbolo))
                         newBefore = newBefore + monedaSimbolo + " ";
@@ -451,7 +409,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             }
             else
             {
-                // No hay token: simplemente insertar símbolo si procede
                 newBefore = before;
                 if (!string.IsNullOrEmpty(monedaSimbolo))
                     newBefore = newBefore + monedaSimbolo + " ";
@@ -462,14 +419,13 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             lbl.Text = newText;
         }
 
-        // ═══════════════════════════════════════════════════════════════
+        // =========================================================
         // CARGA DE DATOS INICIALES
-        // ═══════════════════════════════════════════════════════════════
+        // =========================================================
         private void CargarDatosIniciales()
         {
             try
             {
-                // Cargar todos los combos
                 CargarTiposPago();
                 CargarMonedas();
                 CargarTiposComprobante();
@@ -477,21 +433,16 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 CargarPorcentajesITBIS();
                 CargarPorcentajesRetenciones();
 
-                // Cargar datos para autocompletado
                 CargarFideicomisos();
                 CargarProveedores();
 
-                // Configurar autocompletado
                 ConfigurarAutocompletadoFideicomiso();
                 ConfigurarAutocompletadoProveedor();
 
-                // Generar número de solicitud
                 GenerarNumeroSolicitud();
 
-                // Seleccionar valores por defecto
                 SeleccionarValoresPorDefecto();
 
-                // Aplicar formato inicial de moneda (según selección por defecto)
                 UpdateAllCurrencyDisplays();
             }
             catch (Exception ex)
@@ -501,12 +452,11 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             }
         }
 
-        // ═══════════════════════════════════════════════════════════════
+        // =========================================================
         // SELECCIÓN DE VALORES POR DEFECTO
-        // ═══════════════════════════════════════════════════════════════
+        // =========================================================
         private void SeleccionarValoresPorDefecto()
         {
-            // Seleccionar DOP como moneda por defecto
             foreach (DataRowView item in cboMoneda.Items)
             {
                 if (item["CodigoISO"].ToString() == "DOP")
@@ -516,7 +466,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 }
             }
 
-            // Seleccionar Transferencia como tipo de pago por defecto
             if (cboTipoPago.Items.Count > 0)
             {
                 foreach (DataRowView item in cboTipoPago.Items)
@@ -529,7 +478,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 }
             }
 
-            // Seleccionar 18% como ITBIS por defecto
             foreach (var item in cboITBISPorcentaje.Items)
             {
                 if (item.ToString() == "18%")
@@ -539,47 +487,42 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 }
             }
 
-            // Ocultar tasa de cambio si moneda es DOP
             txtTasa.Visible = false;
             lblTasa.Visible = false;
 
-            // Inicializar el CheckBox maestro (por defecto activado para calcular ITBIS)
             if (chkCalcularITBIS != null)
             {
                 chkCalcularITBIS.Checked = true;
             }
 
-            // Inicializar estado del combo de firma según el checkbox
             if (chkIncluirFirma != null && cboFirma != null)
             {
                 cboFirma.Enabled = chkIncluirFirma.Checked;
             }
 
-            // Inicializar placeholder del NCF según el tipo seleccionado
             SetNumeroNCFPlaceholder();
 
-            // Actualizar estados relacionados con ITBIS y firma
             UpdateEstadoCalculoITBIS();
             ActualizarEstadoITBISManual();
 
             if (chkRetSFS != null)
             {
-                chkRetSFS.Checked = false; // por defecto desactivado
+                chkRetSFS.Checked = false;
                 txtRetSFS.Enabled = chkRetSFS.Checked;
                 txtRetSFS.BackColor = SystemColors.Control;
             }
 
             if (chkRetAFP != null)
             {
-                chkRetAFP.Checked = false; // por defecto desactivado
+                chkRetAFP.Checked = false;
                 txtRetAFP.Enabled = chkRetAFP.Checked;
                 txtRetAFP.BackColor = SystemColors.Control;
             }
         }
 
-        // ═══════════════════════════════════════════════════════════════
+        // =========================================================
         // GENERAR NÚMERO DE SOLICITUD
-        // ═══════════════════════════════════════════════════════════════
+        // =========================================================
         private void GenerarNumeroSolicitud()
         {
             try
@@ -588,7 +531,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 {
                     conn.Open();
 
-                    // Obtener siguiente valor de la secuencia
                     string query = "SELECT NEXT VALUE FOR SEQ_SolicitudPago";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -599,19 +541,16 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             }
             catch (Exception ex)
             {
-                // Si falla, mostrar placeholder
                 lblNumeroSolicitud.Text = "SP-NUEVO";
                 System.Diagnostics.Debug.WriteLine($"Error generando número: {ex.Message}");
             }
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        // REGIÓN: CARGA DE COMBOS DESDE BASE DE DATOS
-        // ═══════════════════════════════════════════════════════════════
-
+        // =========================================================
+        // CARGA DE COMBOS
+        // =========================================================
         #region Carga de Combos
 
-        // Cargar Tipos de Pago
         private void CargarTiposPago()
         {
             try
@@ -639,7 +578,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 System.Diagnostics.Debug.WriteLine($"Error cargando tipos de pago: {ex.Message}");
             }
         }
-        // Cargar Monedas
+
         private void CargarMonedas()
         {
             try
@@ -667,7 +606,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 System.Diagnostics.Debug.WriteLine($"Error cargando monedas: {ex.Message}");
             }
         }
-        // Cargar Tipos de Comprobante
+
         private void CargarTiposComprobante()
         {
             try
@@ -695,7 +634,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 System.Diagnostics.Debug.WriteLine($"Error cargando tipos de comprobante: {ex.Message}");
             }
         }
-        // Cargar Tipos de NCF
+
         private void CargarTiposNCF()
         {
             try
@@ -712,7 +651,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                     DataTable dt = new DataTable();
                     da.Fill(dt);
 
-                    // Agregar columna combinada para mostrar
                     dt.Columns.Add("Display", typeof(string));
                     foreach (DataRow row in dt.Rows)
                     {
@@ -730,7 +668,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 System.Diagnostics.Debug.WriteLine($"Error cargando tipos NCF: {ex.Message}");
             }
         }
-        // Cargar Porcentajes de ITBIS
+
         private void CargarPorcentajesITBIS()
         {
             cboITBISPorcentaje.Items.Clear();
@@ -739,17 +677,15 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             cboITBISPorcentaje.Items.Add("18%");
             cboITBISPorcentaje.SelectedIndex = -1;
         }
-        // Cargar Porcentajes de Retenciones
+
         private void CargarPorcentajesRetenciones()
         {
-            // Retención ITBIS
             cboRetITBIS.Items.Clear();
             cboRetITBIS.Items.Add("0%");
             cboRetITBIS.Items.Add("30%");
             cboRetITBIS.Items.Add("100%");
             cboRetITBIS.SelectedIndex = 0;
 
-            // Retención ISR
             cboRetISR.Items.Clear();
             cboRetISR.Items.Add("0%");
             cboRetISR.Items.Add("2%");
@@ -760,13 +696,11 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
         #endregion
 
-        // ═══════════════════════════════════════════════════════════════
-        // REGIÓN: AUTOCOMPLETADO DE FIDEICOMISO
-        // ═══════════════════════════════════════════════════════════════
-
+        // =========================================================
+        // AUTOCOMPLETADO FIDEICOMISO
+        // =========================================================
         #region Autocompletado Fideicomiso
 
-        // Función auxiliar para dar formato (x-xx-xxxxx-x o xxx-xxxxxxx-x)
         private string FormatearRNC(string rnc)
         {
             if (string.IsNullOrEmpty(rnc)) return "";
@@ -816,13 +750,11 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
         private void ConfigurarAutocompletadoFideicomiso()
         {
-            // Configurar el ComboBox con autocompletado
             cboFideicomiso.DataSource = dtFideicomisos;
             cboFideicomiso.DisplayMember = "Nombre";
             cboFideicomiso.ValueMember = "FideicomisoID";
             cboFideicomiso.SelectedIndex = -1;
 
-            // Configurar autocompletado
             cboFideicomiso.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             cboFideicomiso.AutoCompleteSource = AutoCompleteSource.ListItems;
         }
@@ -885,10 +817,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
         #endregion
 
-        // ═══════════════════════════════════════════════════════════════
-        // REGIÓN: AUTOCOMPLETADO DE PROVEEDOR
-        // ═══════════════════════════════════════════════════════════════
-
+        // =========================================================
+        // AUTOCOMPLETADO PROVEEDOR
+        // =========================================================
         #region Autocompletado Proveedor
 
         private void CargarProveedores()
@@ -924,13 +855,11 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
         private void ConfigurarAutocompletadoProveedor()
         {
-            // Configurar el ComboBox con autocompletado
             cboProveedor.DataSource = dtProveedores;
             cboProveedor.DisplayMember = "Nombre";
             cboProveedor.ValueMember = "ProveedorID";
             cboProveedor.SelectedIndex = -1;
 
-            // Configurar autocompletado
             cboProveedor.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             cboProveedor.AutoCompleteSource = AutoCompleteSource.ListItems;
         }
@@ -968,7 +897,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
                 // Mostrar teléfono
                 string telefono = rows[0]["Telefono"]?.ToString();
-                lblTelefonoProveedor.Text = string.IsNullOrEmpty(telefono) ? "Tel: ---" : $"Tel: {telefono}";
+                lblTelefonoProveedor.Text = string.IsNullOrEmpty(telefono) ? "Tel: ---" : $"Tel: {FormatPhone(telefono)}";
             }
             else
             {
@@ -996,7 +925,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
                     // Actualizar teléfono
                     string telefono = drv["Telefono"]?.ToString();
-                    lblTelefonoProveedor.Text = string.IsNullOrEmpty(telefono) ? "Tel: ---" : $"Tel: {telefono}";
+                    lblTelefonoProveedor.Text = string.IsNullOrEmpty(telefono) ? "Tel: ---" : $"Tel: {FormatPhone(telefono)}";
                 }
             }
             else
@@ -1007,10 +936,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
         #endregion
 
-        // ═══════════════════════════════════════════════════════════════
-        // REGIÓN: EVENTOS DE CONTROLES
-        // ═══════════════════════════════════════════════════════════════
-
+        // =========================================================
+        // EVENTOS DE CONTROLES
+        // =========================================================
         #region Eventos de Controles
 
         private void CboMoneda_SelectedIndexChanged(object sender, EventArgs e)
@@ -1221,10 +1149,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             }
         }
 
-        /// <summary>
-        /// Construye y aplica el placeholder para txtNumeroNCF según el tipo seleccionado en cboTipoNCF.
-        /// Ej.: "B01 00000000" (11 chars) o "E31 0000000000" (13 chars).
-        /// </summary>
         private void SetNumeroNCFPlaceholder()
         {
             if (txtNumeroNCF == null || cboTipoNCF == null)
@@ -1255,12 +1179,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             numeroNCFPlaceholderActivo = true;
         }
 
-        /// <summary>
-        /// Devuelve la longitud total esperada para el NCF según la Serie del tipo seleccionado:
-        /// - Serie "B" => 11
-        /// - Serie "E" => 13
-        /// Si no puede determinar, devuelve 11 por defecto.
-        /// </summary>
         private int GetNCFExpectedLength()
         {
             try
@@ -1280,7 +1198,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             }
             catch
             {
-                // ignore y fallback
             }
 
             return 11;
@@ -1319,7 +1236,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             }
             catch
             {
-                // fallback silencioso
             }
 
             return null;
@@ -1551,9 +1467,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
         #endregion
 
-        // ═══════════════════════════════════════════════════════════════
+        // =========================================================
         // ABRIR MINI-FORM AGREGAR FIDEICOMISO
-        // ═══════════════════════════════════════════════════════════════
+        // =========================================================
         private void BtnAgregarFideicomiso_Click(object sender, EventArgs e)
         {
             using (FormAgregarFideicomiso form = new FormAgregarFideicomiso(this))
@@ -1561,31 +1477,85 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 if (form.ShowDialog() == DialogResult.OK)
                 {
                     // El mini-form ya refrescó los datos y seleccionó el fideicomiso
-                    // No es necesario hacer nada adicional aquí
                 }
             }
         }
 
-        // ═══════════════════════════════════════════════════════════════
+        // =========================================================
+        // ABRIR MINI-FORM AGREGAR PROVEEDOR
+        // =========================================================
+        private void BtnAgregarProveedor_Click(object sender, EventArgs e)
+        {
+            using (FormAgregarProveedor form = new FormAgregarProveedor(this))
+            {
+                form.ShowDialog();
+                // FormAgregarProveedor invoca RefrescarProveedores en padre cuando corresponde.
+            }
+        }
+
+        // =========================================================
         // REFRESCAR FIDEICOMISOS DESDE MINI-FORM
-        // ═══════════════════════════════════════════════════════════════
+        // =========================================================
         public void RefrescarFideicomisos(int? fideicomisoIDSeleccionar)
         {
-            // Recargar datos desde BD
             CargarFideicomisos();
 
-            // Si se especificó un ID, seleccionarlo
             if (fideicomisoIDSeleccionar.HasValue)
             {
                 cboFideicomiso.SelectedValue = fideicomisoIDSeleccionar.Value;
             }
             else
             {
-                // Limpiar selección (por ejemplo, si se eliminó el fideicomiso actual)
                 txtCodigoFideicomiso.Text = string.Empty;
                 cboFideicomiso.SelectedIndex = -1;
                 lblRNCFideicomiso.Text = "RNC: ---";
             }
+        }
+
+        // =========================================================
+        // REFRESCAR PROVEEDORES DESDE MINI-FORM
+        // =========================================================
+        public void RefrescarProveedores(int? proveedorIDSeleccionar)
+        {
+            // Recargar datos desde BD
+            CargarProveedores();
+            ConfigurarAutocompletadoProveedor();
+
+            if (proveedorIDSeleccionar.HasValue)
+            {
+                // Seleccionar después del rebind en el hilo UI
+                this.BeginInvoke(new Action(() =>
+                {
+                    try
+                    {
+                        cboProveedor.SelectedValue = proveedorIDSeleccionar.Value;
+                    }
+                    catch
+                    {
+                        cboProveedor.SelectedIndex = -1;
+                    }
+                }));
+            }
+            else
+            {
+                txtRNCProveedor.Text = string.Empty;
+                cboProveedor.SelectedIndex = -1;
+                lblTelefonoProveedor.Text = "Tel: ---";
+            }
+        }
+
+        // =========================================================
+        // Helper para formatear teléfono para display (lbl)
+        // =========================================================
+        private string FormatPhone(string digits)
+        {
+            if (string.IsNullOrWhiteSpace(digits)) return string.Empty;
+            string d = Regex.Replace(digits, @"\D", string.Empty);
+            if (d.Length == 10)
+                return $"({d.Substring(0,3)}) {d.Substring(3,3)}-{d.Substring(6,4)}";
+            if (d.Length == 7)
+                return $"{d.Substring(0,3)}-{d.Substring(3,4)}";
+            return digits;
         }
     }
 }
