@@ -26,68 +26,88 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
         private void InitControl()
         {
-            // Tarjeta más compacta, con fuente más grande para legibilidad
+            // Tarjeta compacta con padding para evitar recortes del botón
             this.Height = 36;
             this.Width = 120;
             this.Margin = new Padding(4);
             this.BackColor = Color.White;
             this.BorderStyle = BorderStyle.FixedSingle;
+            this.Padding = new Padding(4); // espacio interno para que el botón no quede pegado al borde
 
-            lblMain = new Label
-            {
-                AutoEllipsis = true,
-                Location = new Point(6, 4),
-                Size = new Size(this.Width - 34, this.Height - 8),
-                Font = new Font("Segoe UI", 12.5F, FontStyle.Regular),
-                ForeColor = Color.FromArgb(48, 48, 48),
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-            lblMain.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            this.Controls.Add(lblMain);
-
+            // Botón docked a la derecha para que siempre se vea entero
             btnDelete = new Button
             {
                 Text = "X",
-                Size = new Size(20, 20),
+                Width = 28,
+                Dock = DockStyle.Right,
                 BackColor = Color.FromArgb(220, 53, 69),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
-                Location = new Point(this.Width - 26, 6)
+                Margin = new Padding(6, 4, 4, 4)
             };
             btnDelete.FlatAppearance.BorderSize = 0;
-            btnDelete.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnDelete.Visible = false;
             btnDelete.Click += (s, e) => RemoveRequested?.Invoke(this, EventArgs.Empty);
             this.Controls.Add(btnDelete);
+            btnDelete.BringToFront();
 
-            // Mostrar el botón X al pasar el ratón
+            // Label ocupa el resto del espacio
+            lblMain = new Label
+            {
+                AutoEllipsis = true,
+                Dock = DockStyle.Fill,
+                Font = new Font("Segoe UI", 12.5F, FontStyle.Regular),
+                ForeColor = Color.FromArgb(48, 48, 48),
+                TextAlign = ContentAlignment.MiddleLeft,
+                Margin = new Padding(4, 4, 4, 4)
+            };
+            this.Controls.Add(lblMain);
+            lblMain.BringToFront();
+
+            // Mostrar el botón X al pasar el ratón (control o label)
             this.MouseEnter += (s, e) => btnDelete.Visible = true;
             this.MouseLeave += (s, e) =>
             {
                 var pt = this.PointToClient(Cursor.Position);
-                if (!btnDelete.Bounds.Contains(pt))
+                // si el cursor no está sobre el botón ni dentro del control, ocultar
+                if (!btnDelete.Bounds.Contains(pt) && !this.ClientRectangle.Contains(pt))
                     btnDelete.Visible = false;
+                else
+                {
+                    // si está dentro del control pero no sobre el botón, dejamos visible solo si el cursor está dentro
+                    if (!btnDelete.Bounds.Contains(pt) && this.ClientRectangle.Contains(pt))
+                        btnDelete.Visible = true;
+                }
             };
 
+            // También manejar hover del label y del botón para evitar flicker
             lblMain.MouseEnter += (s, e) => btnDelete.Visible = true;
             lblMain.MouseLeave += (s, e) =>
             {
                 var pt = this.PointToClient(Cursor.Position);
-                if (!btnDelete.Bounds.Contains(pt))
+                if (!btnDelete.Bounds.Contains(pt) && !this.ClientRectangle.Contains(pt))
+                    btnDelete.Visible = false;
+            };
+
+            btnDelete.MouseEnter += (s, e) => btnDelete.Visible = true;
+            btnDelete.MouseLeave += (s, e) =>
+            {
+                var pt = this.PointToClient(Cursor.Position);
+                if (!this.ClientRectangle.Contains(pt))
                     btnDelete.Visible = false;
             };
 
             // Ajuste responsivo al cambiar tamaño
             this.Resize += (s, e) =>
             {
-                lblMain.Width = Math.Max(40, this.Width - 34);
-                btnDelete.Location = new Point(this.Width - 26, 6);
+                // si quieres botones más grandes en anchos mayores puedes ajustar Width aquí
+                if (this.Width > 140) btnDelete.Width = 30; else btnDelete.Width = 28;
             };
         }
 
         private void UpdateDisplay()
         {
-            // Mostrar sólo el comprobante completo (prefijo + secuencial) para ocupar menos espacio
+            // Mostrar sólo el comprobante completo (prefijo + secuencial)
             lblMain.Text = NumeroNCF;
         }
     }

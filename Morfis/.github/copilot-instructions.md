@@ -15,6 +15,7 @@
 - Al usar TextChanged para autocompletar cboProveedor/cboFideicomiso, evitar usar ComboBox.SelectedValue porque ValueMember puede no estar configurado aún; en su lugar, buscar el DataRowView en cbo.Items y asignar SelectedIndex para evitar InvalidOperationException.
 - Expandir el límite de comprobantes a 25 y crear una UI de comprobantes en formato 5 columnas × 5 filas con control para eliminar por hover (X).
 - Reducir tamaño de tarjeta de comprobante y aumentar la fuente; flpComprobantes debe mostrar 5 columnas (recalcular anchos en Resize).
+- El botón eliminar 'X' en `ComprobanteItemControl` debe mostrarse completamente, docked a la derecha y visible sin cortarse; preferencia por tamaño y padding adecuados para verse bien.
 
 ## Form Validation and User Feedback
 - Usar controles ErrorProvider (errProviderProveedor, errProviderFideicomiso) para validaciones en formularios de miniforms. En FormAgregarFideicomiso, usar el ErrorProvider `errProviderFideicomiso` exclusivamente para mostrar errores (incluyendo excepciones en operaciones BD), evitando MessageBox con MessageBoxIcon.Error; mantener MessageBox solo para confirmaciones y mensajes de éxito/información. Mostrar TODOS los errores y excepciones exclusivamente a través de este ErrorProvider (usar SetError en el control más relevante) y limpiar errores en rutas de éxito.
