@@ -95,6 +95,7 @@
             this.cboTipoComprobante = new System.Windows.Forms.ComboBox();
             this.txtNumeroNCF = new System.Windows.Forms.TextBox();
             this.btnAgregarComprobante = new System.Windows.Forms.Button();
+            this.flpComprobantes = new System.Windows.Forms.FlowLayoutPanel();
             this.gbOtrosMontos = new System.Windows.Forms.GroupBox();
             this.lblOtrosImpuestos = new System.Windows.Forms.Label();
             this.txtHorasExtras = new System.Windows.Forms.TextBox();
@@ -156,7 +157,6 @@
             this.tableOpcionesFirma = new System.Windows.Forms.TableLayoutPanel();
             this.chkIncluirFirma = new System.Windows.Forms.CheckBox();
             this.cboFirma = new System.Windows.Forms.ComboBox();
-            this.flpComprobantes = new System.Windows.Forms.FlowLayoutPanel();
             this.panelBotones.SuspendLayout();
             this.panelTotales.SuspendLayout();
             this.tableTotales.SuspendLayout();
@@ -526,7 +526,7 @@
             this.tableLayoutPrincipal.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
             this.tableLayoutPrincipal.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
             this.tableLayoutPrincipal.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
-            this.tableLayoutPrincipal.Controls.Add(this.gbConcepto, 1, 1);
+            this.tableLayoutPrincipal.Controls.Add(this.gbConcepto, 2, 1);
             this.tableLayoutPrincipal.Controls.Add(this.gbMontos, 0, 2);
             this.tableLayoutPrincipal.Controls.Add(this.gbDatosGenerales, 0, 0);
             this.tableLayoutPrincipal.Controls.Add(this.gbComprobantes, 0, 1);
@@ -537,24 +537,22 @@
             this.tableLayoutPrincipal.Name = "tableLayoutPrincipal";
             this.tableLayoutPrincipal.RowCount = 3;
             this.tableLayoutPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 115F));
-            this.tableLayoutPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.tableLayoutPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 200F));
-            this.tableLayoutPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 170F));
+            this.tableLayoutPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 180F));
             this.tableLayoutPrincipal.Size = new System.Drawing.Size(1900, 517);
             this.tableLayoutPrincipal.TabIndex = 0;
             // 
             // gbConcepto
             // 
-            this.tableLayoutPrincipal.SetColumnSpan(this.gbConcepto, 2);
             this.gbConcepto.Controls.Add(this.panelConcepto);
             this.gbConcepto.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbConcepto.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbConcepto.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
-            this.gbConcepto.Location = new System.Drawing.Point(763, 118);
+            this.gbConcepto.Location = new System.Drawing.Point(1333, 118);
             this.gbConcepto.Name = "gbConcepto";
             this.gbConcepto.Padding = new System.Windows.Forms.Padding(5);
-            this.gbConcepto.Size = new System.Drawing.Size(1134, 144);
-            this.gbConcepto.TabIndex = 10;
+            this.gbConcepto.Size = new System.Drawing.Size(564, 164);
+            this.gbConcepto.TabIndex = 12;
             this.gbConcepto.TabStop = false;
             this.gbConcepto.Text = "📝 CONCEPTO";
             // 
@@ -565,7 +563,7 @@
             this.panelConcepto.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelConcepto.Location = new System.Drawing.Point(5, 27);
             this.panelConcepto.Name = "panelConcepto";
-            this.panelConcepto.Size = new System.Drawing.Size(1124, 112);
+            this.panelConcepto.Size = new System.Drawing.Size(554, 132);
             this.panelConcepto.TabIndex = 0;
             // 
             // txtConcepto
@@ -577,7 +575,7 @@
             this.txtConcepto.Multiline = true;
             this.txtConcepto.Name = "txtConcepto";
             this.txtConcepto.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtConcepto.Size = new System.Drawing.Size(1124, 91);
+            this.txtConcepto.Size = new System.Drawing.Size(554, 111);
             this.txtConcepto.TabIndex = 1;
             // 
             // lblContadorConcepto
@@ -585,7 +583,7 @@
             this.lblContadorConcepto.AutoSize = true;
             this.lblContadorConcepto.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.lblContadorConcepto.ForeColor = System.Drawing.Color.Gray;
-            this.lblContadorConcepto.Location = new System.Drawing.Point(0, 91);
+            this.lblContadorConcepto.Location = new System.Drawing.Point(0, 111);
             this.lblContadorConcepto.Name = "lblContadorConcepto";
             this.lblContadorConcepto.Size = new System.Drawing.Size(151, 21);
             this.lblContadorConcepto.TabIndex = 0;
@@ -598,10 +596,10 @@
             this.gbMontos.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbMontos.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbMontos.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
-            this.gbMontos.Location = new System.Drawing.Point(5, 270);
+            this.gbMontos.Location = new System.Drawing.Point(5, 290);
             this.gbMontos.Margin = new System.Windows.Forms.Padding(5);
             this.gbMontos.Name = "gbMontos";
-            this.gbMontos.Size = new System.Drawing.Size(750, 242);
+            this.gbMontos.Size = new System.Drawing.Size(750, 222);
             this.gbMontos.TabIndex = 5;
             this.gbMontos.TabStop = false;
             this.gbMontos.Text = "💰 SUBTOTALES";
@@ -614,7 +612,7 @@
             this.panelMontos.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelMontos.Location = new System.Drawing.Point(3, 25);
             this.panelMontos.Name = "panelMontos";
-            this.panelMontos.Size = new System.Drawing.Size(744, 214);
+            this.panelMontos.Size = new System.Drawing.Size(744, 194);
             this.panelMontos.TabIndex = 0;
             // 
             // dgvSubtotales
@@ -631,7 +629,7 @@
             this.dgvSubtotales.Name = "dgvSubtotales";
             this.dgvSubtotales.RowHeadersVisible = false;
             this.dgvSubtotales.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvSubtotales.Size = new System.Drawing.Size(744, 161);
+            this.dgvSubtotales.Size = new System.Drawing.Size(744, 141);
             this.dgvSubtotales.TabIndex = 2;
             // 
             // btnAgregarSubtotal
@@ -651,7 +649,7 @@
             // lblSubtotalTotal
             // 
             this.lblSubtotalTotal.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.lblSubtotalTotal.Location = new System.Drawing.Point(0, 189);
+            this.lblSubtotalTotal.Location = new System.Drawing.Point(0, 169);
             this.lblSubtotalTotal.Name = "lblSubtotalTotal";
             this.lblSubtotalTotal.Padding = new System.Windows.Forms.Padding(0, 0, 10, 0);
             this.lblSubtotalTotal.Size = new System.Drawing.Size(744, 25);
@@ -1020,6 +1018,7 @@
             // 
             // gbComprobantes
             // 
+            this.tableLayoutPrincipal.SetColumnSpan(this.gbComprobantes, 2);
             this.gbComprobantes.Controls.Add(this.tableComprobantes);
             this.gbComprobantes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbComprobantes.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -1027,17 +1026,18 @@
             this.gbComprobantes.Location = new System.Drawing.Point(3, 118);
             this.gbComprobantes.Name = "gbComprobantes";
             this.gbComprobantes.Padding = new System.Windows.Forms.Padding(5);
-            this.gbComprobantes.Size = new System.Drawing.Size(754, 144);
+            this.gbComprobantes.Size = new System.Drawing.Size(1324, 164);
             this.gbComprobantes.TabIndex = 1;
             this.gbComprobantes.TabStop = false;
             this.gbComprobantes.Text = "📑 COMPROBANTES";
             // 
             // tableComprobantes
             // 
-            this.tableComprobantes.ColumnCount = 5;
+            this.tableComprobantes.ColumnCount = 6;
             this.tableComprobantes.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableComprobantes.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 170F));
             this.tableComprobantes.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 250F));
+            this.tableComprobantes.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.tableComprobantes.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.tableComprobantes.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableComprobantes.Controls.Add(this.cboTipoNCF, 2, 0);
@@ -1052,7 +1052,7 @@
             this.tableComprobantes.RowCount = 2;
             this.tableComprobantes.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableComprobantes.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableComprobantes.Size = new System.Drawing.Size(744, 112);
+            this.tableComprobantes.Size = new System.Drawing.Size(1314, 132);
             this.tableComprobantes.TabIndex = 0;
             // 
             // cboTipoNCF
@@ -1094,7 +1094,7 @@
             this.txtNumeroNCF.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtNumeroNCF.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtNumeroNCF.Location = new System.Drawing.Point(477, 3);
-            this.txtNumeroNCF.MaxLength = 13;
+            this.txtNumeroNCF.MaxLength = 10;
             this.txtNumeroNCF.Name = "txtNumeroNCF";
             this.txtNumeroNCF.Size = new System.Drawing.Size(144, 29);
             this.txtNumeroNCF.TabIndex = 3;
@@ -1110,10 +1110,20 @@
             this.btnAgregarComprobante.Location = new System.Drawing.Point(629, 3);
             this.btnAgregarComprobante.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.btnAgregarComprobante.Name = "btnAgregarComprobante";
-            this.btnAgregarComprobante.Size = new System.Drawing.Size(110, 29);
+            this.btnAgregarComprobante.Size = new System.Drawing.Size(140, 29);
             this.btnAgregarComprobante.TabIndex = 4;
             this.btnAgregarComprobante.Text = "+ Agregar";
             this.btnAgregarComprobante.UseVisualStyleBackColor = false;
+            // 
+            // flpComprobantes
+            // 
+            this.flpComprobantes.AutoScroll = true;
+            this.tableComprobantes.SetColumnSpan(this.flpComprobantes, 6);
+            this.flpComprobantes.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flpComprobantes.Location = new System.Drawing.Point(3, 38);
+            this.flpComprobantes.Name = "flpComprobantes";
+            this.flpComprobantes.Size = new System.Drawing.Size(1308, 91);
+            this.flpComprobantes.TabIndex = 5;
             // 
             // gbOtrosMontos
             // 
@@ -1131,10 +1141,10 @@
             this.gbOtrosMontos.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbOtrosMontos.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbOtrosMontos.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
-            this.gbOtrosMontos.Location = new System.Drawing.Point(765, 270);
+            this.gbOtrosMontos.Location = new System.Drawing.Point(765, 290);
             this.gbOtrosMontos.Margin = new System.Windows.Forms.Padding(5);
             this.gbOtrosMontos.Name = "gbOtrosMontos";
-            this.gbOtrosMontos.Size = new System.Drawing.Size(560, 242);
+            this.gbOtrosMontos.Size = new System.Drawing.Size(560, 222);
             this.gbOtrosMontos.TabIndex = 6;
             this.gbOtrosMontos.TabStop = false;
             this.gbOtrosMontos.Text = "📊 OTROS MONTOS";
@@ -1143,7 +1153,7 @@
             // 
             this.lblOtrosImpuestos.AutoSize = true;
             this.lblOtrosImpuestos.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lblOtrosImpuestos.Location = new System.Drawing.Point(10, 205);
+            this.lblOtrosImpuestos.Location = new System.Drawing.Point(10, 194);
             this.lblOtrosImpuestos.Name = "lblOtrosImpuestos";
             this.lblOtrosImpuestos.Size = new System.Drawing.Size(138, 21);
             this.lblOtrosImpuestos.TabIndex = 24;
@@ -1153,7 +1163,7 @@
             // txtHorasExtras
             // 
             this.txtHorasExtras.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtHorasExtras.Location = new System.Drawing.Point(167, 155);
+            this.txtHorasExtras.Location = new System.Drawing.Point(167, 145);
             this.txtHorasExtras.Margin = new System.Windows.Forms.Padding(3, 5, 10, 5);
             this.txtHorasExtras.Name = "txtHorasExtras";
             this.txtHorasExtras.Size = new System.Drawing.Size(298, 29);
@@ -1163,7 +1173,7 @@
             // 
             this.lblHorasExtras.AutoSize = true;
             this.lblHorasExtras.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lblHorasExtras.Location = new System.Drawing.Point(10, 158);
+            this.lblHorasExtras.Location = new System.Drawing.Point(10, 148);
             this.lblHorasExtras.Name = "lblHorasExtras";
             this.lblHorasExtras.Size = new System.Drawing.Size(108, 21);
             this.lblHorasExtras.TabIndex = 22;
@@ -1173,7 +1183,7 @@
             // txtDescuento
             // 
             this.txtDescuento.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtDescuento.Location = new System.Drawing.Point(167, 110);
+            this.txtDescuento.Location = new System.Drawing.Point(167, 100);
             this.txtDescuento.Margin = new System.Windows.Forms.Padding(3, 5, 10, 5);
             this.txtDescuento.Name = "txtDescuento";
             this.txtDescuento.Size = new System.Drawing.Size(298, 29);
@@ -1183,7 +1193,7 @@
             // 
             this.lblDescuento.AutoSize = true;
             this.lblDescuento.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lblDescuento.Location = new System.Drawing.Point(10, 110);
+            this.lblDescuento.Location = new System.Drawing.Point(9, 103);
             this.lblDescuento.Name = "lblDescuento";
             this.lblDescuento.Size = new System.Drawing.Size(95, 21);
             this.lblDescuento.TabIndex = 20;
@@ -1193,7 +1203,7 @@
             // txtDireccionTecnica
             // 
             this.txtDireccionTecnica.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtDireccionTecnica.Location = new System.Drawing.Point(167, 65);
+            this.txtDireccionTecnica.Location = new System.Drawing.Point(167, 55);
             this.txtDireccionTecnica.Margin = new System.Windows.Forms.Padding(3, 5, 10, 5);
             this.txtDireccionTecnica.Name = "txtDireccionTecnica";
             this.txtDireccionTecnica.Size = new System.Drawing.Size(298, 29);
@@ -1223,7 +1233,7 @@
             // 
             this.lblDireccionTecnica.AutoSize = true;
             this.lblDireccionTecnica.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lblDireccionTecnica.Location = new System.Drawing.Point(9, 68);
+            this.lblDireccionTecnica.Location = new System.Drawing.Point(9, 58);
             this.lblDireccionTecnica.Name = "lblDireccionTecnica";
             this.lblDireccionTecnica.Size = new System.Drawing.Size(148, 21);
             this.lblDireccionTecnica.TabIndex = 18;
@@ -1233,7 +1243,7 @@
             // txtOtrosImpuestos
             // 
             this.txtOtrosImpuestos.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtOtrosImpuestos.Location = new System.Drawing.Point(167, 200);
+            this.txtOtrosImpuestos.Location = new System.Drawing.Point(167, 190);
             this.txtOtrosImpuestos.Name = "txtOtrosImpuestos";
             this.txtOtrosImpuestos.Size = new System.Drawing.Size(298, 29);
             this.txtOtrosImpuestos.TabIndex = 17;
@@ -1245,7 +1255,7 @@
             this.button4.FlatAppearance.BorderSize = 0;
             this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button4.ForeColor = System.Drawing.Color.White;
-            this.button4.Location = new System.Drawing.Point(473, 199);
+            this.button4.Location = new System.Drawing.Point(471, 189);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(33, 30);
             this.button4.TabIndex = 25;
@@ -1267,10 +1277,10 @@
             this.gbNotasCRDB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbNotasCRDB.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbNotasCRDB.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
-            this.gbNotasCRDB.Location = new System.Drawing.Point(1335, 270);
+            this.gbNotasCRDB.Location = new System.Drawing.Point(1335, 290);
             this.gbNotasCRDB.Margin = new System.Windows.Forms.Padding(5);
             this.gbNotasCRDB.Name = "gbNotasCRDB";
-            this.gbNotasCRDB.Size = new System.Drawing.Size(560, 242);
+            this.gbNotasCRDB.Size = new System.Drawing.Size(560, 222);
             this.gbNotasCRDB.TabIndex = 7;
             this.gbNotasCRDB.TabStop = false;
             this.gbNotasCRDB.Text = "📋 NOTAS CR/DB Y AVANCES";
@@ -1278,7 +1288,7 @@
             // txtAvancePagar
             // 
             this.txtAvancePagar.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtAvancePagar.Location = new System.Drawing.Point(132, 189);
+            this.txtAvancePagar.Location = new System.Drawing.Point(132, 180);
             this.txtAvancePagar.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.txtAvancePagar.Name = "txtAvancePagar";
             this.txtAvancePagar.Size = new System.Drawing.Size(321, 29);
@@ -1288,7 +1298,7 @@
             // 
             this.lblAvancePagar.AutoSize = true;
             this.lblAvancePagar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lblAvancePagar.Location = new System.Drawing.Point(5, 192);
+            this.lblAvancePagar.Location = new System.Drawing.Point(6, 183);
             this.lblAvancePagar.Name = "lblAvancePagar";
             this.lblAvancePagar.Size = new System.Drawing.Size(119, 21);
             this.lblAvancePagar.TabIndex = 20;
@@ -1298,7 +1308,7 @@
             // txtAnticipo
             // 
             this.txtAnticipo.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtAnticipo.Location = new System.Drawing.Point(132, 136);
+            this.txtAnticipo.Location = new System.Drawing.Point(132, 130);
             this.txtAnticipo.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.txtAnticipo.Name = "txtAnticipo";
             this.txtAnticipo.Size = new System.Drawing.Size(321, 29);
@@ -1308,7 +1318,7 @@
             // 
             this.lblAnticipo.AutoSize = true;
             this.lblAnticipo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lblAnticipo.Location = new System.Drawing.Point(5, 139);
+            this.lblAnticipo.Location = new System.Drawing.Point(8, 133);
             this.lblAnticipo.Name = "lblAnticipo";
             this.lblAnticipo.Size = new System.Drawing.Size(79, 21);
             this.lblAnticipo.TabIndex = 18;
@@ -1322,7 +1332,7 @@
             this.btnConfigND.FlatAppearance.BorderSize = 0;
             this.btnConfigND.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnConfigND.ForeColor = System.Drawing.Color.White;
-            this.btnConfigND.Location = new System.Drawing.Point(458, 83);
+            this.btnConfigND.Location = new System.Drawing.Point(458, 77);
             this.btnConfigND.Margin = new System.Windows.Forms.Padding(2, 5, 5, 5);
             this.btnConfigND.Name = "btnConfigND";
             this.btnConfigND.Size = new System.Drawing.Size(33, 30);
@@ -1333,7 +1343,7 @@
             // txtNotaDebito
             // 
             this.txtNotaDebito.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtNotaDebito.Location = new System.Drawing.Point(132, 83);
+            this.txtNotaDebito.Location = new System.Drawing.Point(132, 80);
             this.txtNotaDebito.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.txtNotaDebito.Name = "txtNotaDebito";
             this.txtNotaDebito.Size = new System.Drawing.Size(321, 29);
@@ -1343,7 +1353,7 @@
             // 
             this.lblNotaDebito.AutoSize = true;
             this.lblNotaDebito.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lblNotaDebito.Location = new System.Drawing.Point(5, 86);
+            this.lblNotaDebito.Location = new System.Drawing.Point(6, 82);
             this.lblNotaDebito.Name = "lblNotaDebito";
             this.lblNotaDebito.Size = new System.Drawing.Size(108, 21);
             this.lblNotaDebito.TabIndex = 15;
@@ -1357,7 +1367,7 @@
             this.btnConfigNC.FlatAppearance.BorderSize = 0;
             this.btnConfigNC.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnConfigNC.ForeColor = System.Drawing.Color.White;
-            this.btnConfigNC.Location = new System.Drawing.Point(458, 30);
+            this.btnConfigNC.Location = new System.Drawing.Point(460, 30);
             this.btnConfigNC.Margin = new System.Windows.Forms.Padding(2, 5, 5, 5);
             this.btnConfigNC.Name = "btnConfigNC";
             this.btnConfigNC.Size = new System.Drawing.Size(33, 30);
@@ -1369,7 +1379,7 @@
             // 
             this.lblNotaCredito.AutoSize = true;
             this.lblNotaCredito.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lblNotaCredito.Location = new System.Drawing.Point(5, 32);
+            this.lblNotaCredito.Location = new System.Drawing.Point(8, 35);
             this.lblNotaCredito.Name = "lblNotaCredito";
             this.lblNotaCredito.Size = new System.Drawing.Size(112, 21);
             this.lblNotaCredito.TabIndex = 12;
@@ -1841,16 +1851,6 @@
             this.cboFirma.Size = new System.Drawing.Size(405, 29);
             this.cboFirma.TabIndex = 1;
             // 
-            // flpComprobantes
-            // 
-            this.flpComprobantes.AutoScroll = true;
-            this.tableComprobantes.SetColumnSpan(this.flpComprobantes, 5);
-            this.flpComprobantes.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flpComprobantes.Location = new System.Drawing.Point(3, 38);
-            this.flpComprobantes.Name = "flpComprobantes";
-            this.flpComprobantes.Size = new System.Drawing.Size(738, 71);
-            this.flpComprobantes.TabIndex = 5;
-            // 
             // FormSolicitudPago
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1996,10 +1996,6 @@
         private System.Windows.Forms.TableLayoutPanel tableOpcionesFirma;
         private System.Windows.Forms.CheckBox chkIncluirFirma;
         private System.Windows.Forms.ComboBox cboFirma;
-        private System.Windows.Forms.GroupBox gbConcepto;
-        private System.Windows.Forms.Panel panelConcepto;
-        private System.Windows.Forms.TextBox txtConcepto;
-        private System.Windows.Forms.Label lblContadorConcepto;
         private System.Windows.Forms.Panel panelTasaExterno;
         private System.Windows.Forms.Label lblNumeroExterno;
         private System.Windows.Forms.TextBox txtNumeroExterno;
@@ -2045,5 +2041,9 @@
         private System.Windows.Forms.CheckBox chkRetAFP;
         private System.Windows.Forms.CheckBox chkRetSFS;
         private System.Windows.Forms.FlowLayoutPanel flpComprobantes;
+        private System.Windows.Forms.GroupBox gbConcepto;
+        private System.Windows.Forms.Panel panelConcepto;
+        private System.Windows.Forms.TextBox txtConcepto;
+        private System.Windows.Forms.Label lblContadorConcepto;
     }
 }

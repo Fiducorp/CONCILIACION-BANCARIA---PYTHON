@@ -176,6 +176,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             txtNumeroNCF.Enter += TxtNumeroNCF_Enter;
             txtNumeroNCF.Leave += TxtNumeroNCF_Leave;
 
+            // Evento de Comprobante (nuevo handler)
+            cboTipoComprobante.SelectedIndexChanged += CboTipoComprobante_SelectedIndexChanged;
+
             // -------------------------------------------------------
             // Restricciones de entrada NUMÉRICA - solo para los
             // campos solicitados (KeyPress + TextChanged sanitizador)
@@ -1248,6 +1251,30 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         private void CboTipoNCF_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Actualizar placeholder cada vez que cambia el tipo de NCF seleccionado
+            // Pero solo mostrar la advertencia si la acción fue iniciada por el usuario (control con foco),
+            // para evitar mensajes al cargar/cargar datos programáticamente.
+            try
+            {
+                bool tipoComprobanteEsNCF = false;
+                if (cboTipoComprobante != null && cboTipoComprobante.SelectedItem is System.Data.DataRowView drvTipo)
+                {
+                    if (drvTipo.Row.Table.Columns.Contains("RequiereNCF"))
+                        tipoComprobanteEsNCF = Convert.ToBoolean(drvTipo["RequiereNCF"]);
+                    if (!tipoComprobanteEsNCF && drvTipo["Nombre"]?.ToString().Trim().Equals("NCF", StringComparison.OrdinalIgnoreCase) == true)
+                        tipoComprobanteEsNCF = true;
+                }
+
+                // Solo advertir si el usuario realmente interactuó con cboTipoNCF (tiene foco)
+                if (!tipoComprobanteEsNCF && cboTipoNCF != null && cboTipoNCF.SelectedIndex >= 0 && cboTipoNCF.Focused)
+                {
+                    MessageBox.Show("Nota: ha seleccionado un tipo de NCF, pero el tipo de comprobante actual no es 'NCF'. El tipo de NCF seleccionado no se aplicará automáticamente. Aún puede ingresar un número o referencia en el campo y agregar el comprobante.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch
+            {
+                // silencioso en caso de error
+            }
+
             SetNumeroNCFPlaceholder();
         }
 
@@ -1686,6 +1713,35 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             if (d.Length == 7)
                 return $"{d.Substring(0,3)}-{d.Substring(3,4)}";
             return digits;
+        }
+
+        private void CboTipoComprobante_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Si el usuario cambia el TipoComprobante a una opción que NO sea NCF,
+            // limpiamos la selección de cboTipoNCF (si tenía alguna) pero no lo deshabilitamos.
+            bool requiereNCF = false;
+            try
+            {
+                if (cboTipoComprobante.SelectedItem is System.Data.DataRowView drvTipo)
+                {
+                    if (drvTipo.Row.Table.Columns.Contains("RequiereNCF"))
+                        requiereNCF = Convert.ToBoolean(drvTipo["RequiereNCF"]);
+                    if (!requiereNCF && drvTipo["Nombre"]?.ToString().Trim().Equals("NCF", StringComparison.OrdinalIgnoreCase) == true)
+                        requiereNCF = true;
+                }
+            }
+            catch { }
+
+            if (!requiereNCF)
+            {
+                // limpiar selección solo si había una
+                if (cboTipoNCF != null && cboTipoNCF.SelectedIndex >= 0)
+                {
+                    cboTipoNCF.SelectedIndex = -1;
+                    // restablecer placeholder (si lo deseas)
+                    SetNumeroNCFPlaceholder();
+                }
+            }
         }
     }
 }

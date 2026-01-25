@@ -20,25 +20,27 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             TipoNCF = tipoNCF;
             NumeroNCF = numeroNCF ?? string.Empty;
 
-            InitializeComponents();
+            InitControl();
             UpdateDisplay();
         }
 
-        private void InitializeComponents()
+        private void InitControl()
         {
-            this.Height = 56;
-            this.Width = 180;
-            this.Margin = new Padding(6);
+            // Tarjeta más compacta, con fuente más grande para legibilidad
+            this.Height = 36;
+            this.Width = 120;
+            this.Margin = new Padding(4);
             this.BackColor = Color.White;
             this.BorderStyle = BorderStyle.FixedSingle;
 
             lblMain = new Label
             {
                 AutoEllipsis = true,
-                Location = new Point(8, 6),
-                Size = new Size(this.Width - 36, 44),
-                Font = new Font("Segoe UI", 9F, FontStyle.Regular),
-                ForeColor = Color.FromArgb(48, 48, 48)
+                Location = new Point(6, 4),
+                Size = new Size(this.Width - 34, this.Height - 8),
+                Font = new Font("Segoe UI", 12.5F, FontStyle.Regular),
+                ForeColor = Color.FromArgb(48, 48, 48),
+                TextAlign = ContentAlignment.MiddleLeft
             };
             lblMain.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             this.Controls.Add(lblMain);
@@ -46,11 +48,11 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             btnDelete = new Button
             {
                 Text = "X",
-                Size = new Size(24, 24),
+                Size = new Size(20, 20),
                 BackColor = Color.FromArgb(220, 53, 69),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
-                Location = new Point(this.Width - 30, 4)
+                Location = new Point(this.Width - 26, 6)
             };
             btnDelete.FlatAppearance.BorderSize = 0;
             btnDelete.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -62,13 +64,11 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             this.MouseEnter += (s, e) => btnDelete.Visible = true;
             this.MouseLeave += (s, e) =>
             {
-                // si el ratón sale del control y no está encima del botón ocultarlo
                 var pt = this.PointToClient(Cursor.Position);
                 if (!btnDelete.Bounds.Contains(pt))
                     btnDelete.Visible = false;
             };
 
-            // También mostrar X cuando mouse entra en la etiqueta
             lblMain.MouseEnter += (s, e) => btnDelete.Visible = true;
             lblMain.MouseLeave += (s, e) =>
             {
@@ -80,17 +80,15 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             // Ajuste responsivo al cambiar tamaño
             this.Resize += (s, e) =>
             {
-                lblMain.Width = Math.Max(60, this.Width - 36);
-                btnDelete.Location = new Point(this.Width - 30, 4);
+                lblMain.Width = Math.Max(40, this.Width - 34);
+                btnDelete.Location = new Point(this.Width - 26, 6);
             };
         }
 
         private void UpdateDisplay()
         {
-            if (!string.IsNullOrEmpty(TipoNCF))
-                lblMain.Text = $"{TipoComprobante} · {TipoNCF} · {NumeroNCF}";
-            else
-                lblMain.Text = $"{TipoComprobante} · {NumeroNCF}";
+            // Mostrar sólo el comprobante completo (prefijo + secuencial) para ocupar menos espacio
+            lblMain.Text = NumeroNCF;
         }
     }
 }

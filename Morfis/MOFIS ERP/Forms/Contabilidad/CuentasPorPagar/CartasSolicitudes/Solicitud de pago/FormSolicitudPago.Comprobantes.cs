@@ -8,18 +8,20 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 {
     public partial class FormSolicitudPago
     {
-        private const int MaxComprobantes = 20;
+        private const int MaxComprobantes = 25; // actualizado a 25
+        private const int ComprobantesColumns = 5; // 5 columnas (5x5)
         private List<ComprobanteItem> comprobantes = new List<ComprobanteItem>();
+        private bool flpResizeHooked = false;
 
         private class ComprobanteItem
         {
             public string TipoComprobanteNombre { get; set; }
             public string TipoNCFDisplay { get; set; } // puede ser null
             public string NumeroNCF { get; set; }      // NCF completo (prefijo + secuencial) o referencia
-            public string NumeroSecuencial { get; set; } // sólo la parte secuencial (lo que queda en txtNumeroNCF)
+            public string NumeroSecuencial { get; set; } // sólo la parte secuencial
         }
 
-        // Handler a enlazar en ConfigurarEventos:
+        // Handler a enlazar en ConfigurarEventos():
         // if (btnAgregarComprobante != null) btnAgregarComprobante.Click += BtnAgregarComprobante_Click;
         private void BtnAgregarComprobante_Click(object sender, EventArgs e)
         {
@@ -77,9 +79,10 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                     // Normalizar secuencial: sólo dígitos
                     string sec = Regex.Replace(numeroIngresado, @"\D", string.Empty);
 
-                    if (sec.Length != expectedSeqLen)
+                    // Validar que el usuario haya ingresado solo dígitos (no letras) y longitud esperada
+                    if (!Regex.IsMatch(sec, @"^\d+$") || sec.Length != expectedSeqLen)
                     {
-                        MessageBox.Show($"La parte secuencial debe tener {expectedSeqLen} dígitos (actual: {sec.Length}).", "Validación NCF", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show($"La parte secuencial debe contener exactamente {expectedSeqLen} dígitos numéricos.", "Validación NCF", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         txtNumeroNCF.Focus();
                         return;
                     }
@@ -169,7 +172,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             {
                 try
                 {
-                    // eliminar del modelo
                     var ci = ctl.Tag as ComprobanteItem;
                     if (ci != null)
                     {
@@ -179,19 +181,54 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                             comprobantes.Remove(existing);
                     }
 
-                    // eliminar control visual
                     flpComprobantes.Controls.Remove(ctl);
                     ctl.Dispose();
+
+                    // reajustar anchos después de eliminar
+                    AdjustComprobanteWidths();
                 }
                 catch { }
             };
 
-            // Ajuste de tamaño: preferimos ancho fijo para 5 columnas
-            int ancho = Math.Max(160, (flpComprobantes.ClientSize.Width - 24) / 5);
-            ctl.Width = ancho;
-            ctl.Height = 56;
+            // Márgen reducido para poder ajustar 5 columnas
+            ctl.Margin = new Padding(4);
 
+            // Ajuste de tamaño para 5 columnas usando helper centralizado
             flpComprobantes.Controls.Add(ctl);
+
+            // Hookear resize del FlowLayoutPanel una sola vez
+            if (!flpResizeHooked)
+            {
+                flpResizeHooked = true;
+                flpComprobantes.Resize += (s, e) => AdjustComprobanteWidths();
+            }
+
+            // reajustar anchos inmediatamente
+            AdjustComprobanteWidths();
+        }
+
+        // Recalcula y aplica el ancho ideal para cada control dentro de flpComprobantes
+        private void AdjustComprobanteWidths()
+        {
+            if (flpComprobantes == null) return;
+            if (flpComprobantes.Controls.Count == 0) return;
+
+            // Espacio disponible sin scrollbars (aprox)
+            int totalPadding = flpComprobantes.Padding.Left + flpComprobantes.Padding.Right;
+            int available = flpComprobantes.ClientSize.Width - totalPadding;
+
+            // Calcular ancho por columna considerando márgenes internos de cada control
+            // Tomamos el margen horizontal de un control promedio (left+right)
+            int sampleMargin = 8; // 4 left + 4 right (tal como se estableció)
+            int colWidth = Math.Max(80, (available - (ComprobantesColumns * sampleMargin)) / ComprobantesColumns);
+
+            foreach (Control c in flpComprobantes.Controls)
+            {
+                c.Width = colWidth;
+                // altura ya definida por el control (asegura pequeña tarjeta)
+            }
+
+            flpComprobantes.Invalidate();
         }
 
         // Método público para obtener la lista (si es necesario al guardar)
