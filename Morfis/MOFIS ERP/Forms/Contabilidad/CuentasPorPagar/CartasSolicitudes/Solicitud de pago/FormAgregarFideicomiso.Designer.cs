@@ -60,7 +60,7 @@
             // 
             this.txtCodigo.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtCodigo.Location = new System.Drawing.Point(114, 76);
-            this.txtCodigo.MaxLength = 20;
+            this.txtCodigo.MaxLength = 3;
             this.txtCodigo.Name = "txtCodigo";
             this.txtCodigo.Size = new System.Drawing.Size(100, 33);
             this.txtCodigo.TabIndex = 1;
@@ -182,7 +182,7 @@
             // 
             // btnEliminarFideicomiso
             // 
-            this.btnEliminarFideicomiso.BackColor = System.Drawing.Color.Maroon;
+            this.btnEliminarFideicomiso.BackColor = System.Drawing.Color.Red;
             this.btnEliminarFideicomiso.FlatAppearance.BorderSize = 0;
             this.btnEliminarFideicomiso.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnEliminarFideicomiso.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -213,8 +213,11 @@
             this.Controls.Add(this.txtCodigo);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lblCodigo);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.MaximizeBox = false;
             this.Name = "FormAgregarFideicomiso";
-            this.Text = "FormAgregarFideicomiso";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Agregar Fideicomiso";
             ((System.ComponentModel.ISupportInitialize)(this.errProviderFideicomiso)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

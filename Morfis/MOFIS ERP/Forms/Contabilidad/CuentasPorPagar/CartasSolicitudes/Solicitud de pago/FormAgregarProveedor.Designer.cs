@@ -71,9 +71,9 @@
             this.btnGuardarProveedor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnGuardarProveedor.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnGuardarProveedor.ForeColor = System.Drawing.Color.White;
-            this.btnGuardarProveedor.Location = new System.Drawing.Point(505, 309);
+            this.btnGuardarProveedor.Location = new System.Drawing.Point(475, 309);
             this.btnGuardarProveedor.Name = "btnGuardarProveedor";
-            this.btnGuardarProveedor.Size = new System.Drawing.Size(123, 39);
+            this.btnGuardarProveedor.Size = new System.Drawing.Size(153, 39);
             this.btnGuardarProveedor.TabIndex = 14;
             this.btnGuardarProveedor.Text = "💾 Guardar";
             this.btnGuardarProveedor.UseVisualStyleBackColor = false;
@@ -211,7 +211,7 @@
             // 
             // btnEliminarProveedor
             // 
-            this.btnEliminarProveedor.BackColor = System.Drawing.Color.Maroon;
+            this.btnEliminarProveedor.BackColor = System.Drawing.Color.Red;
             this.btnEliminarProveedor.FlatAppearance.BorderSize = 0;
             this.btnEliminarProveedor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnEliminarProveedor.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -264,7 +264,7 @@
             this.MaximizeBox = false;
             this.Name = "FormAgregarProveedor";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "FormAgregarProveedor";
+            this.Text = "Agregar Proveedor";
             ((System.ComponentModel.ISupportInitialize)(this.errProviderProveedor)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

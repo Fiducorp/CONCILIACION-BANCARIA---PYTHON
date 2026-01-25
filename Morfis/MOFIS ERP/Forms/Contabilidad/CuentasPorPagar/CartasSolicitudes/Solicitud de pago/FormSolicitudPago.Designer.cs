@@ -826,6 +826,7 @@
             this.lblTelefonoProveedor.TabIndex = 5;
             this.lblTelefonoProveedor.Text = "Teléfono Proveedor: ---";
             this.lblTelefonoProveedor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblTelefonoProveedor.UseMnemonic = false;
             // 
             // lblNumeroExterno
             // 
@@ -911,7 +912,7 @@
             this.txtCodigoFideicomiso.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtCodigoFideicomiso.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtCodigoFideicomiso.Location = new System.Drawing.Point(153, 3);
-            this.txtCodigoFideicomiso.MaxLength = 999;
+            this.txtCodigoFideicomiso.MaxLength = 3;
             this.txtCodigoFideicomiso.Name = "txtCodigoFideicomiso";
             this.txtCodigoFideicomiso.Size = new System.Drawing.Size(84, 29);
             this.txtCodigoFideicomiso.TabIndex = 1;
@@ -974,7 +975,7 @@
             this.txtRNCProveedor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtRNCProveedor.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtRNCProveedor.Location = new System.Drawing.Point(1082, 3);
-            this.txtRNCProveedor.MaxLength = 15;
+            this.txtRNCProveedor.MaxLength = 11;
             this.txtRNCProveedor.Name = "txtRNCProveedor";
             this.txtRNCProveedor.Size = new System.Drawing.Size(164, 29);
             this.txtRNCProveedor.TabIndex = 6;

@@ -37,6 +37,10 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         private int tasaIntegerDigits = 2;
         private int tasaDecimalDigits = 6;
 
+        // Flags para evitar eventos recursivos en combos
+        private bool suppressFideicomisoEvents = false;
+        private bool suppressProveedorEvents = false;
+
         // =========================================================
         // CONSTRUCTORES
         // =========================================================
@@ -107,11 +111,13 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         {
             // Eventos de Fideicomiso
             txtCodigoFideicomiso.Leave += TxtCodigoFideicomiso_Leave;
+            txtCodigoFideicomiso.TextChanged += TxtCodigoFideicomiso_TextChanged;
             cboFideicomiso.SelectedIndexChanged += CboFideicomiso_SelectedIndexChanged;
 
             // Eventos de Proveedor
             txtRNCProveedor.Enter += TxtRNCProveedor_Enter;
             txtRNCProveedor.Leave += TxtRNCProveedor_Leave;
+            txtRNCProveedor.TextChanged += TxtRNCProveedor_TextChanged;
             cboProveedor.SelectedIndexChanged += CboProveedor_SelectedIndexChanged;
 
             // Evento de Moneda (mostrar/ocultar tasa)
@@ -735,11 +741,19 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                     da.Fill(dtFideicomisos);
                 }
 
+                suppressFideicomisoEvents = true;
                 cboFideicomiso.DataSource = null;
                 cboFideicomiso.DisplayMember = "Nombre";
                 cboFideicomiso.ValueMember = "FideicomisoID";
                 cboFideicomiso.DataSource = dtFideicomisos;
                 cboFideicomiso.SelectedIndex = -1;
+                txtCodigoFideicomiso.Text = string.Empty;
+                lblRNCFideicomiso.Text = "RNC: ---";
+                suppressFideicomisoEvents = false;
+
+                // opcional: asegurar que txtCodigoFideicomiso comienza vacío
+                txtCodigoFideicomiso.Text = string.Empty;
+                lblRNCFideicomiso.Text = "RNC: ---";
             }
             catch (Exception ex)
             {
@@ -790,23 +804,76 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             }
         }
 
+        private void TxtCodigoFideicomiso_TextChanged(object sender, EventArgs e)
+        {
+            if (suppressFideicomisoEvents) return;
+            if (dtFideicomisos == null || dtFideicomisos.Rows.Count == 0) return;
+
+            string codigo = txtCodigoFideicomiso.Text.Trim();
+            if (string.IsNullOrEmpty(codigo))
+            {
+                suppressFideicomisoEvents = true;
+                cboFideicomiso.SelectedIndex = -1;
+                lblRNCFideicomiso.Text = "RNC: ---";
+                suppressFideicomisoEvents = false;
+                return;
+            }
+
+            // Buscar solo coincidencia exacta (no prefijos)
+            string esc = codigo.Replace("'", "''");
+            DataRow[] rows = dtFideicomisos.Select($"Codigo = '{esc}'");
+
+            if (rows.Length > 0)
+            {
+                int fideicomisoID = Convert.ToInt32(rows[0]["FideicomisoID"]);
+
+                // seleccionar por índice (seguro en cualquier momento del binding)
+                int indexToSelect = -1;
+                for (int i = 0; i < cboFideicomiso.Items.Count; i++)
+                {
+                    if (cboFideicomiso.Items[i] is DataRowView drv && Convert.ToInt32(drv["FideicomisoID"]) == fideicomisoID)
+                    {
+                        indexToSelect = i;
+                        break;
+                    }
+                }
+
+                if (indexToSelect >= 0)
+                {
+                    suppressFideicomisoEvents = true;
+                    cboFideicomiso.SelectedIndex = indexToSelect;
+                    suppressFideicomisoEvents = false;
+                }
+
+                string rncRaw = rows[0]["RNC"]?.ToString() ?? string.Empty;
+                lblRNCFideicomiso.Text = string.IsNullOrEmpty(rncRaw) ? "RNC: ---" : $"RNC: {FormatearRNC(rncRaw)}";
+            }
+            else
+            {
+                lblRNCFideicomiso.Text = "RNC: No encontrado";
+                suppressFideicomisoEvents = true;
+                cboFideicomiso.SelectedIndex = -1;
+                suppressFideicomisoEvents = false;
+            }
+        }
+
         private void CboFideicomiso_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (suppressFideicomisoEvents) return;
+
             if (cboFideicomiso.SelectedIndex >= 0 && cboFideicomiso.SelectedValue != null)
             {
-                // Obtener la fila seleccionada
                 DataRowView drv = cboFideicomiso.SelectedItem as DataRowView;
-
                 if (drv != null)
                 {
-                    // Actualizar código
-                    txtCodigoFideicomiso.Text = drv["Codigo"].ToString();
+                    // Solo actualizar txtCodigoFideicomiso si el combo tiene el foco (usuario seleccionó)
+                    if (cboFideicomiso.Focused)
+                    {
+                        txtCodigoFideicomiso.Text = drv["Codigo"].ToString();
+                    }
 
-                    // CAMBIO APLICADO AQUÍ: Actualizar y Formatear RNC
                     string rnc = drv["RNC"].ToString();
-                    lblRNCFideicomiso.Text = string.IsNullOrEmpty(rnc)
-                        ? "RNC: ---"
-                        : $"RNC: {FormatearRNC(rnc)}";
+                    lblRNCFideicomiso.Text = string.IsNullOrEmpty(rnc) ? "RNC: ---" : $"RNC: {FormatearRNC(rnc)}";
                 }
             }
             else
@@ -910,18 +977,74 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             txtRNCProveedor.Text = FormatRncDisplay(documento);
         }
 
+        private void TxtRNCProveedor_TextChanged(object sender, EventArgs e)
+        {
+            if (suppressProveedorEvents) return;
+            if (dtProveedores == null || dtProveedores.Rows.Count == 0) return;
+
+            string documento = Regex.Replace(txtRNCProveedor.Text ?? string.Empty, @"\D", string.Empty);
+
+            if (string.IsNullOrEmpty(documento))
+            {
+                suppressProveedorEvents = true;
+                cboProveedor.SelectedIndex = -1;
+                lblTelefonoProveedor.Text = "Tel: ---";
+                suppressProveedorEvents = false;
+                return;
+            }
+
+            // Buscar solo coincidencia exacta (NumeroDocumentoClean)
+            DataRow[] rows = dtProveedores.Select($"NumeroDocumentoClean = '{documento}'");
+
+            if (rows.Length > 0)
+            {
+                int proveedorID = Convert.ToInt32(rows[0]["ProveedorID"]);
+
+                // seleccionar por índice (evita dependencia de ValueMember en momentos de rebinding)
+                int indexToSelect = -1;
+                for (int i = 0; i < cboProveedor.Items.Count; i++)
+                {
+                    if (cboProveedor.Items[i] is DataRowView drv && Convert.ToInt32(drv["ProveedorID"]) == proveedorID)
+                    {
+                        indexToSelect = i;
+                        break;
+                    }
+                }
+
+                if (indexToSelect >= 0)
+                {
+                    suppressProveedorEvents = true;
+                    cboProveedor.SelectedIndex = indexToSelect;
+                    suppressProveedorEvents = false;
+                }
+
+                string telefono = rows[0]["Telefono"]?.ToString();
+                lblTelefonoProveedor.Text = string.IsNullOrEmpty(telefono) ? "Tel: ---" : $"Tel: {FormatPhone(telefono)}";
+            }
+            else
+            {
+                lblTelefonoProveedor.Text = "Tel: No encontrado";
+                suppressProveedorEvents = true;
+                cboProveedor.SelectedIndex = -1;
+                suppressProveedorEvents = false;
+            }
+        }
+
         private void CboProveedor_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (suppressProveedorEvents) return;
+
             if (cboProveedor.SelectedIndex >= 0 && cboProveedor.SelectedValue != null)
             {
-                // Obtener la fila seleccionada
                 DataRowView drv = cboProveedor.SelectedItem as DataRowView;
-
                 if (drv != null)
                 {
-                    // Actualizar RNC/Cédula en formato visual apropiado
-                    string numeroRaw = drv["NumeroDocumento"]?.ToString() ?? string.Empty;
-                    txtRNCProveedor.Text = FormatRncDisplay(numeroRaw);
+                    // Solo actualizar txtRNCProveedor si el combo tiene el foco (usuario seleccionó)
+                    if (cboProveedor.Focused)
+                    {
+                        string numeroRaw = drv["NumeroDocumento"]?.ToString() ?? string.Empty;
+                        txtRNCProveedor.Text = FormatRncDisplay(numeroRaw);
+                    }
 
                     // Actualizar teléfono
                     string telefono = drv["Telefono"]?.ToString();

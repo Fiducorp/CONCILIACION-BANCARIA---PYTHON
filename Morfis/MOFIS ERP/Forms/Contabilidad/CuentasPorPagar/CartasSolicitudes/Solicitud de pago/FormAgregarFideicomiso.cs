@@ -78,6 +78,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             txtCodigo.TextChanged += Txt_CambioDetectado;
             txtNombre.TextChanged += Txt_CambioDetectado;
             txtRNC.TextChanged += Txt_CambioDetectado;
+            cboTipoFideicomiso.SelectedIndexChanged += (s, e) => Txt_CambioDetectado(s, e);
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -107,8 +108,8 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar tipos de fideicomiso: {ex.Message}",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (errProviderFideicomiso != null)
+                    errProviderFideicomiso.SetError(btnGuardarFideicomiso, $"Error cargando tipos: {ex.Message}");
             }
         }
 
@@ -117,17 +118,15 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
         // ═══════════════════════════════════════════════════════════════
         private void BtnBuscarCodigo_Click(object sender, EventArgs e)
         {
-            string codigo = txtCodigo.Text.Trim();
-
-            if (string.IsNullOrEmpty(codigo))
+            if (string.IsNullOrWhiteSpace(txtCodigo.Text))
             {
-                MessageBox.Show("Ingrese un código para buscar.",
-                    "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (errProviderFideicomiso != null) errProviderFideicomiso.SetError(txtCodigo, "Ingrese un código para buscar.");
                 txtCodigo.Focus();
                 return;
             }
 
-            BuscarYCargarFideicomiso(codigo);
+            if (errProviderFideicomiso != null) errProviderFideicomiso.SetError(txtCodigo, string.Empty);
+            BuscarYCargarFideicomiso(txtCodigo.Text.Trim());
         }
 
         private void BuscarYCargarFideicomiso(string codigo)
@@ -172,14 +171,13 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
 
                                 // Cambiar a modo modificación
                                 EstablecerModoModificacion();
+                                if (errProviderFideicomiso != null) errProviderFideicomiso.Clear();
 
-                                MessageBox.Show("Fideicomiso cargado correctamente.",
-                                    "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                MessageBox.Show("Fideicomiso cargado correctamente.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             }
                             else
                             {
-                                MessageBox.Show($"No se encontró un fideicomiso con el código '{codigo}'.",
-                                    "No encontrado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                MessageBox.Show($"No se encontró un fideicomiso con el código '{codigo}'.", "No encontrado", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             }
                         }
                     }
@@ -187,8 +185,8 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al buscar fideicomiso: {ex.Message}",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (errProviderFideicomiso != null)
+                    errProviderFideicomiso.SetError(btnBuscarCodigo, $"Error al buscar: {ex.Message}");
             }
         }
 
@@ -197,6 +195,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
         // ═══════════════════════════════════════════════════════════════
         private void BtnGuardarFideicomiso_Click(object sender, EventArgs e)
         {
+            // Limpiar errores previos
+            if (errProviderFideicomiso != null) errProviderFideicomiso.Clear();
+
             // Validar campos obligatorios
             if (!ValidarCampos())
                 return;
@@ -211,11 +212,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             if (cambioCodigoYRNC)
             {
                 // Cambio de código Y RNC = nuevo registro
-                DialogResult result = MessageBox.Show(
-                    "Al cambiar tanto el código como el RNC, se creará un NUEVO fideicomiso.\n\n¿Desea continuar?",
-                    "Nuevo Registro",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question);
+                DialogResult result = MessageBox.Show("Al cambiar tanto el código como el RNC, se creará un NUEVO fideicomiso.\n\n¿Desea continuar?", "Nuevo Registro", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (result == DialogResult.Yes)
                 {
@@ -270,16 +267,18 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
 
                         int nuevoID = (int)cmd.ExecuteScalar();
 
-                        // Auditoría
-
+                        // Auditoría (registro coherente)
                         AuditoriaHelper.RegistrarAccion(
+                            SesionActual.UsuarioID,
+                            "CREAR",
+                            "CONTABILIDAD",
+                            "Cuentas por Pagar",
+                            "FormAgregarFideicomiso",
                             nuevoID,
-                            "Fideicomisos",
-                            "INSERT",
-                            $"Nuevo fideicomiso: {codigo} - {nombre}"
+                            $"Codigo={codigo}; Nombre={nombre}; RNC={rnc}; TipoFideicomisoID={(tipoFideicomisoID.HasValue ? tipoFideicomisoID.Value.ToString() : "")}"
                         );
 
-                        // Guardar datos del resultado
+                          // Guardar datos del resultado
                         FideicomisoIDResultado = nuevoID;
                         CodigoResultado = codigo;
                         NombreResultado = nombre;
@@ -288,6 +287,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                         // Refrescar datos en FormSolicitudPago y seleccionar el nuevo
                         formPadre?.RefrescarFideicomisos(nuevoID);
 
+                        MessageBox.Show("Fideicomiso guardado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         this.DialogResult = DialogResult.OK;
                         this.Close();
                     }
@@ -295,8 +295,8 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al guardar fideicomiso: {ex.Message}",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (errProviderFideicomiso != null)
+                    errProviderFideicomiso.SetError(btnGuardarFideicomiso, $"Error guardando: {ex.Message}");
             }
         }
 
@@ -311,9 +311,37 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                     ? (int?)cboTipoFideicomiso.SelectedValue
                     : null;
 
-                // Validar unicidad (excluyendo el registro actual)
                 if (!ValidarUnicidad(codigo, nombre, rnc, fideicomisoIDCargado))
                     return;
+
+                // Leer fila completa antes de actualizar
+                string antesCodigo = string.Empty, antesNombre = string.Empty, antesRNC = string.Empty;
+                string antesTipoID = string.Empty;
+                try
+                {
+                    using (SqlConnection conn = DatabaseConnection.GetConnection())
+                    {
+                        conn.Open();
+                        using (SqlCommand cmd = new SqlCommand("SELECT Codigo, Nombre, RNC, TipoFideicomisoID FROM Fideicomisos WHERE FideicomisoID = @ID", conn))
+                        {
+                            cmd.Parameters.AddWithValue("@ID", fideicomisoIDCargado);
+                            using (var rdr = cmd.ExecuteReader())
+                            {
+                                if (rdr.Read())
+                                {
+                                    antesCodigo = rdr["Codigo"]?.ToString() ?? string.Empty;
+                                    antesNombre = rdr["Nombre"]?.ToString() ?? string.Empty;
+                                    antesRNC = Regex.Replace(rdr["RNC"]?.ToString() ?? string.Empty, @"\D", string.Empty);
+                                    antesTipoID = rdr["TipoFideicomisoID"] == DBNull.Value ? "" : rdr["TipoFideicomisoID"].ToString();
+                                }
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    if (errProviderFideicomiso != null) errProviderFideicomiso.SetError(btnGuardarFideicomiso, "Error leyendo valores previos (auditoría).");
+                }
 
                 using (SqlConnection conn = DatabaseConnection.GetConnection())
                 {
@@ -340,23 +368,29 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
 
                         cmd.ExecuteNonQuery();
 
-                        // Auditoría
+                        // Preparar valores para auditoría fuera de la interpolación
+                        string despuesTipoID = tipoFideicomisoID.HasValue ? tipoFideicomisoID.Value.ToString() : string.Empty;
+                        string detalle = $"Antes: Codigo={antesCodigo}; Nombre={antesNombre}; RNC={antesRNC}; TipoFideicomisoID={antesTipoID} | " +
+                                         $"Después: Codigo={codigo}; Nombre={nombre}; RNC={rnc}; TipoFideicomisoID={despuesTipoID}";
+
                         AuditoriaHelper.RegistrarAccion(
+                            SesionActual.UsuarioID,
+                            "EDITAR",
+                            "CONTABILIDAD",
+                            "Cuentas por Pagar",
+                            "FormAgregarFideicomiso",
                             fideicomisoIDCargado,
-                            "Fideicomisos",
-                            "UPDATE",
-                            $"Modificado: {codigo} - {nombre}"
+                            detalle
                         );
 
-                        // Guardar datos del resultado
                         FideicomisoIDResultado = fideicomisoIDCargado;
                         CodigoResultado = codigo;
                         NombreResultado = nombre;
                         RNCResultado = rnc;
 
-                        // Refrescar datos en FormSolicitudPago y mantener seleccionado
                         formPadre?.RefrescarFideicomisos(fideicomisoIDCargado);
 
+                        MessageBox.Show("Fideicomiso actualizado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         this.DialogResult = DialogResult.OK;
                         this.Close();
                     }
@@ -364,8 +398,8 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al modificar fideicomiso: {ex.Message}",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (errProviderFideicomiso != null)
+                    errProviderFideicomiso.SetError(btnGuardarFideicomiso, $"Error modificando: {ex.Message}");
             }
         }
 
@@ -376,16 +410,11 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
         {
             if (!esModificacion || fideicomisoIDCargado == 0)
             {
-                MessageBox.Show("Debe cargar un fideicomiso antes de eliminarlo.",
-                    "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (errProviderFideicomiso != null) errProviderFideicomiso.SetError(btnEliminarFideicomiso, "Debe cargar un fideicomiso antes de eliminar.");
                 return;
             }
 
-            DialogResult result = MessageBox.Show(
-                $"¿Está seguro que desea eliminar el fideicomiso '{txtNombre.Text}'?\n\nEsta acción no se puede deshacer.",
-                "Confirmar Eliminación",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning);
+            DialogResult result = MessageBox.Show($"¿Está seguro que desea eliminar el fideicomiso '{txtNombre.Text}'?\n\nEsta acción no se puede deshacer.", "Confirmar Eliminación", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
             if (result == DialogResult.Yes)
             {
@@ -414,16 +443,22 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
 
                         cmd.ExecuteNonQuery();
 
-                        // Auditoría
+                        // Preparar valores para auditoría evitando escapes dentro de la interpolación
+                        string codigo = txtCodigo?.Text ?? string.Empty;
+                        string nombre = txtNombre?.Text ?? string.Empty;
+                        string rncClean = Regex.Replace(txtRNC?.Text ?? string.Empty, "\\D", string.Empty);
+
                         AuditoriaHelper.RegistrarAccion(
+                            SesionActual.UsuarioID,
+                            "ELIMINAR",
+                            "CONTABILIDAD",
+                            "Cuentas por Pagar",
+                            "FormAgregarFideicomiso",
                             fideicomisoIDCargado,
-                            "Fideicomisos",
-                            "DELETE",
-                            $"Eliminado: {txtCodigo.Text} - {txtNombre.Text}"
+                            $"Eliminado: Codigo={codigo}; Nombre={nombre}; RNC={rncClean}"
                         );
 
-                        MessageBox.Show("Fideicomiso eliminado exitosamente.",
-                            "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Fideicomiso eliminado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         // Refrescar datos en FormSolicitudPago (esto quitará la selección si estaba seleccionado)
                         formPadre?.RefrescarFideicomisos(null);
@@ -435,8 +470,8 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al eliminar fideicomiso: {ex.Message}",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (errProviderFideicomiso != null)
+                    errProviderFideicomiso.SetError(btnEliminarFideicomiso, $"Error eliminando: {ex.Message}");
             }
         }
 
@@ -445,54 +480,50 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
         // ═══════════════════════════════════════════════════════════════
         private bool ValidarCampos()
         {
-            // Código
+            bool valido = true;
+            if (errProviderFideicomiso != null) errProviderFideicomiso.Clear();
+
             if (string.IsNullOrWhiteSpace(txtCodigo.Text))
             {
-                MessageBox.Show("El código es obligatorio.",
-                    "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (errProviderFideicomiso != null) errProviderFideicomiso.SetError(txtCodigo, "El código es obligatorio.");
                 txtCodigo.Focus();
-                return false;
+                valido = false;
             }
 
-            // Nombre
             if (string.IsNullOrWhiteSpace(txtNombre.Text))
             {
-                MessageBox.Show("El nombre es obligatorio.",
-                    "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtNombre.Focus();
-                return false;
+                if (errProviderFideicomiso != null) errProviderFideicomiso.SetError(txtNombre, "El nombre es obligatorio.");
+                if (valido) txtNombre.Focus();
+                valido = false;
             }
 
-            // RNC
             string rnc = Regex.Replace(txtRNC.Text, @"\D", string.Empty);
             if (string.IsNullOrEmpty(rnc))
             {
-                MessageBox.Show("El RNC es obligatorio.",
-                    "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtRNC.Focus();
-                return false;
+                if (errProviderFideicomiso != null) errProviderFideicomiso.SetError(txtRNC, "El RNC es obligatorio.");
+                if (valido) txtRNC.Focus();
+                valido = false;
             }
-
-            if (rnc.Length != 9)
+            else if (rnc.Length != 9)
             {
-                MessageBox.Show("El RNC debe tener 9 dígitos.",
-                    "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtRNC.Focus();
-                return false;
+                if (errProviderFideicomiso != null) errProviderFideicomiso.SetError(txtRNC, "El RNC debe tener 9 dígitos.");
+                if (valido) txtRNC.Focus();
+                valido = false;
             }
 
-            return true;
+            return valido;
         }
 
         private bool ValidarUnicidad(string codigo, string nombre, string rnc, int? excluirFideicomisoID)
         {
             try
             {
+                if (errProviderFideicomiso != null) errProviderFideicomiso.Clear();
+
                 using (SqlConnection conn = DatabaseConnection.GetConnection())
                 {
                     conn.Open();
 
-                    // Validar código único
                     string queryCodigo = @"SELECT COUNT(*) FROM Fideicomisos 
                                           WHERE Codigo = @Codigo 
                                           AND EsEliminado = 0 
@@ -501,20 +532,17 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                     using (SqlCommand cmd = new SqlCommand(queryCodigo, conn))
                     {
                         cmd.Parameters.AddWithValue("@Codigo", codigo);
-                        cmd.Parameters.AddWithValue("@ExcluirID",
-                            excluirFideicomisoID.HasValue ? (object)excluirFideicomisoID.Value : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ExcluirID", excluirFideicomisoID.HasValue ? (object)excluirFideicomisoID.Value : DBNull.Value);
 
                         int count = (int)cmd.ExecuteScalar();
                         if (count > 0)
                         {
-                            MessageBox.Show($"Ya existe un fideicomiso con el código '{codigo}'.",
-                                "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            if (errProviderFideicomiso != null) errProviderFideicomiso.SetError(txtCodigo, $"Ya existe un fideicomiso con el código '{codigo}'.");
                             txtCodigo.Focus();
                             return false;
                         }
                     }
 
-                    // Validar nombre único
                     string queryNombre = @"SELECT COUNT(*) FROM Fideicomisos 
                                           WHERE Nombre = @Nombre 
                                           AND EsEliminado = 0 
@@ -523,20 +551,17 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                     using (SqlCommand cmd = new SqlCommand(queryNombre, conn))
                     {
                         cmd.Parameters.AddWithValue("@Nombre", nombre);
-                        cmd.Parameters.AddWithValue("@ExcluirID",
-                            excluirFideicomisoID.HasValue ? (object)excluirFideicomisoID.Value : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ExcluirID", excluirFideicomisoID.HasValue ? (object)excluirFideicomisoID.Value : DBNull.Value);
 
                         int count = (int)cmd.ExecuteScalar();
                         if (count > 0)
                         {
-                            MessageBox.Show($"Ya existe un fideicomiso con el nombre '{nombre}'.",
-                                "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            if (errProviderFideicomiso != null) errProviderFideicomiso.SetError(txtNombre, $"Ya existe un fideicomiso con el nombre '{nombre}'.");
                             txtNombre.Focus();
                             return false;
                         }
                     }
 
-                    // Validar RNC único
                     string queryRNC = @"SELECT COUNT(*) FROM Fideicomisos 
                                        WHERE RNC = @RNC 
                                        AND EsEliminado = 0 
@@ -545,14 +570,12 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                     using (SqlCommand cmd = new SqlCommand(queryRNC, conn))
                     {
                         cmd.Parameters.AddWithValue("@RNC", rnc);
-                        cmd.Parameters.AddWithValue("@ExcluirID",
-                            excluirFideicomisoID.HasValue ? (object)excluirFideicomisoID.Value : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@ExcluirID", excluirFideicomisoID.HasValue ? (object)excluirFideicomisoID.Value : DBNull.Value);
 
                         int count = (int)cmd.ExecuteScalar();
                         if (count > 0)
                         {
-                            MessageBox.Show($"Ya existe un fideicomiso con el RNC '{FormatRncDisplay(rnc)}'.",
-                                "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            if (errProviderFideicomiso != null) errProviderFideicomiso.SetError(txtRNC, $"Ya existe un fideicomiso con el RNC '{FormatRncDisplay(rnc)}'.");
                             txtRNC.Focus();
                             return false;
                         }
@@ -563,8 +586,8 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al validar unicidad: {ex.Message}",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (errProviderFideicomiso != null)
+                    errProviderFideicomiso.SetError(btnGuardarFideicomiso, $"Error al validar unicidad: {ex.Message}");
                 return false;
             }
         }
@@ -596,19 +619,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
 
         private string FormatRncDisplay(string digits)
         {
-            if (string.IsNullOrEmpty(digits))
-                return string.Empty;
-
-            // Mantener solo dígitos
+            if (string.IsNullOrEmpty(digits)) return string.Empty;
             digits = Regex.Replace(digits, @"\D", string.Empty);
-
-            if (digits.Length == 9)
-            {
-                // Formato: 1-31-12345-6
-                return $"{digits.Substring(0, 1)}-{digits.Substring(1, 2)}-{digits.Substring(3, 5)}-{digits.Substring(8, 1)}";
-            }
-
-            // Fallback: devolver solo dígitos
+            if (digits.Length == 9) return $"{digits.Substring(0, 1)}-{digits.Substring(1, 2)}-{digits.Substring(3, 5)}-{digits.Substring(8, 1)}";
             return digits;
         }
 
@@ -659,6 +672,8 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             btnEliminarFideicomiso.BackColor = SystemColors.Control;
 
             txtCodigo.Focus();
+
+            if (errProviderFideicomiso != null) errProviderFideicomiso.Clear();
         }
 
         private void EstablecerModoModificacion()
@@ -671,6 +686,8 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             btnEliminarFideicomiso.BackColor = Color.FromArgb(220, 53, 69);
 
             txtNombre.Focus();
+
+            if (errProviderFideicomiso != null) errProviderFideicomiso.Clear();
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -678,10 +695,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
         // ═══════════════════════════════════════════════════════════════
         private void NumericInteger_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
-            {
-                e.Handled = true;
-            }
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar)) e.Handled = true;
         }
 
         // ═══════════════════════════════════════════════════════════════

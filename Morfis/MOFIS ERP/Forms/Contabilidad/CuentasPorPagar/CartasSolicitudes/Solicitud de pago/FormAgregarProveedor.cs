@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Drawing;
 using MOFIS_ERP.Classes;
 
 namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicitud_de_pago
@@ -29,13 +30,14 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             currentProveedorID = null;
             originalNumeroDocumentoClean = null;
 
-            // Inicialmente deshabilitar eliminar
             if (btnEliminarProveedor != null)
                 btnEliminarProveedor.Enabled = false;
+                btnEliminarProveedor.BackColor = SystemColors.Control;
 
-            // Limpiar errores
             if (errProviderProveedor != null)
                 errProviderProveedor.Clear();
+
+            ActualizarEstadoBotonGuardar();
         }
 
         private void ConfigurarEventos()
@@ -46,13 +48,19 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             {
                 txtTelefonoProv.Enter += TxtTelefonoProv_Enter;
                 txtTelefonoProv.Leave += TxtTelefonoProv_Leave;
+                txtTelefonoProv.TextChanged += (s, e) => ActualizarEstadoBotonGuardar();
             }
 
             if (txtNumeroDocumento != null)
             {
                 txtNumeroDocumento.Enter += TxtNumeroDocumento_Enter;
                 txtNumeroDocumento.Leave += TxtNumeroDocumento_Leave;
+                txtNumeroDocumento.TextChanged += (s, e) => ActualizarEstadoBotonGuardar();
             }
+
+            if (txtNombreProv != null) txtNombreProv.TextChanged += (s, e) => ActualizarEstadoBotonGuardar();
+            if (cboTipoDocumento != null) cboTipoDocumento.SelectedIndexChanged += (s, e) => ActualizarEstadoBotonGuardar();
+            if (txtEmailProv != null) txtEmailProv.TextChanged += (s, e) => ActualizarEstadoBotonGuardar();
 
             if (btnBuscarNumero != null) btnBuscarNumero.Click += BtnBuscarNumero_Click;
             if (btnEliminarProveedor != null) btnEliminarProveedor.Click += BtnEliminarProveedor_Click;
@@ -65,8 +73,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             cboTipoDocumento.Items.Clear();
             cboTipoDocumento.Items.Add("RNC");
             cboTipoDocumento.Items.Add("CEDULA");
-            // No seleccionar ninguno por defecto
-            cboTipoDocumento.SelectedIndex = -1;
+            cboTipoDocumento.SelectedIndex = -1; // sin selección por defecto
         }
 
         private void CargarSiguienteProveedorID()
@@ -88,9 +95,13 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             {
                 txtIdProveedor.Text = "PRV-000001";
             }
+
+            ActualizarEstadoBotonGuardar();
         }
 
-        // Teléfono: quitar formato en Enter, validar y formatear en Leave
+        // ---------------------------
+        // Formato y validaciones Tel
+        // ---------------------------
         private void TxtTelefonoProv_Enter(object sender, EventArgs e)
         {
             if (txtTelefonoProv == null) return;
@@ -105,7 +116,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
 
             string cleaned = Regex.Replace(txtTelefonoProv.Text ?? string.Empty, @"\D", string.Empty);
 
-            // Si se ingresó algo, debe ser exactamente 10 dígitos
             if (!string.IsNullOrEmpty(cleaned))
             {
                 if (cleaned.Length != 10)
@@ -123,7 +133,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             }
             else
             {
-                // Campo vacío -> limpiar error y valor
                 if (errProviderProveedor != null) errProviderProveedor.SetError(txtTelefonoProv, string.Empty);
                 txtTelefonoProv.Text = string.Empty;
             }
@@ -140,7 +149,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             return digits;
         }
 
-        // Documento: quitar formato en Enter, validar/formatear en Leave
+        // ---------------------------
+        // Documento (RNC/Cédula)
+        // ---------------------------
         private void TxtNumeroDocumento_Enter(object sender, EventArgs e)
         {
             if (txtNumeroDocumento == null) return;
@@ -154,9 +165,8 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             if (txtNumeroDocumento == null || cboTipoDocumento == null) return;
 
             string rawDigits = Regex.Replace(txtNumeroDocumento.Text ?? string.Empty, @"\D", string.Empty);
-
-            // Validar según tipo seleccionado (si existe selección)
             string tipoSel = cboTipoDocumento.SelectedItem?.ToString().ToUpper() ?? string.Empty;
+
             if (!string.IsNullOrEmpty(tipoSel))
             {
                 if (tipoSel == "RNC")
@@ -184,7 +194,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             }
             else
             {
-                // Sin tipo seleccionado: limpiar validación previa
                 if (errProviderProveedor != null) errProviderProveedor.SetError(txtNumeroDocumento, string.Empty);
             }
 
@@ -202,11 +211,11 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             return digits;
         }
 
-        // Buscar proveedor por numero de documento (no cierra el formulario)
+        // ---------------------------
+        // Buscar proveedor
+        // ---------------------------
         private void BtnBuscarNumero_Click(object sender, EventArgs e)
         {
-            if (txtNumeroDocumento == null) return;
-
             string documentoClean = Regex.Replace(txtNumeroDocumento.Text ?? string.Empty, @"\D", string.Empty);
             if (string.IsNullOrEmpty(documentoClean))
             {
@@ -220,7 +229,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                 {
                     conn.Open();
                     string q = @"
-                        SELECT ProveedorID, Nombre, TipoDocumento, NumeroDocumento, Telefono, Email, CreadoPorUsuarioID, FechaCreacion
+                        SELECT ProveedorID, Nombre, TipoDocumento, NumeroDocumento, Telefono, Email
                         FROM Proveedores
                         WHERE (REPLACE(NumeroDocumento,'-','') = @num OR NumeroDocumento = @raw)
                           AND EsEliminado = 0";
@@ -234,6 +243,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                             {
                                 currentProveedorID = Convert.ToInt32(rdr["ProveedorID"]);
                                 modoEdicion = true;
+
                                 txtIdProveedor.Text = $"PRV-{currentProveedorID.Value:D6}";
                                 txtNombreProv.Text = rdr["Nombre"]?.ToString();
                                 string tipo = (rdr["TipoDocumento"]?.ToString() ?? "R").ToUpper();
@@ -242,17 +252,20 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                                 txtNumeroDocumento.Text = FormatDocumentoDisplay(Regex.Replace(numeroRaw, @"\D", string.Empty));
                                 string telefono = (rdr["Telefono"]?.ToString() ?? string.Empty);
                                 txtTelefonoProv.Text = string.IsNullOrEmpty(telefono) ? string.Empty : Regex.Replace(telefono, @"\D", string.Empty);
-                                // Forzar formato si correcto
                                 if (!string.IsNullOrEmpty(txtTelefonoProv.Text) && txtTelefonoProv.Text.Length == 10)
                                     txtTelefonoProv.Text = FormatPhone(txtTelefonoProv.Text);
                                 txtEmailProv.Text = rdr["Email"]?.ToString();
                                 originalNumeroDocumentoClean = Regex.Replace(numeroRaw, @"\D", string.Empty);
 
-                                // Habilitar eliminar
                                 if (btnEliminarProveedor != null)
-                                    btnEliminarProveedor.Enabled = true;
 
-                                // limpiar errores previos
+                                {
+                                    btnEliminarProveedor.Enabled = true;
+                                    btnEliminarProveedor.BackColor = Color.Red;
+                                }
+
+                                ActualizarEstadoBotonGuardar();
+
                                 if (errProviderProveedor != null) errProviderProveedor.Clear();
                             }
                             else
@@ -269,7 +282,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             }
         }
 
-        // Eliminar proveedor (eliminación lógica), no cierra el formulario
+        // ---------------------------
+        // Eliminar proveedor (lógica)
+        // ---------------------------
         private void BtnEliminarProveedor_Click(object sender, EventArgs e)
         {
             if (!currentProveedorID.HasValue)
@@ -286,13 +301,12 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                 using (SqlConnection conn = DatabaseConnection.GetConnection())
                 {
                     conn.Open();
-                    string q = @"
-                        UPDATE Proveedores
-                        SET EsEliminado = 1,
-                            Activo = 0,
-                            FechaEliminacion = GETDATE(),
-                            EliminadoPorUsuarioID = @usuarioID
-                        WHERE ProveedorID = @id";
+                    string q = @"UPDATE Proveedores
+                                 SET EsEliminado = 1,
+                                     Activo = 0,
+                                     FechaEliminacion = GETDATE(),
+                                     EliminadoPorUsuarioID = @usuarioID
+                                 WHERE ProveedorID = @id";
                     using (SqlCommand cmd = new SqlCommand(q, conn))
                     {
                         cmd.Parameters.AddWithValue("@id", currentProveedorID.Value);
@@ -301,18 +315,15 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                     }
                 }
 
-                // Registrar auditoría
-                AuditoriaHelper.RegistrarAccion(SesionActual.UsuarioID, "ELIMINAR", "CONTABILIDAD", "Cuentas por Pagar", "FormAgregarProveedor", currentProveedorID, $"ProveedorID={currentProveedorID}");
+                AuditoriaHelper.RegistrarAccion(SesionActual.UsuarioID, "ELIMINAR", "CONTABILIDAD", "Cuentas por Pagar", "FormAgregarProveedor", currentProveedorID, $"Eliminado: ProveedorID={currentProveedorID}; Nombre={txtNombreProv.Text}; Numero={Regex.Replace(txtNumeroDocumento.Text, @"\D", string.Empty)}");
 
                 MessageBox.Show("Proveedor eliminado correctamente.", "Eliminar", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                // Refrescar la lista en el formulario padre y limpiar selección en este mini-form
                 if (parentForm != null)
                 {
                     parentForm.BeginInvoke(new Action(() => parentForm.RefrescarProveedores(null)));
                 }
 
-                // Limpiar formulario para nuevas operaciones
                 CargarSiguienteProveedorID();
                 txtNombreProv.Text = string.Empty;
                 txtNumeroDocumento.Text = string.Empty;
@@ -322,11 +333,14 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                 modoEdicion = false;
                 originalNumeroDocumentoClean = null;
 
-                // Deshabilitar eliminar
                 if (btnEliminarProveedor != null)
+                {
                     btnEliminarProveedor.Enabled = false;
+                    btnEliminarProveedor.BackColor = SystemColors.Control;
+                }
 
                 if (errProviderProveedor != null) errProviderProveedor.Clear();
+                ActualizarEstadoBotonGuardar();
             }
             catch (Exception ex)
             {
@@ -334,10 +348,11 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             }
         }
 
-        // Guardar nuevo o modificar existente (según reglas solicitadas)
+        // ---------------------------
+        // Guardar / Modificar
+        // ---------------------------
         private void BtnGuardarProveedor_Click(object sender, EventArgs e)
         {
-            // Limpiar errores iniciales
             if (errProviderProveedor != null) errProviderProveedor.Clear();
 
             string nombre = (txtNombreProv.Text ?? string.Empty).Trim();
@@ -345,7 +360,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             string email = (txtEmailProv.Text ?? string.Empty).Trim();
             string numeroClean = Regex.Replace(txtNumeroDocumento.Text ?? string.Empty, @"\D", string.Empty);
             string tipoSeleccionado = (cboTipoDocumento.SelectedItem ?? string.Empty).ToString().ToUpper();
-            string tipoDb = tipoSeleccionado == "CEDULA" ? "C" : "R"; // si no seleccionado, queda 'R' por fallback
+            string tipoDb = tipoSeleccionado == "CEDULA" ? "C" : "R";
 
             bool valid = true;
 
@@ -362,7 +377,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             }
             else
             {
-                // Validar según tipo seleccionado
                 if (!string.IsNullOrEmpty(tipoSeleccionado))
                 {
                     if (tipoDb == "R" && numeroClean.Length != 9)
@@ -378,14 +392,12 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                 }
             }
 
-            // Validar teléfono (si se ingresó debe ser exactamente 10)
             if (!string.IsNullOrEmpty(telefonoClean) && telefonoClean.Length != 10)
             {
                 if (errProviderProveedor != null) errProviderProveedor.SetError(txtTelefonoProv, "Teléfono debe tener exactamente 10 dígitos.");
                 valid = false;
             }
 
-            // Validar email si existe
             if (!string.IsNullOrEmpty(email) && !IsValidEmail(email))
             {
                 if (errProviderProveedor != null) errProviderProveedor.SetError(txtEmailProv, "Correo electrónico inválido.");
@@ -400,7 +412,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                 {
                     conn.Open();
 
-                    // Verificar unicidad del numero de documento contra otros registros activos
                     string qCheck = "SELECT ProveedorID FROM Proveedores WHERE REPLACE(NumeroDocumento,'-','') = @num AND EsEliminado = 0";
                     using (SqlCommand cmdCheck = new SqlCommand(qCheck, conn))
                     {
@@ -426,7 +437,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                         }
                     }
 
-                    // Determinar si tratar como nuevo cuando en modo edición se cambió el documento
                     bool tratarComoNuevo = false;
                     if (modoEdicion && currentProveedorID.HasValue)
                     {
@@ -438,7 +448,28 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
 
                     if (modoEdicion && currentProveedorID.HasValue && !tratarComoNuevo)
                     {
-                        // Actualizar existente
+                        // Leer fila antes de update (todos los campos relevantes)
+                        string antesNombre = string.Empty, antesTipo = string.Empty, antesNumero = string.Empty, antesTelefono = string.Empty, antesEmail = string.Empty;
+                        try
+                        {
+                            using (SqlCommand cmdGet = new SqlCommand("SELECT Nombre, TipoDocumento, NumeroDocumento, Telefono, Email FROM Proveedores WHERE ProveedorID = @id", conn))
+                            {
+                                cmdGet.Parameters.AddWithValue("@id", currentProveedorID.Value);
+                                using (var rdr = cmdGet.ExecuteReader())
+                                {
+                                    if (rdr.Read())
+                                    {
+                                        antesNombre = rdr["Nombre"]?.ToString() ?? string.Empty;
+                                        antesTipo = rdr["TipoDocumento"]?.ToString() ?? string.Empty;
+                                        antesNumero = Regex.Replace(rdr["NumeroDocumento"]?.ToString() ?? string.Empty, @"\D", string.Empty);
+                                        antesTelefono = Regex.Replace(rdr["Telefono"]?.ToString() ?? string.Empty, @"\D", string.Empty);
+                                        antesEmail = rdr["Email"]?.ToString() ?? string.Empty;
+                                    }
+                                }
+                            }
+                        }
+                        catch { /* no crítico */ }
+
                         string qUpd = @"
                             UPDATE Proveedores
                             SET Nombre = @nombre,
@@ -461,8 +492,11 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                             cmdUpd.ExecuteNonQuery();
                         }
 
-                        // Auditoría
-                        AuditoriaHelper.RegistrarAccion(SesionActual.UsuarioID, "EDITAR", "CONTABILIDAD", "Cuentas por Pagar", "FormAgregarProveedor", currentProveedorID, $"ProveedorID={currentProveedorID}; Nombre={nombre}; Numero={numeroClean}");
+                        // Auditoría con antes / después completos
+                        string detalle = $"Antes: Nombre={antesNombre}; Tipo={antesTipo}; Numero={antesNumero}; Telefono={antesTelefono}; Email={antesEmail} | " +
+                                         $"Después: Nombre={nombre}; Tipo={tipoDb}; Numero={numeroClean}; Telefono={(string.IsNullOrEmpty(telefonoClean) ? "" : telefonoClean)}; Email={email}";
+
+                        AuditoriaHelper.RegistrarAccion(SesionActual.UsuarioID, "EDITAR", "CONTABILIDAD", "Cuentas por Pagar", "FormAgregarProveedor", currentProveedorID, detalle);
 
                         if (parentForm != null)
                         {
@@ -477,7 +511,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                     }
                     else
                     {
-                        // Insertar nuevo registro
                         string qIns = @"
                             INSERT INTO Proveedores (Nombre, TipoDocumento, NumeroDocumento, Telefono, Email, Activo, FechaCreacion, CreadoPorUsuarioID)
                             VALUES (@nombre, @tipo, @numero, @telefono, @email, 1, GETDATE(), @usuarioID);
@@ -494,8 +527,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                             object res = cmdIns.ExecuteScalar();
                             int newId = Convert.ToInt32(Convert.ToDecimal(res));
 
-                            // Auditoría
-                            AuditoriaHelper.RegistrarAccion(SesionActual.UsuarioID, "CREAR", "CONTABILIDAD", "Cuentas por Pagar", "FormAgregarProveedor", newId, $"ProveedorID={newId}; Nombre={nombre}; Numero={numeroClean}");
+                            AuditoriaHelper.RegistrarAccion(SesionActual.UsuarioID, "CREAR", "CONTABILIDAD", "Cuentas por Pagar", "FormAgregarProveedor", newId, $"ProveedorID={newId}; Nombre={nombre}; Tipo={tipoDb}; Numero={numeroClean}; Telefono={telefonoClean}; Email={email}");
 
                             if (parentForm != null)
                             {
@@ -533,6 +565,34 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             catch
             {
                 return false;
+            }
+        }
+
+        // Actualiza texto y color del botón Guardar según estado/modificaciones
+        private void ActualizarEstadoBotonGuardar()
+        {
+            if (btnGuardarProveedor == null) return;
+
+            if (modoEdicion && currentProveedorID.HasValue)
+            {
+                string numeroActual = Regex.Replace(txtNumeroDocumento.Text ?? string.Empty, @"\D", string.Empty);
+                bool numeroCambio = !string.Equals(originalNumeroDocumentoClean ?? string.Empty, numeroActual, StringComparison.Ordinal);
+
+                if (numeroCambio)
+                {
+                    btnGuardarProveedor.Text = "💾 Guardar como Nuevo";
+                    btnGuardarProveedor.BackColor = Color.FromArgb(40, 167, 69);
+                }
+                else
+                {
+                    btnGuardarProveedor.Text = "✏️ Modificar";
+                    btnGuardarProveedor.BackColor = Color.FromArgb(255, 193, 7);
+                }
+            }
+            else
+            {
+                btnGuardarProveedor.Text = "💾 Guardar";
+                btnGuardarProveedor.BackColor = Color.FromArgb(40, 167, 69);
             }
         }
     }
