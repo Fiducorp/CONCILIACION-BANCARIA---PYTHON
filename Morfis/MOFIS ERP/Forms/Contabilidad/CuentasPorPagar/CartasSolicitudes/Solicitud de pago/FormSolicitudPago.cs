@@ -1655,16 +1655,51 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         // =========================================================
         public void RefrescarFideicomisos(int? fideicomisoIDSeleccionar)
         {
+            // Recargar datos desde BD
             CargarFideicomisos();
 
             if (fideicomisoIDSeleccionar.HasValue)
             {
-                cboFideicomiso.SelectedValue = fideicomisoIDSeleccionar.Value;
+                // Selección programática: seleccionar combo y además actualizar txtCodigoFideicomiso y lblRNCFideicomiso
+                suppressFideicomisoEvents = true;
+                try
+                {
+                    // Seleccionar en el combo si existe
+                    try
+                    {
+                        cboFideicomiso.SelectedValue = fideicomisoIDSeleccionar.Value;
+                    }
+                    catch
+                    {
+                        cboFideicomiso.SelectedIndex = -1;
+                    }
+
+                    // Obtener fila correspondiente del DataTable y actualizar los TextBoxes/labels directamente
+                    if (dtFideicomisos != null && dtFideicomisos.Rows.Count > 0)
+                    {
+                        DataRow[] rows = dtFideicomisos.Select($"FideicomisoID = {fideicomisoIDSeleccionar.Value}");
+                        if (rows.Length > 0)
+                        {
+                            string codigo = rows[0]["Codigo"]?.ToString() ?? string.Empty;
+                            string rnc = rows[0]["RNC"]?.ToString() ?? string.Empty;
+
+                            // Actualizar sin depender del SelectedIndexChanged del combo
+                            txtCodigoFideicomiso.Text = codigo;
+                            lblRNCFideicomiso.Text = string.IsNullOrEmpty(rnc) ? "RNC: ---" : $"RNC: {FormatearRNC(rnc)}";
+                        }
+                    }
+                }
+                finally
+                {
+                    suppressFideicomisoEvents = false;
+                }
             }
             else
             {
                 txtCodigoFideicomiso.Text = string.Empty;
+                suppressFideicomisoEvents = true;
                 cboFideicomiso.SelectedIndex = -1;
+                suppressFideicomisoEvents = false;
                 lblRNCFideicomiso.Text = "RNC: ---";
             }
         }
@@ -1680,23 +1715,49 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
             if (proveedorIDSeleccionar.HasValue)
             {
-                // Seleccionar después del rebind en el hilo UI
+                // Selección programática en el hilo UI
                 this.BeginInvoke(new Action(() =>
                 {
+                    suppressProveedorEvents = true;
                     try
                     {
-                        cboProveedor.SelectedValue = proveedorIDSeleccionar.Value;
+                        try
+                        {
+                            cboProveedor.SelectedValue = proveedorIDSeleccionar.Value;
+                        }
+                        catch
+                        {
+                            cboProveedor.SelectedIndex = -1;
+                        }
+
+                        // Obtener fila correspondiente y actualizar txtRNCProveedor y lblTelefonoProveedor
+                        if (dtProveedores != null && dtProveedores.Rows.Count > 0)
+                        {
+                            DataRow[] rows = dtProveedores.Select($"ProveedorID = {proveedorIDSeleccionar.Value}");
+                            if (rows.Length > 0)
+                            {
+                                string numero = (rows[0]["NumeroDocumento"] ?? string.Empty).ToString();
+                                string numeroClean = System.Text.RegularExpressions.Regex.Replace(numero, @"\D", string.Empty);
+                                string telefono = (rows[0]["Telefono"] ?? string.Empty).ToString();
+
+                                // Formatear y actualizar directamente para que el usuario vea los valores guardados
+                                txtRNCProveedor.Text = FormatRncDisplay(numeroClean);
+                                lblTelefonoProveedor.Text = string.IsNullOrEmpty(telefono) ? "Tel: ---" : $"Tel: {FormatPhone(telefono)}";
+                            }
+                        }
                     }
-                    catch
+                    finally
                     {
-                        cboProveedor.SelectedIndex = -1;
+                        suppressProveedorEvents = false;
                     }
                 }));
             }
             else
             {
                 txtRNCProveedor.Text = string.Empty;
+                suppressProveedorEvents = true;
                 cboProveedor.SelectedIndex = -1;
+                suppressProveedorEvents = false;
                 lblTelefonoProveedor.Text = "Tel: ---";
             }
         }

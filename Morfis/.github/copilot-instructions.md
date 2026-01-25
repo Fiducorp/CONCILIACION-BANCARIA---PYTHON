@@ -24,3 +24,9 @@
 
 ## NCF Validation
 - Validar el campo NCF según el tipo seleccionado en `cboTipoNCF` (longitud y prefijo). `txtNumeroNCF` debe contener solo la parte secuencial (placeholder sigue mostrando prefijo); `cboTipoNCF` no se deshabilita si `cboTipoComprobante` cambia a no-NCF, pero su selección se limpia; si el usuario selecciona un tipo NCF mientras `cboTipoComprobante` no es NCF, mostrar una advertencia informativa solo si el usuario realmente seleccionó el cboTipoNCF (evitar mensaje en carga) y permitir registrar referencia. Además, validar que `txtNumeroNCF` contenga solo dígitos cuando `cboTipoComprobante` sea NCF y `cboTipoNCF` seleccionado (serie B/E).
+
+## Refreshing Data from Mini-Forms
+- Al refrescar desde mini?forms (RefrescarFideicomisos y RefrescarProveedores) al seleccionar programáticamente un registro, también actualizar explícitamente `txtCodigoFideicomiso` y `txtRNCProveedor` (y sus labels) con los valores del registro seleccionado usando los DataTables, respetando los flags `suppressFideicomisoEvents`/`suppressProveedorEvents` para evitar recursiones. Además, al refrescar desde mini-forms, actualizar explícitamente `txtCodigoFideicomiso` y `txtRNCProveedor` con los valores del registro seleccionado (usando dtFideicomisos/dtProveedores) porque la selección programática del ComboBox se realiza con eventos suprimidos; usar flags suppressFideicomisoEvents/suppressProveedorEvents para evitar recursiones.
+
+## ComboBox Behavior
+- When updating ComboBox SelectedIndexChanged handlers, update the related TextBox only if the TextBox is not focused. Specifically, in FormSolicitudPago, `CboFideicomiso_SelectedIndexChanged` should set `txtCodigoFideicomiso.Text` when `txtCodigoFideicomiso` is not focused; `CboProveedor_SelectedIndexChanged` should set `txtRNCProveedor.Text` when `txtRNCProveedor` is not focused.
