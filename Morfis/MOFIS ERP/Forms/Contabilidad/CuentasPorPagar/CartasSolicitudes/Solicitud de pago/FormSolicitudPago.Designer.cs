@@ -95,7 +95,6 @@
             this.cboTipoComprobante = new System.Windows.Forms.ComboBox();
             this.txtNumeroNCF = new System.Windows.Forms.TextBox();
             this.btnAgregarComprobante = new System.Windows.Forms.Button();
-            this.lstComprobantes = new System.Windows.Forms.ListBox();
             this.gbOtrosMontos = new System.Windows.Forms.GroupBox();
             this.lblOtrosImpuestos = new System.Windows.Forms.Label();
             this.txtHorasExtras = new System.Windows.Forms.TextBox();
@@ -157,6 +156,7 @@
             this.tableOpcionesFirma = new System.Windows.Forms.TableLayoutPanel();
             this.chkIncluirFirma = new System.Windows.Forms.CheckBox();
             this.cboFirma = new System.Windows.Forms.ComboBox();
+            this.flpComprobantes = new System.Windows.Forms.FlowLayoutPanel();
             this.panelBotones.SuspendLayout();
             this.panelTotales.SuspendLayout();
             this.tableTotales.SuspendLayout();
@@ -1045,7 +1045,7 @@
             this.tableComprobantes.Controls.Add(this.cboTipoComprobante, 1, 0);
             this.tableComprobantes.Controls.Add(this.txtNumeroNCF, 3, 0);
             this.tableComprobantes.Controls.Add(this.btnAgregarComprobante, 4, 0);
-            this.tableComprobantes.Controls.Add(this.lstComprobantes, 0, 1);
+            this.tableComprobantes.Controls.Add(this.flpComprobantes, 0, 1);
             this.tableComprobantes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableComprobantes.Location = new System.Drawing.Point(5, 27);
             this.tableComprobantes.Name = "tableComprobantes";
@@ -1114,19 +1114,6 @@
             this.btnAgregarComprobante.TabIndex = 4;
             this.btnAgregarComprobante.Text = "+ Agregar";
             this.btnAgregarComprobante.UseVisualStyleBackColor = false;
-            // 
-            // lstComprobantes
-            // 
-            this.lstComprobantes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tableComprobantes.SetColumnSpan(this.lstComprobantes, 5);
-            this.lstComprobantes.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lstComprobantes.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lstComprobantes.FormattingEnabled = true;
-            this.lstComprobantes.ItemHeight = 21;
-            this.lstComprobantes.Location = new System.Drawing.Point(3, 38);
-            this.lstComprobantes.Name = "lstComprobantes";
-            this.lstComprobantes.Size = new System.Drawing.Size(738, 71);
-            this.lstComprobantes.TabIndex = 5;
             // 
             // gbOtrosMontos
             // 
@@ -1854,6 +1841,16 @@
             this.cboFirma.Size = new System.Drawing.Size(405, 29);
             this.cboFirma.TabIndex = 1;
             // 
+            // flpComprobantes
+            // 
+            this.flpComprobantes.AutoScroll = true;
+            this.tableComprobantes.SetColumnSpan(this.flpComprobantes, 5);
+            this.flpComprobantes.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flpComprobantes.Location = new System.Drawing.Point(3, 38);
+            this.flpComprobantes.Name = "flpComprobantes";
+            this.flpComprobantes.Size = new System.Drawing.Size(738, 71);
+            this.flpComprobantes.TabIndex = 5;
+            // 
             // FormSolicitudPago
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1963,7 +1960,6 @@
         private System.Windows.Forms.ComboBox cboTipoNCF;
         private System.Windows.Forms.TextBox txtNumeroNCF;
         private System.Windows.Forms.Button btnAgregarComprobante;
-        private System.Windows.Forms.ListBox lstComprobantes;
         private System.Windows.Forms.GroupBox gbMontos;
         private System.Windows.Forms.Panel panelMontos;
         private System.Windows.Forms.DataGridView dgvSubtotales;
@@ -2048,5 +2044,6 @@
         private System.Windows.Forms.TextBox txtNotaCredito;
         private System.Windows.Forms.CheckBox chkRetAFP;
         private System.Windows.Forms.CheckBox chkRetSFS;
+        private System.Windows.Forms.FlowLayoutPanel flpComprobantes;
     }
 }

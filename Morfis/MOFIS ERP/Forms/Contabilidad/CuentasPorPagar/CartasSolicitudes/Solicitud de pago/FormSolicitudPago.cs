@@ -135,6 +135,13 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             // Evento del botón Agregar Proveedor (mini-form)
             btnAgregarProveedor.Click += BtnAgregarProveedor_Click;
 
+            // =========================================================
+            // A partir de aquí se listan los cambios solicitados
+            // =========================================================
+
+            // Evento del botón Agregar Comprobante (mini-form)
+            if (btnAgregarComprobante != null) btnAgregarComprobante.Click += BtnAgregarComprobante_Click;
+
             // Evento maestro: activar/desactivar cálculo automático del ITBIS
             if (chkCalcularITBIS != null)
             {
