@@ -185,6 +185,9 @@
     <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormAgregarProveedor.Designer.cs">
       <DependentUpon>FormAgregarProveedor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormInputSubtotal.Designer.cs">
+      <DependentUpon>FormInputSubtotal.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormSolicitudPago.Comprobantes.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -194,11 +197,20 @@
     <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormSolicitudPago.Designer.cs">
       <DependentUpon>FormSolicitudPago.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormInputSubtotal.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\ComprobanteItemControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\ComprobanteItemControl.Designer.cs">
       <DependentUpon>ComprobanteItemControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\SubtotalItemControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\SubtotalItemControl.Designer.cs">
+      <DependentUpon>SubtotalItemControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Contabilidad\CuentasPorPagar\FormDashboardCuentasPorPagar.cs">
       <SubType>Form</SubType>
@@ -367,6 +379,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormAgregarProveedor.resx">
       <DependentUpon>FormAgregarProveedor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormInputSubtotal.resx">
+      <DependentUpon>FormInputSubtotal.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormSolicitudPago.resx">
       <DependentUpon>FormSolicitudPago.cs</DependentUpon>

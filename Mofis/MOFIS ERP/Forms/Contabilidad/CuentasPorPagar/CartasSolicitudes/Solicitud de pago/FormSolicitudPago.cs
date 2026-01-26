@@ -222,6 +222,15 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             txtTasa.TextChanged += Tasa_TextChanged;
             txtTasa.Enter += (s, e) => { txtTasa.SelectionStart = txtTasa.Text.Length; };
 
+            // Evento del botón Agregar Subtotal
+            btnAgregarSubtotal.Click += BtnAgregarSubtotal_Click;
+
+            // Eventos del DataGridView Subtotales
+
+
+            // Configurar Grid al inicio
+            ConfigurarGridSubtotales();
+            
             // Adjuntar manejadores de formato moneda (Enter/Leave) a los TextBoxes listados
             foreach (var tb in currencyTextBoxes)
             {
@@ -362,6 +371,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             ReformatAmountPortionInLabel(lblOtrasRetTitulo);
             ReformatAmountPortionInLabel(lblTotalRetencionTitulo);
             ReformatAmountPortionInLabel(lblTotalAPagar);
+
+            // Actualizar formato del grid de subtotales y su label
+            ActualizarFormatoGridSubtotales();
         }
 
         private void ReformatLabelNumberIfPossible(Label lbl)
@@ -434,6 +446,105 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
             lbl.Text = newText;
         }
+
+        // =========================================================
+        // GESTIÓN DE SUBTOTALES (GRUPO "gbMontos")
+        // =========================================================
+        #region Subtotales
+
+        private void ConfigurarGridSubtotales()
+        {
+            // Ya no se usa DataGridView, inicializamos estado del FlowLayoutPanel si es necesario
+            flpSubtotales.Controls.Clear();
+        }
+
+        private void BtnAgregarSubtotal_Click(object sender, EventArgs e)
+        {
+            AbrirInputSubtotal();
+        }
+
+        private void AbrirInputSubtotal()
+        {
+            using (var form = new FormInputSubtotal())
+            {
+                var result = form.ShowDialog(this);
+
+                if (result == DialogResult.OK)
+                {
+                    AgregarMontoGrid(form.MontoIngresado);
+
+                    if (form.AgregarOtro)
+                    {
+                        // Llamada recursiva (o bucle) para agregar otro inmediatamente
+                        AbrirInputSubtotal();
+                    }
+                }
+            }
+        }
+
+        private void AgregarMontoGrid(decimal monto)
+        {
+            string simbolo = !string.IsNullOrEmpty(monedaSimbolo) ? monedaSimbolo : "RD$";
+            var nfi = monedaNumberFormat ?? BuildNumberFormat();
+            
+            SubtotalItemControl item = new SubtotalItemControl(monto, simbolo, nfi);
+            
+            // Suscribir al evento de eliminar
+            item.RemoveRequested += (s, e) =>
+            {
+                if (MessageBox.Show("¿Eliminar este subtotal?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    flpSubtotales.Controls.Remove(item);
+                    item.Dispose();
+                    ActualizarTotalSubtotales();
+                }
+            };
+
+            flpSubtotales.Controls.Add(item);
+            
+            // Hacer scroll al final para que se vea el nuevo elemento
+            flpSubtotales.ScrollControlIntoView(item);
+            
+            ActualizarTotalSubtotales();
+        }
+
+        private void ActualizarTotalSubtotales()
+        {
+            decimal total = 0m;
+            
+            foreach (Control ctrl in flpSubtotales.Controls)
+            {
+                if (ctrl is SubtotalItemControl item)
+                {
+                    total += item.Monto;
+                }
+            }
+
+            // Actualizar Label con formato de moneda dinámico
+            string simbolo = !string.IsNullOrEmpty(monedaSimbolo) ? monedaSimbolo : "RD$";
+            var nfi = monedaNumberFormat ?? BuildNumberFormat();
+            string textoTotal = $"{simbolo} {total.ToString("N2", nfi)}";
+
+            lblSubtotalTotal.Text = $"SUBTOTAL: {textoTotal}";
+        }
+
+        private void ActualizarFormatoGridSubtotales()
+        {
+            string simbolo = !string.IsNullOrEmpty(monedaSimbolo) ? monedaSimbolo : "RD$";
+            var nfi = monedaNumberFormat ?? BuildNumberFormat();
+
+            foreach (Control ctrl in flpSubtotales.Controls)
+            {
+                if (ctrl is SubtotalItemControl item)
+                {
+                    item.ActualizarFormato(simbolo, nfi);
+                }
+            }
+            
+            ActualizarTotalSubtotales();
+        }
+
+        #endregion
 
         // =========================================================
         // CARGA DE DATOS INICIALES

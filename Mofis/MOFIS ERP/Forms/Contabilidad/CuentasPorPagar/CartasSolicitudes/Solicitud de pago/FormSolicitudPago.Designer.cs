@@ -58,7 +58,7 @@
             this.lblContadorConcepto = new System.Windows.Forms.Label();
             this.gbMontos = new System.Windows.Forms.GroupBox();
             this.panelMontos = new System.Windows.Forms.Panel();
-            this.dgvSubtotales = new System.Windows.Forms.DataGridView();
+            this.flpSubtotales = new System.Windows.Forms.FlowLayoutPanel();
             this.btnAgregarSubtotal = new System.Windows.Forms.Button();
             this.lblSubtotalTotal = new System.Windows.Forms.Label();
             this.gbDatosGenerales = new System.Windows.Forms.GroupBox();
@@ -168,7 +168,6 @@
             this.panelConcepto.SuspendLayout();
             this.gbMontos.SuspendLayout();
             this.panelMontos.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvSubtotales)).BeginInit();
             this.gbDatosGenerales.SuspendLayout();
             this.tableDatosGenerales.SuspendLayout();
             this.panelTasaExterno.SuspendLayout();
@@ -201,10 +200,10 @@
             this.panelBotones.Controls.Add(this.btnGuardar);
             this.panelBotones.Controls.Add(this.btnLimpiar);
             this.panelBotones.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelBotones.Location = new System.Drawing.Point(0, 887);
+            this.panelBotones.Location = new System.Drawing.Point(0, 937);
             this.panelBotones.Name = "panelBotones";
             this.panelBotones.Padding = new System.Windows.Forms.Padding(10);
-            this.panelBotones.Size = new System.Drawing.Size(1900, 63);
+            this.panelBotones.Size = new System.Drawing.Size(1780, 63);
             this.panelBotones.TabIndex = 0;
             // 
             // btnExcel
@@ -292,10 +291,10 @@
             this.panelTotales.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(14)))), ((int)(((byte)(31)))), ((int)(((byte)(54)))));
             this.panelTotales.Controls.Add(this.tableTotales);
             this.panelTotales.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelTotales.Location = new System.Drawing.Point(0, 777);
+            this.panelTotales.Location = new System.Drawing.Point(0, 827);
             this.panelTotales.Name = "panelTotales";
             this.panelTotales.Padding = new System.Windows.Forms.Padding(10);
-            this.panelTotales.Size = new System.Drawing.Size(1900, 110);
+            this.panelTotales.Size = new System.Drawing.Size(1780, 110);
             this.panelTotales.TabIndex = 1;
             // 
             // tableTotales
@@ -324,7 +323,7 @@
             this.tableTotales.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34F));
             this.tableTotales.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableTotales.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableTotales.Size = new System.Drawing.Size(1880, 90);
+            this.tableTotales.Size = new System.Drawing.Size(1760, 90);
             this.tableTotales.TabIndex = 0;
             // 
             // lblTotalAPagar
@@ -335,7 +334,7 @@
             this.lblTotalAPagar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(150)))));
             this.lblTotalAPagar.Location = new System.Drawing.Point(3, 58);
             this.lblTotalAPagar.Name = "lblTotalAPagar";
-            this.lblTotalAPagar.Size = new System.Drawing.Size(1874, 32);
+            this.lblTotalAPagar.Size = new System.Drawing.Size(1754, 32);
             this.lblTotalAPagar.TabIndex = 8;
             this.lblTotalAPagar.Text = "▶▶▶  TOTAL A PAGAR:  RD$ 0.00  ◀◀◀";
             this.lblTotalAPagar.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -346,9 +345,9 @@
             this.lblTotalRetencionTitulo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblTotalRetencionTitulo.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTotalRetencionTitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
-            this.lblTotalRetencionTitulo.Location = new System.Drawing.Point(1413, 29);
+            this.lblTotalRetencionTitulo.Location = new System.Drawing.Point(1323, 29);
             this.lblTotalRetencionTitulo.Name = "lblTotalRetencionTitulo";
-            this.lblTotalRetencionTitulo.Size = new System.Drawing.Size(464, 29);
+            this.lblTotalRetencionTitulo.Size = new System.Drawing.Size(434, 29);
             this.lblTotalRetencionTitulo.TabIndex = 7;
             this.lblTotalRetencionTitulo.Text = "TOTAL RETENCIÓN: RD$ 0.00";
             this.lblTotalRetencionTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -359,9 +358,9 @@
             this.lblOtrasRetTitulo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblOtrasRetTitulo.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblOtrasRetTitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.lblOtrasRetTitulo.Location = new System.Drawing.Point(943, 29);
+            this.lblOtrasRetTitulo.Location = new System.Drawing.Point(883, 29);
             this.lblOtrasRetTitulo.Name = "lblOtrasRetTitulo";
-            this.lblOtrasRetTitulo.Size = new System.Drawing.Size(464, 29);
+            this.lblOtrasRetTitulo.Size = new System.Drawing.Size(434, 29);
             this.lblOtrasRetTitulo.TabIndex = 6;
             this.lblOtrasRetTitulo.Text = "OTRAS RETENCIONES: RD$ 0.00";
             this.lblOtrasRetTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -372,9 +371,9 @@
             this.lblRetISRTitulo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblRetISRTitulo.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblRetISRTitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.lblRetISRTitulo.Location = new System.Drawing.Point(473, 29);
+            this.lblRetISRTitulo.Location = new System.Drawing.Point(443, 29);
             this.lblRetISRTitulo.Name = "lblRetISRTitulo";
-            this.lblRetISRTitulo.Size = new System.Drawing.Size(464, 29);
+            this.lblRetISRTitulo.Size = new System.Drawing.Size(434, 29);
             this.lblRetISRTitulo.TabIndex = 5;
             this.lblRetISRTitulo.Text = "RETENCIÓN ISR: RD$ 0.00";
             this.lblRetISRTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -387,7 +386,7 @@
             this.lblRetITBISTitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
             this.lblRetITBISTitulo.Location = new System.Drawing.Point(3, 29);
             this.lblRetITBISTitulo.Name = "lblRetITBISTitulo";
-            this.lblRetITBISTitulo.Size = new System.Drawing.Size(464, 29);
+            this.lblRetITBISTitulo.Size = new System.Drawing.Size(434, 29);
             this.lblRetITBISTitulo.TabIndex = 4;
             this.lblRetITBISTitulo.Text = "RETENCIÓN ITBIS: RD$ 0.00";
             this.lblRetITBISTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -398,9 +397,9 @@
             this.lblTotalFacturaTitulo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblTotalFacturaTitulo.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTotalFacturaTitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(200)))), ((int)(((byte)(255)))));
-            this.lblTotalFacturaTitulo.Location = new System.Drawing.Point(1413, 0);
+            this.lblTotalFacturaTitulo.Location = new System.Drawing.Point(1323, 0);
             this.lblTotalFacturaTitulo.Name = "lblTotalFacturaTitulo";
-            this.lblTotalFacturaTitulo.Size = new System.Drawing.Size(464, 29);
+            this.lblTotalFacturaTitulo.Size = new System.Drawing.Size(434, 29);
             this.lblTotalFacturaTitulo.TabIndex = 3;
             this.lblTotalFacturaTitulo.Text = "TOTAL FACTURA: RD$ 0.00";
             this.lblTotalFacturaTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -411,9 +410,9 @@
             this.lblTotalExentoTitulo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblTotalExentoTitulo.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTotalExentoTitulo.ForeColor = System.Drawing.Color.White;
-            this.lblTotalExentoTitulo.Location = new System.Drawing.Point(943, 0);
+            this.lblTotalExentoTitulo.Location = new System.Drawing.Point(883, 0);
             this.lblTotalExentoTitulo.Name = "lblTotalExentoTitulo";
-            this.lblTotalExentoTitulo.Size = new System.Drawing.Size(464, 29);
+            this.lblTotalExentoTitulo.Size = new System.Drawing.Size(434, 29);
             this.lblTotalExentoTitulo.TabIndex = 2;
             this.lblTotalExentoTitulo.Text = "EXENTO: RD$ 0.00";
             this.lblTotalExentoTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -424,9 +423,9 @@
             this.lblTotalITBISTitulo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblTotalITBISTitulo.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTotalITBISTitulo.ForeColor = System.Drawing.Color.White;
-            this.lblTotalITBISTitulo.Location = new System.Drawing.Point(473, 0);
+            this.lblTotalITBISTitulo.Location = new System.Drawing.Point(443, 0);
             this.lblTotalITBISTitulo.Name = "lblTotalITBISTitulo";
-            this.lblTotalITBISTitulo.Size = new System.Drawing.Size(464, 29);
+            this.lblTotalITBISTitulo.Size = new System.Drawing.Size(434, 29);
             this.lblTotalITBISTitulo.TabIndex = 1;
             this.lblTotalITBISTitulo.Text = "ITBIS: RD$ 0.00";
             this.lblTotalITBISTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -439,7 +438,7 @@
             this.lblTotalSubtotalTitulo.ForeColor = System.Drawing.Color.White;
             this.lblTotalSubtotalTitulo.Location = new System.Drawing.Point(3, 0);
             this.lblTotalSubtotalTitulo.Name = "lblTotalSubtotalTitulo";
-            this.lblTotalSubtotalTitulo.Size = new System.Drawing.Size(464, 29);
+            this.lblTotalSubtotalTitulo.Size = new System.Drawing.Size(434, 29);
             this.lblTotalSubtotalTitulo.TabIndex = 0;
             this.lblTotalSubtotalTitulo.Text = "SUBTOTAL: RD$ 0.00";
             this.lblTotalSubtotalTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -453,7 +452,7 @@
             this.panelEncabezado.Location = new System.Drawing.Point(0, 0);
             this.panelEncabezado.Name = "panelEncabezado";
             this.panelEncabezado.Padding = new System.Windows.Forms.Padding(10);
-            this.panelEncabezado.Size = new System.Drawing.Size(1900, 60);
+            this.panelEncabezado.Size = new System.Drawing.Size(1780, 60);
             this.panelEncabezado.TabIndex = 2;
             // 
             // panelDerecho
@@ -462,7 +461,7 @@
             this.panelDerecho.Controls.Add(this.btnBuscar);
             this.panelDerecho.Controls.Add(this.lblNumeroSolicitud);
             this.panelDerecho.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panelDerecho.Location = new System.Drawing.Point(1670, 10);
+            this.panelDerecho.Location = new System.Drawing.Point(1550, 10);
             this.panelDerecho.Name = "panelDerecho";
             this.panelDerecho.Size = new System.Drawing.Size(220, 40);
             this.panelDerecho.TabIndex = 2;
@@ -502,7 +501,7 @@
             this.lblTituloFormulario.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
             this.lblTituloFormulario.Location = new System.Drawing.Point(10, 10);
             this.lblTituloFormulario.Name = "lblTituloFormulario";
-            this.lblTituloFormulario.Size = new System.Drawing.Size(1880, 40);
+            this.lblTituloFormulario.Size = new System.Drawing.Size(1760, 40);
             this.lblTituloFormulario.TabIndex = 1;
             this.lblTituloFormulario.Text = "SOLICITUD DE PAGO";
             this.lblTituloFormulario.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -516,15 +515,15 @@
             this.panelContenido.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelContenido.Location = new System.Drawing.Point(0, 60);
             this.panelContenido.Name = "panelContenido";
-            this.panelContenido.Size = new System.Drawing.Size(1900, 717);
+            this.panelContenido.Size = new System.Drawing.Size(1780, 767);
             this.panelContenido.TabIndex = 3;
             // 
             // tableLayoutPrincipal
             // 
-            this.tableLayoutPrincipal.BackColor = System.Drawing.Color.Transparent;
+            this.tableLayoutPrincipal.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
             this.tableLayoutPrincipal.ColumnCount = 3;
-            this.tableLayoutPrincipal.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
-            this.tableLayoutPrincipal.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
+            this.tableLayoutPrincipal.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 39.21348F));
+            this.tableLayoutPrincipal.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30.73034F));
             this.tableLayoutPrincipal.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
             this.tableLayoutPrincipal.Controls.Add(this.gbConcepto, 2, 1);
             this.tableLayoutPrincipal.Controls.Add(this.gbMontos, 0, 2);
@@ -539,7 +538,7 @@
             this.tableLayoutPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 115F));
             this.tableLayoutPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 170F));
             this.tableLayoutPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 180F));
-            this.tableLayoutPrincipal.Size = new System.Drawing.Size(1900, 517);
+            this.tableLayoutPrincipal.Size = new System.Drawing.Size(1780, 567);
             this.tableLayoutPrincipal.TabIndex = 0;
             // 
             // gbConcepto
@@ -548,10 +547,10 @@
             this.gbConcepto.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbConcepto.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbConcepto.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
-            this.gbConcepto.Location = new System.Drawing.Point(1333, 118);
+            this.gbConcepto.Location = new System.Drawing.Point(1248, 118);
             this.gbConcepto.Name = "gbConcepto";
             this.gbConcepto.Padding = new System.Windows.Forms.Padding(5);
-            this.gbConcepto.Size = new System.Drawing.Size(564, 164);
+            this.gbConcepto.Size = new System.Drawing.Size(529, 164);
             this.gbConcepto.TabIndex = 12;
             this.gbConcepto.TabStop = false;
             this.gbConcepto.Text = "📝 CONCEPTO";
@@ -563,7 +562,7 @@
             this.panelConcepto.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelConcepto.Location = new System.Drawing.Point(5, 27);
             this.panelConcepto.Name = "panelConcepto";
-            this.panelConcepto.Size = new System.Drawing.Size(554, 132);
+            this.panelConcepto.Size = new System.Drawing.Size(519, 132);
             this.panelConcepto.TabIndex = 0;
             // 
             // txtConcepto
@@ -575,7 +574,7 @@
             this.txtConcepto.Multiline = true;
             this.txtConcepto.Name = "txtConcepto";
             this.txtConcepto.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtConcepto.Size = new System.Drawing.Size(554, 111);
+            this.txtConcepto.Size = new System.Drawing.Size(519, 111);
             this.txtConcepto.TabIndex = 1;
             // 
             // lblContadorConcepto
@@ -599,38 +598,33 @@
             this.gbMontos.Location = new System.Drawing.Point(5, 290);
             this.gbMontos.Margin = new System.Windows.Forms.Padding(5);
             this.gbMontos.Name = "gbMontos";
-            this.gbMontos.Size = new System.Drawing.Size(750, 222);
+            this.gbMontos.Size = new System.Drawing.Size(688, 272);
             this.gbMontos.TabIndex = 5;
             this.gbMontos.TabStop = false;
             this.gbMontos.Text = "💰 SUBTOTALES";
             // 
             // panelMontos
             // 
-            this.panelMontos.Controls.Add(this.dgvSubtotales);
+            this.panelMontos.Controls.Add(this.flpSubtotales);
             this.panelMontos.Controls.Add(this.btnAgregarSubtotal);
             this.panelMontos.Controls.Add(this.lblSubtotalTotal);
             this.panelMontos.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelMontos.Location = new System.Drawing.Point(3, 25);
             this.panelMontos.Name = "panelMontos";
-            this.panelMontos.Size = new System.Drawing.Size(744, 194);
+            this.panelMontos.Size = new System.Drawing.Size(682, 244);
             this.panelMontos.TabIndex = 0;
             // 
-            // dgvSubtotales
+            // flpSubtotales
             // 
-            this.dgvSubtotales.AllowUserToAddRows = false;
-            this.dgvSubtotales.AllowUserToDeleteRows = false;
-            this.dgvSubtotales.AllowUserToResizeColumns = false;
-            this.dgvSubtotales.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvSubtotales.BackgroundColor = System.Drawing.Color.White;
-            this.dgvSubtotales.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvSubtotales.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvSubtotales.Location = new System.Drawing.Point(0, 28);
-            this.dgvSubtotales.MultiSelect = false;
-            this.dgvSubtotales.Name = "dgvSubtotales";
-            this.dgvSubtotales.RowHeadersVisible = false;
-            this.dgvSubtotales.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvSubtotales.Size = new System.Drawing.Size(744, 141);
-            this.dgvSubtotales.TabIndex = 2;
+            this.flpSubtotales.AutoScroll = true;
+            this.flpSubtotales.BackColor = System.Drawing.Color.White;
+            this.flpSubtotales.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.flpSubtotales.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flpSubtotales.Location = new System.Drawing.Point(0, 28);
+            this.flpSubtotales.Name = "flpSubtotales";
+            this.flpSubtotales.Padding = new System.Windows.Forms.Padding(60, 4, 4, 4);
+            this.flpSubtotales.Size = new System.Drawing.Size(682, 191);
+            this.flpSubtotales.TabIndex = 2;
             // 
             // btnAgregarSubtotal
             // 
@@ -641,7 +635,7 @@
             this.btnAgregarSubtotal.ForeColor = System.Drawing.Color.White;
             this.btnAgregarSubtotal.Location = new System.Drawing.Point(0, 0);
             this.btnAgregarSubtotal.Name = "btnAgregarSubtotal";
-            this.btnAgregarSubtotal.Size = new System.Drawing.Size(744, 28);
+            this.btnAgregarSubtotal.Size = new System.Drawing.Size(682, 28);
             this.btnAgregarSubtotal.TabIndex = 1;
             this.btnAgregarSubtotal.Text = "+ Agregar Subtotal";
             this.btnAgregarSubtotal.UseVisualStyleBackColor = false;
@@ -649,10 +643,10 @@
             // lblSubtotalTotal
             // 
             this.lblSubtotalTotal.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.lblSubtotalTotal.Location = new System.Drawing.Point(0, 169);
+            this.lblSubtotalTotal.Location = new System.Drawing.Point(0, 219);
             this.lblSubtotalTotal.Name = "lblSubtotalTotal";
             this.lblSubtotalTotal.Padding = new System.Windows.Forms.Padding(0, 0, 10, 0);
-            this.lblSubtotalTotal.Size = new System.Drawing.Size(744, 25);
+            this.lblSubtotalTotal.Size = new System.Drawing.Size(682, 25);
             this.lblSubtotalTotal.TabIndex = 0;
             this.lblSubtotalTotal.Text = "SUBTOTAL: RD$ 0.00";
             this.lblSubtotalTotal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -667,7 +661,7 @@
             this.gbDatosGenerales.Location = new System.Drawing.Point(3, 3);
             this.gbDatosGenerales.Name = "gbDatosGenerales";
             this.gbDatosGenerales.Padding = new System.Windows.Forms.Padding(5);
-            this.gbDatosGenerales.Size = new System.Drawing.Size(1894, 109);
+            this.gbDatosGenerales.Size = new System.Drawing.Size(1774, 109);
             this.gbDatosGenerales.TabIndex = 0;
             this.gbDatosGenerales.TabStop = false;
             this.gbDatosGenerales.Text = "📋 DATOS GENERALES";
@@ -698,7 +692,7 @@
             this.tableDatosGenerales.RowCount = 2;
             this.tableDatosGenerales.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 47F));
             this.tableDatosGenerales.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 53F));
-            this.tableDatosGenerales.Size = new System.Drawing.Size(1884, 77);
+            this.tableDatosGenerales.Size = new System.Drawing.Size(1764, 77);
             this.tableDatosGenerales.TabIndex = 0;
             // 
             // cboMoneda
@@ -782,7 +776,7 @@
             this.panelTasaExterno.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelTasaExterno.Location = new System.Drawing.Point(820, 3);
             this.panelTasaExterno.Name = "panelTasaExterno";
-            this.panelTasaExterno.Size = new System.Drawing.Size(1061, 30);
+            this.panelTasaExterno.Size = new System.Drawing.Size(941, 30);
             this.panelTasaExterno.TabIndex = 9;
             // 
             // chkMostrarConversion
@@ -860,7 +854,7 @@
             this.panelFideicomisoProveedor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelFideicomisoProveedor.Location = new System.Drawing.Point(3, 39);
             this.panelFideicomisoProveedor.Name = "panelFideicomisoProveedor";
-            this.panelFideicomisoProveedor.Size = new System.Drawing.Size(1878, 35);
+            this.panelFideicomisoProveedor.Size = new System.Drawing.Size(1758, 35);
             this.panelFideicomisoProveedor.TabIndex = 10;
             // 
             // tableFideicomisoProveedor
@@ -890,7 +884,7 @@
             this.tableFideicomisoProveedor.Name = "tableFideicomisoProveedor";
             this.tableFideicomisoProveedor.RowCount = 1;
             this.tableFideicomisoProveedor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableFideicomisoProveedor.Size = new System.Drawing.Size(1878, 35);
+            this.tableFideicomisoProveedor.Size = new System.Drawing.Size(1758, 35);
             this.tableFideicomisoProveedor.TabIndex = 0;
             // 
             // lblCodigoFideicomiso
@@ -1003,7 +997,7 @@
             this.cboProveedor.FormattingEnabled = true;
             this.cboProveedor.Location = new System.Drawing.Point(1292, 3);
             this.cboProveedor.Name = "cboProveedor";
-            this.cboProveedor.Size = new System.Drawing.Size(583, 29);
+            this.cboProveedor.Size = new System.Drawing.Size(463, 29);
             this.cboProveedor.TabIndex = 8;
             // 
             // dtpFecha
@@ -1026,7 +1020,7 @@
             this.gbComprobantes.Location = new System.Drawing.Point(3, 118);
             this.gbComprobantes.Name = "gbComprobantes";
             this.gbComprobantes.Padding = new System.Windows.Forms.Padding(5);
-            this.gbComprobantes.Size = new System.Drawing.Size(1324, 164);
+            this.gbComprobantes.Size = new System.Drawing.Size(1239, 164);
             this.gbComprobantes.TabIndex = 1;
             this.gbComprobantes.TabStop = false;
             this.gbComprobantes.Text = "📑 COMPROBANTES";
@@ -1052,7 +1046,7 @@
             this.tableComprobantes.RowCount = 2;
             this.tableComprobantes.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableComprobantes.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableComprobantes.Size = new System.Drawing.Size(1314, 132);
+            this.tableComprobantes.Size = new System.Drawing.Size(1229, 132);
             this.tableComprobantes.TabIndex = 0;
             // 
             // cboTipoNCF
@@ -1122,7 +1116,7 @@
             this.flpComprobantes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flpComprobantes.Location = new System.Drawing.Point(3, 38);
             this.flpComprobantes.Name = "flpComprobantes";
-            this.flpComprobantes.Size = new System.Drawing.Size(1308, 91);
+            this.flpComprobantes.Size = new System.Drawing.Size(1223, 91);
             this.flpComprobantes.TabIndex = 5;
             // 
             // gbOtrosMontos
@@ -1141,10 +1135,10 @@
             this.gbOtrosMontos.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbOtrosMontos.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbOtrosMontos.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
-            this.gbOtrosMontos.Location = new System.Drawing.Point(765, 290);
+            this.gbOtrosMontos.Location = new System.Drawing.Point(703, 290);
             this.gbOtrosMontos.Margin = new System.Windows.Forms.Padding(5);
             this.gbOtrosMontos.Name = "gbOtrosMontos";
-            this.gbOtrosMontos.Size = new System.Drawing.Size(560, 222);
+            this.gbOtrosMontos.Size = new System.Drawing.Size(537, 272);
             this.gbOtrosMontos.TabIndex = 6;
             this.gbOtrosMontos.TabStop = false;
             this.gbOtrosMontos.Text = "📊 OTROS MONTOS";
@@ -1153,7 +1147,7 @@
             // 
             this.lblOtrosImpuestos.AutoSize = true;
             this.lblOtrosImpuestos.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lblOtrosImpuestos.Location = new System.Drawing.Point(10, 194);
+            this.lblOtrosImpuestos.Location = new System.Drawing.Point(9, 214);
             this.lblOtrosImpuestos.Name = "lblOtrosImpuestos";
             this.lblOtrosImpuestos.Size = new System.Drawing.Size(138, 21);
             this.lblOtrosImpuestos.TabIndex = 24;
@@ -1163,17 +1157,17 @@
             // txtHorasExtras
             // 
             this.txtHorasExtras.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtHorasExtras.Location = new System.Drawing.Point(167, 145);
+            this.txtHorasExtras.Location = new System.Drawing.Point(167, 165);
             this.txtHorasExtras.Margin = new System.Windows.Forms.Padding(3, 5, 10, 5);
             this.txtHorasExtras.Name = "txtHorasExtras";
-            this.txtHorasExtras.Size = new System.Drawing.Size(298, 29);
+            this.txtHorasExtras.Size = new System.Drawing.Size(310, 29);
             this.txtHorasExtras.TabIndex = 23;
             // 
             // lblHorasExtras
             // 
             this.lblHorasExtras.AutoSize = true;
             this.lblHorasExtras.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lblHorasExtras.Location = new System.Drawing.Point(10, 148);
+            this.lblHorasExtras.Location = new System.Drawing.Point(10, 168);
             this.lblHorasExtras.Name = "lblHorasExtras";
             this.lblHorasExtras.Size = new System.Drawing.Size(108, 21);
             this.lblHorasExtras.TabIndex = 22;
@@ -1183,17 +1177,17 @@
             // txtDescuento
             // 
             this.txtDescuento.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtDescuento.Location = new System.Drawing.Point(167, 100);
+            this.txtDescuento.Location = new System.Drawing.Point(167, 120);
             this.txtDescuento.Margin = new System.Windows.Forms.Padding(3, 5, 10, 5);
             this.txtDescuento.Name = "txtDescuento";
-            this.txtDescuento.Size = new System.Drawing.Size(298, 29);
+            this.txtDescuento.Size = new System.Drawing.Size(310, 29);
             this.txtDescuento.TabIndex = 21;
             // 
             // lblDescuento
             // 
             this.lblDescuento.AutoSize = true;
             this.lblDescuento.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lblDescuento.Location = new System.Drawing.Point(9, 103);
+            this.lblDescuento.Location = new System.Drawing.Point(10, 123);
             this.lblDescuento.Name = "lblDescuento";
             this.lblDescuento.Size = new System.Drawing.Size(95, 21);
             this.lblDescuento.TabIndex = 20;
@@ -1203,17 +1197,17 @@
             // txtDireccionTecnica
             // 
             this.txtDireccionTecnica.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtDireccionTecnica.Location = new System.Drawing.Point(167, 55);
+            this.txtDireccionTecnica.Location = new System.Drawing.Point(167, 75);
             this.txtDireccionTecnica.Margin = new System.Windows.Forms.Padding(3, 5, 10, 5);
             this.txtDireccionTecnica.Name = "txtDireccionTecnica";
-            this.txtDireccionTecnica.Size = new System.Drawing.Size(298, 29);
+            this.txtDireccionTecnica.Size = new System.Drawing.Size(310, 29);
             this.txtDireccionTecnica.TabIndex = 19;
             // 
             // lblExento
             // 
             this.lblExento.AutoSize = true;
             this.lblExento.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lblExento.Location = new System.Drawing.Point(10, 23);
+            this.lblExento.Location = new System.Drawing.Point(10, 33);
             this.lblExento.Name = "lblExento";
             this.lblExento.Size = new System.Drawing.Size(67, 21);
             this.lblExento.TabIndex = 15;
@@ -1223,17 +1217,17 @@
             // txtExento
             // 
             this.txtExento.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtExento.Location = new System.Drawing.Point(167, 20);
+            this.txtExento.Location = new System.Drawing.Point(167, 30);
             this.txtExento.Margin = new System.Windows.Forms.Padding(3, 5, 10, 5);
             this.txtExento.Name = "txtExento";
-            this.txtExento.Size = new System.Drawing.Size(298, 29);
+            this.txtExento.Size = new System.Drawing.Size(310, 29);
             this.txtExento.TabIndex = 16;
             // 
             // lblDireccionTecnica
             // 
             this.lblDireccionTecnica.AutoSize = true;
             this.lblDireccionTecnica.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lblDireccionTecnica.Location = new System.Drawing.Point(9, 58);
+            this.lblDireccionTecnica.Location = new System.Drawing.Point(10, 78);
             this.lblDireccionTecnica.Name = "lblDireccionTecnica";
             this.lblDireccionTecnica.Size = new System.Drawing.Size(148, 21);
             this.lblDireccionTecnica.TabIndex = 18;
@@ -1243,9 +1237,9 @@
             // txtOtrosImpuestos
             // 
             this.txtOtrosImpuestos.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtOtrosImpuestos.Location = new System.Drawing.Point(167, 190);
+            this.txtOtrosImpuestos.Location = new System.Drawing.Point(167, 210);
             this.txtOtrosImpuestos.Name = "txtOtrosImpuestos";
-            this.txtOtrosImpuestos.Size = new System.Drawing.Size(298, 29);
+            this.txtOtrosImpuestos.Size = new System.Drawing.Size(310, 29);
             this.txtOtrosImpuestos.TabIndex = 17;
             // 
             // button4
@@ -1255,7 +1249,7 @@
             this.button4.FlatAppearance.BorderSize = 0;
             this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button4.ForeColor = System.Drawing.Color.White;
-            this.button4.Location = new System.Drawing.Point(471, 189);
+            this.button4.Location = new System.Drawing.Point(483, 210);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(33, 30);
             this.button4.TabIndex = 25;
@@ -1277,10 +1271,10 @@
             this.gbNotasCRDB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbNotasCRDB.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbNotasCRDB.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
-            this.gbNotasCRDB.Location = new System.Drawing.Point(1335, 290);
+            this.gbNotasCRDB.Location = new System.Drawing.Point(1250, 290);
             this.gbNotasCRDB.Margin = new System.Windows.Forms.Padding(5);
             this.gbNotasCRDB.Name = "gbNotasCRDB";
-            this.gbNotasCRDB.Size = new System.Drawing.Size(560, 222);
+            this.gbNotasCRDB.Size = new System.Drawing.Size(525, 272);
             this.gbNotasCRDB.TabIndex = 7;
             this.gbNotasCRDB.TabStop = false;
             this.gbNotasCRDB.Text = "📋 NOTAS CR/DB Y AVANCES";
@@ -1291,7 +1285,7 @@
             this.txtAvancePagar.Location = new System.Drawing.Point(132, 180);
             this.txtAvancePagar.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.txtAvancePagar.Name = "txtAvancePagar";
-            this.txtAvancePagar.Size = new System.Drawing.Size(321, 29);
+            this.txtAvancePagar.Size = new System.Drawing.Size(330, 29);
             this.txtAvancePagar.TabIndex = 21;
             // 
             // lblAvancePagar
@@ -1311,7 +1305,7 @@
             this.txtAnticipo.Location = new System.Drawing.Point(132, 130);
             this.txtAnticipo.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.txtAnticipo.Name = "txtAnticipo";
-            this.txtAnticipo.Size = new System.Drawing.Size(321, 29);
+            this.txtAnticipo.Size = new System.Drawing.Size(330, 29);
             this.txtAnticipo.TabIndex = 19;
             // 
             // lblAnticipo
@@ -1332,7 +1326,7 @@
             this.btnConfigND.FlatAppearance.BorderSize = 0;
             this.btnConfigND.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnConfigND.ForeColor = System.Drawing.Color.White;
-            this.btnConfigND.Location = new System.Drawing.Point(458, 77);
+            this.btnConfigND.Location = new System.Drawing.Point(467, 77);
             this.btnConfigND.Margin = new System.Windows.Forms.Padding(2, 5, 5, 5);
             this.btnConfigND.Name = "btnConfigND";
             this.btnConfigND.Size = new System.Drawing.Size(33, 30);
@@ -1346,7 +1340,7 @@
             this.txtNotaDebito.Location = new System.Drawing.Point(132, 80);
             this.txtNotaDebito.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.txtNotaDebito.Name = "txtNotaDebito";
-            this.txtNotaDebito.Size = new System.Drawing.Size(321, 29);
+            this.txtNotaDebito.Size = new System.Drawing.Size(330, 29);
             this.txtNotaDebito.TabIndex = 16;
             // 
             // lblNotaDebito
@@ -1367,7 +1361,7 @@
             this.btnConfigNC.FlatAppearance.BorderSize = 0;
             this.btnConfigNC.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnConfigNC.ForeColor = System.Drawing.Color.White;
-            this.btnConfigNC.Location = new System.Drawing.Point(460, 30);
+            this.btnConfigNC.Location = new System.Drawing.Point(467, 29);
             this.btnConfigNC.Margin = new System.Windows.Forms.Padding(2, 5, 5, 5);
             this.btnConfigNC.Name = "btnConfigNC";
             this.btnConfigNC.Size = new System.Drawing.Size(33, 30);
@@ -1392,18 +1386,19 @@
             this.txtNotaCredito.Location = new System.Drawing.Point(132, 30);
             this.txtNotaCredito.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.txtNotaCredito.Name = "txtNotaCredito";
-            this.txtNotaCredito.Size = new System.Drawing.Size(321, 29);
+            this.txtNotaCredito.Size = new System.Drawing.Size(330, 29);
             this.txtNotaCredito.TabIndex = 13;
             // 
             // panelFilaImpuestosObs
             // 
+            this.panelFilaImpuestosObs.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
             this.panelFilaImpuestosObs.Controls.Add(this.panelImpuestosContenedor);
             this.panelFilaImpuestosObs.Controls.Add(this.panelObservacionesContenedor);
             this.panelFilaImpuestosObs.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelFilaImpuestosObs.Location = new System.Drawing.Point(0, 517);
+            this.panelFilaImpuestosObs.Location = new System.Drawing.Point(0, 567);
             this.panelFilaImpuestosObs.Name = "panelFilaImpuestosObs";
             this.panelFilaImpuestosObs.Padding = new System.Windows.Forms.Padding(5, 0, 5, 10);
-            this.panelFilaImpuestosObs.Size = new System.Drawing.Size(1900, 200);
+            this.panelFilaImpuestosObs.Size = new System.Drawing.Size(1780, 200);
             this.panelFilaImpuestosObs.TabIndex = 8;
             // 
             // panelImpuestosContenedor
@@ -1413,11 +1408,12 @@
             this.panelImpuestosContenedor.Location = new System.Drawing.Point(5, 0);
             this.panelImpuestosContenedor.Name = "panelImpuestosContenedor";
             this.panelImpuestosContenedor.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-            this.panelImpuestosContenedor.Size = new System.Drawing.Size(1329, 190);
+            this.panelImpuestosContenedor.Size = new System.Drawing.Size(1242, 190);
             this.panelImpuestosContenedor.TabIndex = 1;
             // 
             // gbImpuestos
             // 
+            this.gbImpuestos.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
             this.gbImpuestos.Controls.Add(this.chkCalcularITBIS);
             this.gbImpuestos.Controls.Add(this.chkRetAFP);
             this.gbImpuestos.Controls.Add(this.chkRetSFS);
@@ -1439,7 +1435,7 @@
             this.gbImpuestos.Location = new System.Drawing.Point(0, 0);
             this.gbImpuestos.Name = "gbImpuestos";
             this.gbImpuestos.Padding = new System.Windows.Forms.Padding(5);
-            this.gbImpuestos.Size = new System.Drawing.Size(1324, 190);
+            this.gbImpuestos.Size = new System.Drawing.Size(1237, 190);
             this.gbImpuestos.TabIndex = 0;
             this.gbImpuestos.TabStop = false;
             this.gbImpuestos.Text = "🧾 IMPUESTOS Y RETENCIONES";
@@ -1733,10 +1729,10 @@
             // 
             this.panelObservacionesContenedor.Controls.Add(this.gbObservaciones);
             this.panelObservacionesContenedor.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panelObservacionesContenedor.Location = new System.Drawing.Point(1334, 0);
+            this.panelObservacionesContenedor.Location = new System.Drawing.Point(1247, 0);
             this.panelObservacionesContenedor.Name = "panelObservacionesContenedor";
             this.panelObservacionesContenedor.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-            this.panelObservacionesContenedor.Size = new System.Drawing.Size(561, 190);
+            this.panelObservacionesContenedor.Size = new System.Drawing.Size(528, 190);
             this.panelObservacionesContenedor.TabIndex = 0;
             // 
             // gbObservaciones
@@ -1748,7 +1744,7 @@
             this.gbObservaciones.Location = new System.Drawing.Point(5, 0);
             this.gbObservaciones.Name = "gbObservaciones";
             this.gbObservaciones.Padding = new System.Windows.Forms.Padding(5);
-            this.gbObservaciones.Size = new System.Drawing.Size(556, 190);
+            this.gbObservaciones.Size = new System.Drawing.Size(523, 190);
             this.gbObservaciones.TabIndex = 0;
             this.gbObservaciones.TabStop = false;
             this.gbObservaciones.Text = "📝 OBSERVACIONES Y FIRMA";
@@ -1761,7 +1757,7 @@
             this.panelObservacionesInterno.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelObservacionesInterno.Location = new System.Drawing.Point(5, 27);
             this.panelObservacionesInterno.Name = "panelObservacionesInterno";
-            this.panelObservacionesInterno.Size = new System.Drawing.Size(546, 158);
+            this.panelObservacionesInterno.Size = new System.Drawing.Size(513, 158);
             this.panelObservacionesInterno.TabIndex = 0;
             // 
             // tableLayoutObs
@@ -1776,7 +1772,7 @@
             this.tableLayoutObs.RowCount = 2;
             this.tableLayoutObs.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 80F));
             this.tableLayoutObs.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutObs.Size = new System.Drawing.Size(546, 123);
+            this.tableLayoutObs.Size = new System.Drawing.Size(513, 123);
             this.tableLayoutObs.TabIndex = 5;
             // 
             // lblContadorObservaciones
@@ -1786,7 +1782,7 @@
             this.lblContadorObservaciones.ForeColor = System.Drawing.Color.Gray;
             this.lblContadorObservaciones.Location = new System.Drawing.Point(3, 98);
             this.lblContadorObservaciones.Name = "lblContadorObservaciones";
-            this.lblContadorObservaciones.Size = new System.Drawing.Size(540, 25);
+            this.lblContadorObservaciones.Size = new System.Drawing.Size(507, 25);
             this.lblContadorObservaciones.TabIndex = 6;
             this.lblContadorObservaciones.Text = "0 / 1000 caracteres";
             this.lblContadorObservaciones.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -1800,7 +1796,7 @@
             this.txtObservaciones.Multiline = true;
             this.txtObservaciones.Name = "txtObservaciones";
             this.txtObservaciones.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtObservaciones.Size = new System.Drawing.Size(540, 92);
+            this.txtObservaciones.Size = new System.Drawing.Size(507, 92);
             this.txtObservaciones.TabIndex = 1;
             // 
             // panelOpcionesFirma
@@ -1809,7 +1805,7 @@
             this.panelOpcionesFirma.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panelOpcionesFirma.Location = new System.Drawing.Point(0, 123);
             this.panelOpcionesFirma.Name = "panelOpcionesFirma";
-            this.panelOpcionesFirma.Size = new System.Drawing.Size(546, 35);
+            this.panelOpcionesFirma.Size = new System.Drawing.Size(513, 35);
             this.panelOpcionesFirma.TabIndex = 2;
             // 
             // tableOpcionesFirma
@@ -1825,7 +1821,7 @@
             this.tableOpcionesFirma.RowCount = 1;
             this.tableOpcionesFirma.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableOpcionesFirma.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableOpcionesFirma.Size = new System.Drawing.Size(546, 35);
+            this.tableOpcionesFirma.Size = new System.Drawing.Size(513, 35);
             this.tableOpcionesFirma.TabIndex = 0;
             // 
             // chkIncluirFirma
@@ -1848,7 +1844,7 @@
             this.cboFirma.Location = new System.Drawing.Point(136, 3);
             this.cboFirma.Margin = new System.Windows.Forms.Padding(3, 3, 5, 3);
             this.cboFirma.Name = "cboFirma";
-            this.cboFirma.Size = new System.Drawing.Size(405, 29);
+            this.cboFirma.Size = new System.Drawing.Size(372, 29);
             this.cboFirma.TabIndex = 1;
             // 
             // FormSolicitudPago
@@ -1856,7 +1852,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
-            this.ClientSize = new System.Drawing.Size(1900, 950);
+            this.ClientSize = new System.Drawing.Size(1780, 1000);
             this.Controls.Add(this.panelContenido);
             this.Controls.Add(this.panelEncabezado);
             this.Controls.Add(this.panelTotales);
@@ -1877,7 +1873,6 @@
             this.panelConcepto.PerformLayout();
             this.gbMontos.ResumeLayout(false);
             this.panelMontos.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvSubtotales)).EndInit();
             this.gbDatosGenerales.ResumeLayout(false);
             this.tableDatosGenerales.ResumeLayout(false);
             this.tableDatosGenerales.PerformLayout();
@@ -1962,7 +1957,7 @@
         private System.Windows.Forms.Button btnAgregarComprobante;
         private System.Windows.Forms.GroupBox gbMontos;
         private System.Windows.Forms.Panel panelMontos;
-        private System.Windows.Forms.DataGridView dgvSubtotales;
+        private System.Windows.Forms.FlowLayoutPanel flpSubtotales;
         private System.Windows.Forms.Button btnAgregarSubtotal;
         private System.Windows.Forms.Label lblSubtotalTotal;
         private System.Windows.Forms.GroupBox gbOtrosMontos;
