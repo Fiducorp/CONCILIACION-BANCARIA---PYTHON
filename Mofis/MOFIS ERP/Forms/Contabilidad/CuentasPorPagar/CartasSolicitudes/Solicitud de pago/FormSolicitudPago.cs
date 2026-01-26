@@ -511,14 +511,22 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         private void ActualizarTotalSubtotales()
         {
             decimal total = 0m;
+            int count = 0;
             
             foreach (Control ctrl in flpSubtotales.Controls)
             {
                 if (ctrl is SubtotalItemControl item)
                 {
                     total += item.Monto;
+                    count++;
                 }
             }
+
+            // Ajustar padding según la cantidad de elementos para centrado visual
+            if (count >= 2)
+                flpSubtotales.Padding = new Padding(60, 4, 4, 4);
+            else
+                flpSubtotales.Padding = new Padding(4, 4, 4, 4);
 
             // Actualizar Label con formato de moneda dinámico
             string simbolo = !string.IsNullOrEmpty(monedaSimbolo) ? monedaSimbolo : "RD$";
