@@ -1039,6 +1039,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                     // Actualizar el label (asegurar el sufijo :)
                     string sufijo = otrosImpuestosNombre.EndsWith(":") ? "" : ":";
                     lblOtrosImpuestos.Text = otrosImpuestosNombre + sufijo;
+
+                    // Recalcular para reflejar el cambio de signo si ya hay un monto
+                    RecalcularTodo();
                 }
             }
         }
