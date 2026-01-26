@@ -41,6 +41,10 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         private bool suppressFideicomisoEvents = false;
         private bool suppressProveedorEvents = false;
 
+        // Configuración de Otros Impuestos
+        private string otrosImpuestosNombre = "Otros Impuestos:";
+        private bool otrosImpuestosSumar = true;
+
         // =========================================================
         // CONSTRUCTORES
         // =========================================================
@@ -134,6 +138,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
             // Evento del botón Agregar Proveedor (mini-form)
             btnAgregarProveedor.Click += BtnAgregarProveedor_Click;
+            
+            // Evento Configuración Otros Impuestos
+            btnConfigOtros.Click += BtnConfigOtros_Click;
 
             // =========================================================
             // A partir de aquí se listan los cambios solicitados
@@ -461,6 +468,22 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         private void BtnAgregarSubtotal_Click(object sender, EventArgs e)
         {
             AbrirInputSubtotal();
+        }
+
+        private void BtnConfigOtros_Click(object sender, EventArgs e)
+        {
+            using (var form = new FormConfigOtrosImpuestos(otrosImpuestosNombre, otrosImpuestosSumar))
+            {
+                if (form.ShowDialog(this) == DialogResult.OK)
+                {
+                    otrosImpuestosNombre = form.NombreImpuesto;
+                    otrosImpuestosSumar = form.SumarAlTotal;
+
+                    // Actualizar el label (asegurar el sufijo :)
+                    string sufijo = otrosImpuestosNombre.EndsWith(":") ? "" : ":";
+                    lblOtrosImpuestos.Text = otrosImpuestosNombre + sufijo;
+                }
+            }
         }
 
         private void AbrirInputSubtotal()

@@ -264,7 +264,7 @@ El anticipo si afectaría los totales, porque es un monto que ya se pago por lo 
 
 10. ARQUITECTURA DE FORMULARIOS
 
-No sera como propusiste, no esta pensado a largo plazo. Sera de la siguiente manera:
+Sera de la siguiente manera:
 
 Modulo de "Cuentas por pagar", al entrar habrán varios submódulos (cards) una de ellas sera "Cartas y Solicitudes", otra sera "Configuración" Y no agregaremos mas (por ahora), porque luego de culminar con estas dos trabajaremos en otras que también agregaremos dentro del modulo "Cuentas por pagar". Entonces, al entrar a "Cartas y Solicitudes" se habrira un menu en pantalla completa, sera un menu lateral con todas las formas que contendra este Submodulo, una de ellas y la primera sera "SOLICITUD DE PAGO", CERTIFICADO DE RETENCION, ETC. Y en pantalla al otro lado habran varias cosas, una de ellas es el logo del sistema, una descripcion del submodulo que ira cambiando de manera automatica con descripciones de todo lo que se puede hacer dentro de cada forma, y al pasar el mouse sobre el menu lateral, que de por si tendra su propio hover, cada card dentro de este menu tambien tendra su hover individual y al pasar el cursor la descripcion cambiante cambiara y lo hara segun la forma a la que se quiere acceder. Tambien habran notas que el sistema dejara en caso de ser necesario, y advertencia si el usuario salio de una forma sin guardar cambios. O lo ultimo que se hizo. O otras cosas que consideres mas util y mas moderno. 
 

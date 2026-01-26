@@ -97,6 +97,7 @@
             this.btnAgregarComprobante = new System.Windows.Forms.Button();
             this.flpComprobantes = new System.Windows.Forms.FlowLayoutPanel();
             this.gbOtrosMontos = new System.Windows.Forms.GroupBox();
+            this.btnConfigOtros = new System.Windows.Forms.Button();
             this.lblOtrosImpuestos = new System.Windows.Forms.Label();
             this.txtHorasExtras = new System.Windows.Forms.TextBox();
             this.lblHorasExtras = new System.Windows.Forms.Label();
@@ -107,7 +108,6 @@
             this.txtExento = new System.Windows.Forms.TextBox();
             this.lblDireccionTecnica = new System.Windows.Forms.Label();
             this.txtOtrosImpuestos = new System.Windows.Forms.TextBox();
-            this.button4 = new System.Windows.Forms.Button();
             this.gbNotasCRDB = new System.Windows.Forms.GroupBox();
             this.txtAvancePagar = new System.Windows.Forms.TextBox();
             this.lblAvancePagar = new System.Windows.Forms.Label();
@@ -1121,6 +1121,7 @@
             // 
             // gbOtrosMontos
             // 
+            this.gbOtrosMontos.Controls.Add(this.btnConfigOtros);
             this.gbOtrosMontos.Controls.Add(this.lblOtrosImpuestos);
             this.gbOtrosMontos.Controls.Add(this.txtHorasExtras);
             this.gbOtrosMontos.Controls.Add(this.lblHorasExtras);
@@ -1131,7 +1132,6 @@
             this.gbOtrosMontos.Controls.Add(this.txtExento);
             this.gbOtrosMontos.Controls.Add(this.lblDireccionTecnica);
             this.gbOtrosMontos.Controls.Add(this.txtOtrosImpuestos);
-            this.gbOtrosMontos.Controls.Add(this.button4);
             this.gbOtrosMontos.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbOtrosMontos.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbOtrosMontos.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
@@ -1142,6 +1142,21 @@
             this.gbOtrosMontos.TabIndex = 6;
             this.gbOtrosMontos.TabStop = false;
             this.gbOtrosMontos.Text = "📊 OTROS MONTOS";
+            // 
+            // btnConfigOtros
+            // 
+            this.btnConfigOtros.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.btnConfigOtros.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnConfigOtros.FlatAppearance.BorderSize = 0;
+            this.btnConfigOtros.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnConfigOtros.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.btnConfigOtros.ForeColor = System.Drawing.Color.White;
+            this.btnConfigOtros.Location = new System.Drawing.Point(483, 210);
+            this.btnConfigOtros.Name = "btnConfigOtros";
+            this.btnConfigOtros.Size = new System.Drawing.Size(33, 30);
+            this.btnConfigOtros.TabIndex = 25;
+            this.btnConfigOtros.Text = "⚙";
+            this.btnConfigOtros.UseVisualStyleBackColor = false;
             // 
             // lblOtrosImpuestos
             // 
@@ -1241,20 +1256,6 @@
             this.txtOtrosImpuestos.Name = "txtOtrosImpuestos";
             this.txtOtrosImpuestos.Size = new System.Drawing.Size(310, 29);
             this.txtOtrosImpuestos.TabIndex = 17;
-            // 
-            // button4
-            // 
-            this.button4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
-            this.button4.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button4.FlatAppearance.BorderSize = 0;
-            this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button4.ForeColor = System.Drawing.Color.White;
-            this.button4.Location = new System.Drawing.Point(483, 210);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(33, 30);
-            this.button4.TabIndex = 25;
-            this.button4.Text = "⚙";
-            this.button4.UseVisualStyleBackColor = false;
             // 
             // gbNotasCRDB
             // 
@@ -2012,6 +2013,7 @@
         private System.Windows.Forms.Button btnLimpiar;
         private System.Windows.Forms.CheckBox chkITBISManual;
         private System.Windows.Forms.CheckBox chkCalcularITBIS;
+        private System.Windows.Forms.Button btnConfigOtros;
         private System.Windows.Forms.Label lblOtrosImpuestos;
         private System.Windows.Forms.TextBox txtHorasExtras;
         private System.Windows.Forms.Label lblHorasExtras;
@@ -2022,7 +2024,6 @@
         private System.Windows.Forms.TextBox txtExento;
         private System.Windows.Forms.Label lblDireccionTecnica;
         private System.Windows.Forms.TextBox txtOtrosImpuestos;
-        private System.Windows.Forms.Button button4;
         private System.Windows.Forms.TextBox txtAvancePagar;
         private System.Windows.Forms.Label lblAvancePagar;
         private System.Windows.Forms.TextBox txtAnticipo;
