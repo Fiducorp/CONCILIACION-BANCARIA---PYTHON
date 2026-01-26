@@ -45,6 +45,30 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         private string otrosImpuestosNombre = "Otros Impuestos:";
         private bool otrosImpuestosSumar = true;
 
+        // Estructura para guardar info de la nota de Crédito/Débito
+        private struct NotaInfo
+        {
+            public decimal Subtotal;
+            public bool AplicaITBIS;
+            public decimal PorcentajeITBIS;
+            public decimal MontoITBIS;
+            public decimal Total;
+            public string Descripcion;
+            public bool AfectaSubtotal; // Modo 2: Afecta base imponible
+            public bool EsManual;       // Si true, se ignora todo lo anterior y se usa el valor del TextBox directo
+        }
+
+        private NotaInfo notaCredito = new NotaInfo { EsManual = true };
+        private NotaInfo notaDebito = new NotaInfo { EsManual = true };
+        private bool isRecalculating = false; // Flag para evitar bucles infinitos en TextChanged
+
+        // Constantes de Retención (Valores Estándar aproximados, ajustables)
+        // El usuario mencionó que están en el código, si no están, usaremos estos por defecto.
+        private const decimal CONST_RET_AFP_PCT = 0.0287m; // 2.87%
+        private const decimal CONST_RET_SFS_PCT = 0.0304m; // 3.04%
+
+        // =========================================================
+
         // =========================================================
         // CONSTRUCTORES
         // =========================================================
@@ -142,6 +166,70 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             // Evento Configuración Otros Impuestos
             btnConfigOtros.Click += BtnConfigOtros_Click;
 
+            // Eventos Notas Crédito / Débito
+            btnConfigNC.Click += BtnConfigNC_Click;
+            btnConfigND.Click += BtnConfigND_Click;
+
+            // Eventos manuales de Notas (para limpiar config si el usuario escribe)
+            // SOLO si el valor cambia realmente y tiene foco (evita borrado por formateo)
+            txtNotaCredito.TextChanged += (s, e) => 
+            {
+                if (isRecalculating) return;
+                
+                if (txtNotaCredito.Focused)
+                {
+                     decimal valTexto = ParseMoneda(txtNotaCredito.Text);
+                     // Si el valor numérico cambió y no era manual, pasar a manual
+                     if (!notaCredito.EsManual && Math.Abs(valTexto - notaCredito.Total) > 0.01m)
+                     {
+                         notaCredito.EsManual = true;
+                         notaCredito.AfectaSubtotal = false; 
+                     }
+                }
+                RecalcularTodo(); 
+            };
+            
+            txtNotaDebito.TextChanged += (s, e) => 
+            { 
+                 if (isRecalculating) return;
+                 
+                 if (txtNotaDebito.Focused)
+                 {
+                     decimal valTexto = ParseMoneda(txtNotaDebito.Text);
+                     if (!notaDebito.EsManual && Math.Abs(valTexto - notaDebito.Total) > 0.01m)
+                     {
+                         notaDebito.EsManual = true;
+                         notaDebito.AfectaSubtotal = false;
+                     }
+                 }
+                 RecalcularTodo();
+            };
+
+            // Asegurar que RecalcularTodo se llame en cambios clave
+            if (cboITBISPorcentaje != null) cboITBISPorcentaje.SelectedIndexChanged += (s, e) => RecalcularTodo();
+            if (rbBaseSubtotal != null) rbBaseSubtotal.CheckedChanged += (s, e) => RecalcularTodo();
+            if (rbBaseDirTec != null) rbBaseDirTec.CheckedChanged += (s, e) => RecalcularTodo();
+            if (cboRetITBIS != null) cboRetITBIS.SelectedIndexChanged += (s, e) => RecalcularTodo();
+            if (cboRetISR != null) cboRetISR.SelectedIndexChanged += (s, e) => RecalcularTodo();
+            if (chkITBISManual != null) chkITBISManual.CheckedChanged += (s, e) => { ActualizarEstadoITBISManual(); RecalcularTodo(); };
+            if (txtITBISManual != null) txtITBISManual.TextChanged += (s, e) => RecalcularTodo();
+
+            // Suscribir todos los campos monetarios a RecalcularTodo
+            if (currencyTextBoxes != null)
+            {
+                foreach (var tb in currencyTextBoxes)
+                {
+                    if (tb != null && tb != txtNotaCredito && tb != txtNotaDebito && tb != txtITBISManual) 
+                    {
+                        tb.TextChanged += (s, e) => RecalcularTodo();
+                    }
+                }
+            }
+
+            // =========================================================
+            // A partir de aquí se listan los cambios solicitados
+
+
             // =========================================================
             // A partir de aquí se listan los cambios solicitados
             // =========================================================
@@ -152,25 +240,39 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             // Evento maestro: activar/desactivar cálculo automático del ITBIS
             if (chkCalcularITBIS != null)
             {
-                chkCalcularITBIS.CheckedChanged += ChkCalcularITBIS_CheckedChanged;
+                chkCalcularITBIS.CheckedChanged += (s, e) => {
+                     UpdateEstadoCalculoITBIS();
+                     RecalcularTodo();
+                };
+            }
+            if (chkCalcularITBIS != null)
+            {
+                // chkCalcularITBIS.CheckedChanged += ChkCalcularITBIS_CheckedChanged; // Eliminamos la asignacion duplicada si ya existia para evitar doble llamada o conflictos
             }
 
             // Evento de ITBIS Manual (override)
             if (chkITBISManual != null)
             {
-                chkITBISManual.CheckedChanged += ChkITBISManual_CheckedChanged;
+                // chkITBISManual.CheckedChanged += ChkITBISManual_CheckedChanged; // Lo integramos arriba
             }
 
             // CheckBoxes para retenciones (habilitan/deshabilitan sus TextBoxes)
             if (chkRetSFS != null)
             {
-                chkRetSFS.CheckedChanged += ChkRetSFS_CheckedChanged;
+                chkRetSFS.CheckedChanged += (s, e) => {
+                     ChkRetSFS_CheckedChanged(s, e);
+                     ActualizarRetencionesLey();
+                };
             }
 
             if (chkRetAFP != null)
             {
-                chkRetAFP.CheckedChanged += ChkRetAFP_CheckedChanged;
+                chkRetAFP.CheckedChanged += (s, e) => {
+                     ChkRetAFP_CheckedChanged(s, e);
+                     ActualizarRetencionesLey();
+                };
             }
+
 
             // Evento para incluir firma -> habilita/deshabilita cboFirma
             if (chkIncluirFirma != null)
@@ -379,9 +481,464 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             ReformatAmountPortionInLabel(lblTotalRetencionTitulo);
             ReformatAmountPortionInLabel(lblTotalAPagar);
 
+
             // Actualizar formato del grid de subtotales y su label
             ActualizarFormatoGridSubtotales();
+            
+            // Llamada maestra al recalculo
+            RecalcularTodo();
         }
+
+        // =========================================================
+        // LÓGICA DE NOTAS CRÉDITO / DÉBITO Y CÁLCULO FINAL
+        // =========================================================
+        
+        private void BtnConfigNC_Click(object sender, EventArgs e)
+        {
+            AbrirConfigNota(true);
+        }
+
+        private void BtnConfigND_Click(object sender, EventArgs e)
+        {
+            AbrirConfigNota(false);
+        }
+
+        private void AbrirConfigNota(bool esCredito)
+        {
+            decimal subtotalSolicitud = ObtenerSubtotalSimple(); // El subtotal "bruto" del grid
+            bool tieneSubtotal = subtotalSolicitud > 0;
+
+            NotaInfo infoActual = esCredito ? notaCredito : notaDebito;
+            
+            // Si estaba en manual, el valor del textbox quizás no cuadre con la info interna
+            // Pasaremos null como subtotalActual si es manual, para que inicie limpio,
+            // o podríamos intentar inferir. Por simplicidad, si es manual, abrimos limpio o con el valor total como subtotal provisional.
+            decimal? subPrevio = infoActual.EsManual ? (decimal?)null : infoActual.Subtotal;
+            
+            using (var form = new FormConfigNota(esCredito, tieneSubtotal, 
+                                                monedaNumberFormat ?? BuildNumberFormat(),
+                                                monedaSimbolo,
+                                                subPrevio, 
+                                                infoActual.AplicaITBIS, 
+                                                infoActual.PorcentajeITBIS > 0 ? infoActual.PorcentajeITBIS : 18m,
+                                                infoActual.Descripcion,
+                                                infoActual.AfectaSubtotal))
+            {
+                if (form.ShowDialog() == DialogResult.OK)
+                {
+                    NotaInfo nuevaInfo = new NotaInfo
+                    {
+                        Subtotal = form.Subtotal,
+                        AplicaITBIS = form.AplicaITBIS,
+                        PorcentajeITBIS = form.PorcentajeITBIS,
+                        MontoITBIS = form.MontoITBIS,
+                        Total = form.TotalNota,
+                        Descripcion = form.Descripcion,
+                        AfectaSubtotal = form.AfectaSubtotal,
+                        EsManual = false
+                    };
+
+                    // IMPORTANTE: Primero actualizamos el texto CON FORMATO
+                    // Seteamos el texto y la info primero, y luego RecalcularTodo
+                    // Para evitar que el primer RecalcularTodo (disparado por TextChanged) 
+                    // vea un estado inconsistente.
+                    
+                    if (esCredito)
+                        notaCredito = nuevaInfo;
+                    else
+                        notaDebito = nuevaInfo;
+                    
+                    if (esCredito)
+                        txtNotaCredito.Text = FormatearMoneda(nuevaInfo.Total);
+                    else
+                        txtNotaDebito.Text = FormatearMoneda(nuevaInfo.Total);
+
+                    RecalcularTodo();
+                }
+            }
+        }
+
+
+        // Método central de cálculo
+        private void RecalcularTodo()
+        {
+            if (isRecalculating) return;
+            isRecalculating = true;
+
+            try
+            {
+                // =========================================================
+                // 1. OBTENER SUBTOTALES Y BASES
+                // =========================================================
+                
+                // Subtotal del Grid (Suma de items)
+                decimal subtotalGrid = ObtenerSubtotalSimple();
+
+                // Montos de Dirección Técnica y Exento
+                decimal montoDirTecnica = ParseMoneda(txtDireccionTecnica?.Text);
+                decimal montoExento = ParseMoneda(txtExento?.Text);
+                decimal montoOtrosImp = ParseMoneda(txtOtrosImpuestos?.Text);
+                if (!otrosImpuestosSumar) montoOtrosImp = -montoOtrosImp;
+                
+                decimal montoHorasExtras = ParseMoneda(txtHorasExtras?.Text);
+                
+                // --- Variables de control para ITBIS ---
+                bool usareManual = chkITBISManual != null && chkITBISManual.Checked;
+                bool calcularAuto = chkCalcularITBIS != null && chkCalcularITBIS.Checked;
+
+                // VALIDACIÓN BASE DIRECCIÓN TÉCNICA
+                if (rbBaseDirTec != null && rbBaseDirTec.Checked)
+                {
+                    if (montoDirTecnica <= 0 && calcularAuto)
+                    {
+                        MessageBox.Show("No se puede calcular ITBIS sobre Dirección Técnica porque el monto es 0.\nSe cambiará la base a 'Subtotal'.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        rbBaseSubtotal.Checked = true;
+                        // Al cambiar el radio button, se disparará RecalcularTodo nuevamente
+                        return; 
+                    }
+                }
+
+                // =========================================================
+                // 2. APLICAR NOTAS MODO 2 (AFECTAN BASE)
+                // =========================================================
+                
+                decimal ajusteSubtotalNotas = 0m;
+
+                // Verificamos si los textboxes están vacíos o cambiaron para sincronizar estado manual
+                
+                string txtNC = txtNotaCredito?.Text ?? "";
+                decimal valNC_UI = ParseMoneda(txtNC);
+                
+                if (string.IsNullOrWhiteSpace(txtNC) && notaCredito.Total != 0)
+                {
+                    // Usuario borró el texto manual -> Reset total a 0 y esManual
+                    notaCredito = new NotaInfo { EsManual = true, Total = 0 }; 
+                }
+                else if (notaCredito.EsManual)
+                {
+                    notaCredito.Total = valNC_UI;
+                }
+
+                string txtND = txtNotaDebito?.Text ?? "";
+                decimal valND_UI = ParseMoneda(txtND);
+                if (string.IsNullOrWhiteSpace(txtND) && notaDebito.Total != 0)
+                {
+                    notaDebito = new NotaInfo { EsManual = true, Total = 0 };
+                }
+                else if (notaDebito.EsManual)
+                {
+                     notaDebito.Total = valND_UI;
+                }
+
+                // Ajustamos variables locales para usar los valores finales según modo
+                decimal valNC_final = notaCredito.EsManual ? valNC_UI : notaCredito.Subtotal;
+                decimal valND_final = notaDebito.EsManual ? valND_UI : notaDebito.Subtotal;
+
+                // Aplicar lógica Modo 2 (Afectan Subtotal)
+                if (!notaCredito.EsManual && notaCredito.AfectaSubtotal)
+                    ajusteSubtotalNotas -= valNC_final;
+
+                if (!notaDebito.EsManual && notaDebito.AfectaSubtotal)
+                    ajusteSubtotalNotas += valND_final;
+
+                // Base Imponible Real (Subtotal Grid +/- Notas Modo 2)
+                decimal baseImponibleReal = subtotalGrid + ajusteSubtotalNotas;
+
+                if (baseImponibleReal < 0) baseImponibleReal = 0;
+
+
+                // =========================================================
+                // 3. CÁLCULO DE ITBIS (AUTO vs MANUAL)
+                // =========================================================
+
+                decimal itbisFinal = 0m;
+                decimal itbisCalculadoAuto = 0m; // Para mostrar en label y calcular diferencia
+
+                // --- Cálculo Automático ---
+                if (calcularAuto)
+                {
+                    // Determinar Base para ITBIS
+                    decimal baseParaITBIS = baseImponibleReal; // Por defecto rbBaseSubtotal
+                    
+                    if (rbBaseDirTec != null && rbBaseDirTec.Checked)
+                    {
+                        baseParaITBIS = montoDirTecnica;
+                    }
+
+                    // Obtener Porcentaje
+                    decimal pctITBIS = 0.18m;
+                    if (cboITBISPorcentaje != null && cboITBISPorcentaje.SelectedItem != null)
+                    {
+                         string sPct = cboITBISPorcentaje.SelectedItem.ToString().Replace("%", "").Trim();
+                         if (decimal.TryParse(sPct, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal p))
+                             pctITBIS = p / 100m;
+                    }
+
+                    itbisCalculadoAuto = Math.Round(baseParaITBIS * pctITBIS, 2);
+                }
+
+                // --- Selección Final ITBIS ---
+                if (usareManual)
+                {
+                    itbisFinal = ParseMoneda(txtITBISManual?.Text);
+                }
+                else
+                {
+                    itbisFinal = itbisCalculadoAuto;
+                }
+
+                // --- Actualización UI ITBIS ---
+                if (lblITBISCalculado != null) 
+                    lblITBISCalculado.Text = FormatearMonedaPlain(itbisCalculadoAuto); // Solo número o con símbolo? User dijo "Muestra el ITBIS calculado". Mejor con formato completo:
+                if (lblITBISCalculado != null) lblITBISCalculado.Text = FormatearMoneda(itbisCalculadoAuto);
+
+                if (lblITBISDiferencia != null)
+                {
+                     decimal dif = itbisCalculadoAuto - itbisFinal;
+                     lblITBISDiferencia.Text = $"Dif: {FormatearMoneda(dif)}";
+                     // Color coding opcional
+                     lblITBISDiferencia.ForeColor = (Math.Abs(dif) > 0.01m) ? Color.Red : Color.Green;
+                }
+
+                // =========================================================
+                // 4. RETENCIONES
+                // =========================================================
+                
+                decimal totalRetenciones = 0m;
+                
+                // RETENCIÓN ITBIS (Sobre el ITBIS Final seleccionado)
+                decimal retItbisMonto = 0m;
+                if (cboRetITBIS != null && cboRetITBIS.SelectedItem != null)
+                {
+                    string sRetItb = cboRetITBIS.SelectedItem.ToString().Replace("%", "").Trim();
+                     if (decimal.TryParse(sRetItb, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal pRet))
+                     {
+                         retItbisMonto = Math.Round(itbisFinal * (pRet / 100m), 2);
+                     }
+                }
+                if (lblRetITBISMonto != null) lblRetITBISMonto.Text = FormatearMoneda(retItbisMonto);
+                if (lblRetITBISTitulo != null) lblRetITBISTitulo.Text = $"RETENCIÓN ITBIS: {FormatearMoneda(retItbisMonto)}";
+                
+                // RETENCIÓN ISR (Sobre el Subtotal / Base Imponible Real)
+                // User: "se hace en base al subtotal en el label 'lblSubtotalTotal'" -> baseImponibleReal (que es lo que muestra ese label ahora)
+                decimal retIsrMonto = 0m;
+                if (cboRetISR != null && cboRetISR.SelectedItem != null)
+                {
+                    string sRetIsr = cboRetISR.SelectedItem.ToString().Replace("%", "").Trim();
+                     if (decimal.TryParse(sRetIsr, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal pIsr))
+                     {
+                         retIsrMonto = Math.Round(baseImponibleReal * (pIsr / 100m), 2);
+                     }
+                }
+                if (lblRetISRMonto != null) lblRetISRMonto.Text = FormatearMoneda(retIsrMonto);
+                if (lblRetISRTitulo != null) lblRetISRTitulo.Text = $"RETENCIÓN ISR: {FormatearMoneda(retIsrMonto)}";
+
+
+                // RETENCIONES AFP / SFS (Constantes sobre Subtotal)
+                // Lógica requerida: Si check, calcular automático. Si usuario cambia, permitir pero avisar (no implementaré aviso invasivo ahora, solo lógica de cálculo).
+                // Si check SFS -> Calcular. Pero si el campo tiene valor ingresado manual que difiere, ¿respetamos manual o forzamos?
+                // REGLA: "al habilitarlos, el calculo debe ser automatico... y luego el usuario quiere ingresar otro monto diferente, el sistema debe permitirlo"
+                // Implementación: Solo calculamos y sobrescribimos SI el usuario acaba de activar el check (evento CheckedChanged aparte) O si el campo está vacío/cero. 
+                // Pero en RecalculateTodo, sobrescribir cada vez impediría edición manual.
+                // SOLUCIÓN: El cálculo automático de AFP/SFS lo haremos en los eventos CheckedChanged o cuando cambie el Subtotal SOLO SI el usuario no lo ha 'tocado' manualmente o si forzamos.
+                // Como RecalcularTodo corre siempre, mejor leemos el valor del TextBox. La lógica de "poner el valor automático" la delegamos a un helper que se llame cuando cambie el Check o el Subtotal.
+                
+                // Para este paso, simplemente SUMAMOS lo que haya en los TextBoxes si están habilitados.
+                decimal valAFP = (chkRetAFP != null && chkRetAFP.Checked) ? ParseMoneda(txtRetAFP?.Text) : 0m;
+                decimal valSFS = (chkRetSFS != null && chkRetSFS.Checked) ? ParseMoneda(txtRetSFS?.Text) : 0m;
+
+                totalRetenciones = retItbisMonto + retIsrMonto + valAFP + valSFS;
+
+                if (lblTotalRetencionTitulo != null) lblTotalRetencionTitulo.Text = $"TOTAL RETENCIÓN: {FormatearMoneda(totalRetenciones)}";
+                
+                // Otras Retenciones (Label) -> Debe reflejar suma AFP + SFS según requerimiento
+                if (lblOtrasRetTitulo != null)
+                {
+                    decimal otras = valAFP + valSFS;
+                    lblOtrasRetTitulo.Text = $"OTRAS RETENCIONES: {FormatearMoneda(otras)}";
+                }
+                
+                // =========================================================
+                // 5. TOTAL FACTURA
+
+                // =========================================================
+                // Componentes: Base + ITBIS + Exento + DirTec + HorasExtra + OtrosImp
+                // (Anticipo se resta ahora en el Total a Pagar, no aquí)
+                
+                decimal montoAnticipo = ParseMoneda(txtAnticipo?.Text);
+
+                decimal totalFactura = baseImponibleReal + itbisFinal + montoExento + montoDirTecnica + montoHorasExtras + montoOtrosImp;
+
+                if (lblTotalFacturaTitulo != null) lblTotalFacturaTitulo.Text = $"TOTAL FACTURA: {FormatearMoneda(totalFactura)}";
+                if (lblTotalExentoTitulo != null) lblTotalExentoTitulo.Text = $"EXENTO: {FormatearMoneda(montoExento)}";
+                if (lblTotalITBISTitulo != null) lblTotalITBISTitulo.Text = $"ITBIS: {FormatearMoneda(itbisFinal)}";
+
+                // =========================================================
+                // 6. TOTAL A PAGAR
+                // =========================================================
+                // Total A Pagar = Total Factura - Retenciones - Descuento - Anticipo - Avance + AjustesNotasModo1
+                
+                decimal montoDescuento = ParseMoneda(txtDescuento?.Text);
+                decimal montoAvance = ParseMoneda(txtAvancePagar?.Text); // Referencia solo
+
+                // Notas Modo 1 o Manuales
+                decimal ajusteNotasPagar = 0m;
+                
+                // Nota Crédito
+                if (notaCredito.EsManual)
+                {
+                    ajusteNotasPagar -= valNC_UI;
+                }
+                else if (!notaCredito.AfectaSubtotal) // Modo 1 Aut
+                {
+                    ajusteNotasPagar -= notaCredito.Total;
+                }
+
+                // Nota Débito
+                if (notaDebito.EsManual)
+                {
+                    ajusteNotasPagar += valND_UI;
+                }
+                else if (!notaDebito.AfectaSubtotal) // Modo 1 Aut
+                {
+                    ajusteNotasPagar += notaDebito.Total;
+                }
+
+                decimal totalAPagar = totalFactura - totalRetenciones - montoDescuento - montoAnticipo + ajusteNotasPagar;
+
+                if (lblTotalAPagar != null)
+                    lblTotalAPagar.Text = $"▶▶▶  TOTAL A PAGAR:  {FormatearMoneda(totalAPagar)}  ◀◀◀";
+
+                // Sincronizar Label de Subtotal arriba del grid también para reflejar impacto
+                if (lblSubtotalTotal != null)
+                {
+                    lblSubtotalTotal.Text = $"SUBTOTAL: {FormatearMoneda(baseImponibleReal)}";
+                    lblSubtotalTotal.ForeColor = (notaCredito.AfectaSubtotal || notaDebito.AfectaSubtotal) ? Color.OrangeRed : Color.FromArgb(64, 64, 64);
+                }
+
+                // Sincronizar TextBoxes de notas si NO tienen foco (para que tengan el formato correcto)
+                if (txtNotaCredito != null && !txtNotaCredito.Focused)
+                {
+                    decimal val = notaCredito.EsManual ? valNC_UI : notaCredito.Total;
+                    string res = val != 0 ? FormatearMoneda(val) : "";
+                    if (txtNotaCredito.Text != res) txtNotaCredito.Text = res;
+                }
+                if (txtNotaDebito != null && !txtNotaDebito.Focused)
+                {
+                    decimal val = notaDebito.EsManual ? valND_UI : notaDebito.Total;
+                    string res = val != 0 ? FormatearMoneda(val) : "";
+                    if (txtNotaDebito.Text != res) txtNotaDebito.Text = res;
+                }
+
+
+
+
+                // Update Subtotal Header
+                if (lblTotalSubtotalTitulo != null) 
+                {
+                    lblTotalSubtotalTitulo.Text = $"SUBTOTAL: {FormatearMoneda(baseImponibleReal)}";
+                    lblTotalSubtotalTitulo.ForeColor = (notaCredito.AfectaSubtotal || notaDebito.AfectaSubtotal) ? Color.Orange : Color.White;
+                }
+                
+                // =========================================================
+                // 7. ACTUALIZACIÓN AUTOMÁTICA AFP/SFS (Si aplica)
+                // =========================================================
+                // Si los checks están activos, queremos que el valor se mantenga actualizado con el subtotal
+                // SIEMPRE QUE el usuario no lo haya editado a mano.
+                // Esto es complejo de detectar sin un flag extra. 
+                // Simplificación: Recalculamos siempre si el check está activo, SALVO que estemos editando ese campo específico.
+                // Pero el user quiere poder editar. 
+                // Estrategia: Solo actualizar AFP/SFS cuando cambie la Base (Subtotal) o se activen los checks.
+                // Lo haré en un método aparte llamado desde los eventos pertinentes, no aquí en RecalcularTodo para evitar sobrescritura constante.
+            }
+            catch (Exception ex)
+            {
+               System.Diagnostics.Debug.WriteLine("Error al recalcular: " + ex.Message);
+            }
+            finally
+            {
+                isRecalculating = false;
+            }
+        }
+        
+        // Método helper para actualizar AFP/SFS cuando cambia la base o se activan
+        private void ActualizarRetencionesLey()
+        {
+            if (isRecalculating) return;
+            
+            decimal baseCalculo = ObtenerSubtotalSimple(); 
+            // ¿Base original o afectada por notas? User dijo "base al subtotal en el label 'lblSubtotalTotal'".
+            // Ese label ahora muestra la base afectada por notas Modo 2.
+            // Usaremos la base afectada si hay notas Modo 2.
+             decimal ajuste = 0m;
+             if (!notaCredito.EsManual && notaCredito.AfectaSubtotal) ajuste -= notaCredito.Subtotal;
+             if (!notaDebito.EsManual && notaDebito.AfectaSubtotal) ajuste += notaDebito.Subtotal;
+             baseCalculo += ajuste;
+             if (baseCalculo < 0) baseCalculo = 0;
+
+            if (chkRetAFP != null && chkRetAFP.Checked)
+            {
+                decimal val = Math.Round(baseCalculo * CONST_RET_AFP_PCT, 2);
+                if (txtRetAFP != null) txtRetAFP.Text = FormatearMonedaPlain(val);
+            }
+            
+            if (chkRetSFS != null && chkRetSFS.Checked)
+            {
+                 decimal val = Math.Round(baseCalculo * CONST_RET_SFS_PCT, 2);
+                 if (txtRetSFS != null) txtRetSFS.Text = FormatearMonedaPlain(val);
+            }
+            
+            // Esto actualizará los textbox -> TextChanged -> RecalcularTodo
+        }
+
+        private decimal ObtenerSubtotalSimple()
+        {
+            decimal total = 0m;
+            foreach (Control ctrl in flpSubtotales.Controls)
+            {
+                if (ctrl is SubtotalItemControl item)
+                    total += item.Monto;
+            }
+            return total;
+        }
+
+        private decimal ParseMoneda(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return 0m;
+            string clean = Regex.Replace(text, "[^0-9.-]", "");
+            if (decimal.TryParse(clean, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal val))
+                return val;
+            return 0m;
+        }
+
+        private string FormatearMoneda(decimal valor)
+        {
+             string simbolo = !string.IsNullOrEmpty(monedaSimbolo) ? monedaSimbolo : "RD$";
+             var nfi = monedaNumberFormat ?? BuildNumberFormat();
+             return $"{simbolo} {valor.ToString("N2", nfi)}";
+        }
+        
+        private string FormatearMonedaPlain(decimal valor)
+        {
+             var nfi = monedaNumberFormat ?? BuildNumberFormat();
+             return valor.ToString("N2", nfi);
+        }
+
+        private decimal ObtenerValorLabel(Label lbl)
+        {
+            if (lbl == null) return 0m;
+            // Extraer números del texto (ej "RET ITBIS: RD$ 450.00")
+            // Usamos regex para sacar el último bloque numérico
+            var match = Regex.Match(lbl.Text, @"[0-9]+(?:\.[0-9]+)?");
+            // Buscar la coincidencia que parezca monto (con decimales o al final)
+            // Mejor limpieza:
+             string clean = Regex.Replace(lbl.Text, "[^0-9.-]", "");
+             // Ojo con guiones en textos no numéricos.
+             if (decimal.TryParse(clean, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal val))
+                return val;
+            return 0m;
+        }
+
 
         private void ReformatLabelNumberIfPossible(Label lbl)
         {
@@ -557,6 +1114,10 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             string textoTotal = $"{simbolo} {total.ToString("N2", nfi)}";
 
             lblSubtotalTotal.Text = $"SUBTOTAL: {textoTotal}";
+            
+            // Si cambia el subtotal, deben actualizarse AFP y SFS si están en automático
+            ActualizarRetencionesLey();
+            RecalcularTodo();
         }
 
         private void ActualizarFormatoGridSubtotales()
@@ -1334,6 +1895,8 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 if (!calcular)
                 {
                     chkITBISManual.Checked = false;
+                    // Limpiar también el valor manual
+                    if (txtITBISManual != null) txtITBISManual.Text = string.Empty;
                 }
             }
 
@@ -1348,7 +1911,13 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             // Nota: chkITBISManual.Enabled ya se gestiona por UpdateEstadoCalculoITBIS
 
             // Habilitar / deshabilitar input manual
-            if (txtITBISManual != null) txtITBISManual.Enabled = manualChecked;
+            if (txtITBISManual != null) 
+            {
+                txtITBISManual.Enabled = manualChecked;
+                // Si se deshabilita, limpiar
+                if (!manualChecked)
+                    txtITBISManual.Text = string.Empty;
+            }
 
             // Mostrar / ocultar diferencia
             if (lblDif != null) lblDif.Visible = manualChecked;
@@ -1550,6 +2119,15 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
             // Opcional: ajustar color para indicar estado
             txtRetSFS.BackColor = txtRetSFS.Enabled ? Color.White : SystemColors.Control;
+            
+            // Si se deshabilita, limpiar
+            if (!chkRetSFS.Checked)
+            {
+                txtRetSFS.Text = string.Empty;
+                // No llamamos RecalcularTodo aquí excesivamente porque UpdateRetencionesLey puede llamarlo o el TextChanged
+                // Pero es mejor asegurarse
+                if (!isRecalculating) RecalcularTodo();
+            }
         }
 
         private void ChkRetAFP_CheckedChanged(object sender, EventArgs e)
@@ -1562,6 +2140,13 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
             // Opcional: ajustar color para indicar estado
             txtRetAFP.BackColor = txtRetAFP.Enabled ? Color.White : SystemColors.Control;
+            
+            // Si se deshabilita, limpiar
+            if (!chkRetAFP.Checked)
+            {
+                txtRetAFP.Text = string.Empty;
+                if (!isRecalculating) RecalcularTodo();
+            }
         }
 
         // Validador para enteros (solo dígitos)

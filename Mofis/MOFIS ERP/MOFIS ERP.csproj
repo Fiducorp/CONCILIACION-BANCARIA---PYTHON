@@ -185,6 +185,12 @@
     <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormAgregarProveedor.Designer.cs">
       <DependentUpon>FormAgregarProveedor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormConfigNota.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormConfigNota.Designer.cs">
+      <DependentUpon>FormConfigNota.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormConfigOtrosImpuestos.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -385,6 +391,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormAgregarProveedor.resx">
       <DependentUpon>FormAgregarProveedor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormConfigNota.resx">
+      <DependentUpon>FormConfigNota.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormConfigOtrosImpuestos.resx">
       <DependentUpon>FormConfigOtrosImpuestos.cs</DependentUpon>

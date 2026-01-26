@@ -1455,7 +1455,7 @@
             // 
             this.chkRetAFP.AutoSize = true;
             this.chkRetAFP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.chkRetAFP.Location = new System.Drawing.Point(722, 112);
+            this.chkRetAFP.Location = new System.Drawing.Point(758, 112);
             this.chkRetAFP.Name = "chkRetAFP";
             this.chkRetAFP.Size = new System.Drawing.Size(143, 25);
             this.chkRetAFP.TabIndex = 12;
@@ -1466,7 +1466,7 @@
             // 
             this.chkRetSFS.AutoSize = true;
             this.chkRetSFS.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.chkRetSFS.Location = new System.Drawing.Point(722, 154);
+            this.chkRetSFS.Location = new System.Drawing.Point(758, 154);
             this.chkRetSFS.Name = "chkRetSFS";
             this.chkRetSFS.Size = new System.Drawing.Size(140, 25);
             this.chkRetSFS.TabIndex = 12;
@@ -1477,7 +1477,7 @@
             // 
             this.chkITBISManual.AutoSize = true;
             this.chkITBISManual.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.chkITBISManual.Location = new System.Drawing.Point(722, 54);
+            this.chkITBISManual.Location = new System.Drawing.Point(758, 54);
             this.chkITBISManual.Name = "chkITBISManual";
             this.chkITBISManual.Size = new System.Drawing.Size(87, 25);
             this.chkITBISManual.TabIndex = 12;
@@ -1487,7 +1487,7 @@
             // txtRetSFS
             // 
             this.txtRetSFS.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtRetSFS.Location = new System.Drawing.Point(871, 152);
+            this.txtRetSFS.Location = new System.Drawing.Point(907, 152);
             this.txtRetSFS.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.txtRetSFS.Name = "txtRetSFS";
             this.txtRetSFS.Size = new System.Drawing.Size(180, 29);
@@ -1496,7 +1496,7 @@
             // txtRetAFP
             // 
             this.txtRetAFP.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtRetAFP.Location = new System.Drawing.Point(871, 110);
+            this.txtRetAFP.Location = new System.Drawing.Point(907, 110);
             this.txtRetAFP.Margin = new System.Windows.Forms.Padding(3, 5, 10, 5);
             this.txtRetAFP.Name = "txtRetAFP";
             this.txtRetAFP.Size = new System.Drawing.Size(180, 29);
@@ -1507,22 +1507,18 @@
             this.panelRetenciones.Controls.Add(this.tableRetenciones);
             this.panelRetenciones.Location = new System.Drawing.Point(9, 105);
             this.panelRetenciones.Name = "panelRetenciones";
-            this.panelRetenciones.Size = new System.Drawing.Size(654, 39);
+            this.panelRetenciones.Size = new System.Drawing.Size(743, 39);
             this.panelRetenciones.TabIndex = 8;
             // 
             // tableRetenciones
             // 
-            this.tableRetenciones.ColumnCount = 8;
+            this.tableRetenciones.ColumnCount = 6;
             this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
-            this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
-            this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableRetenciones.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.tableRetenciones.Controls.Add(this.lblRetISRMonto, 5, 0);
             this.tableRetenciones.Controls.Add(this.cboRetISR, 4, 0);
             this.tableRetenciones.Controls.Add(this.lblRetISR, 3, 0);
@@ -1534,7 +1530,7 @@
             this.tableRetenciones.Name = "tableRetenciones";
             this.tableRetenciones.RowCount = 1;
             this.tableRetenciones.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableRetenciones.Size = new System.Drawing.Size(654, 39);
+            this.tableRetenciones.Size = new System.Drawing.Size(743, 39);
             this.tableRetenciones.TabIndex = 0;
             // 
             // lblRetISRMonto
@@ -1542,9 +1538,9 @@
             this.lblRetISRMonto.AutoSize = true;
             this.lblRetISRMonto.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblRetISRMonto.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
-            this.lblRetISRMonto.Location = new System.Drawing.Point(557, 0);
+            this.lblRetISRMonto.Location = new System.Drawing.Point(607, 0);
             this.lblRetISRMonto.Name = "lblRetISRMonto";
-            this.lblRetISRMonto.Size = new System.Drawing.Size(94, 39);
+            this.lblRetISRMonto.Size = new System.Drawing.Size(144, 39);
             this.lblRetISRMonto.TabIndex = 5;
             this.lblRetISRMonto.Text = "RD$ 0.00";
             this.lblRetISRMonto.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1555,7 +1551,7 @@
             this.cboRetISR.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboRetISR.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cboRetISR.FormattingEnabled = true;
-            this.cboRetISR.Location = new System.Drawing.Point(477, 5);
+            this.cboRetISR.Location = new System.Drawing.Point(527, 5);
             this.cboRetISR.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.cboRetISR.Name = "cboRetISR";
             this.cboRetISR.Size = new System.Drawing.Size(74, 29);
@@ -1566,7 +1562,7 @@
             this.lblRetISR.AutoSize = true;
             this.lblRetISR.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblRetISR.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lblRetISR.Location = new System.Drawing.Point(337, 0);
+            this.lblRetISR.Location = new System.Drawing.Point(387, 0);
             this.lblRetISR.Name = "lblRetISR";
             this.lblRetISR.Size = new System.Drawing.Size(134, 39);
             this.lblRetISR.TabIndex = 3;
@@ -1580,7 +1576,7 @@
             this.lblRetITBISMonto.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
             this.lblRetITBISMonto.Location = new System.Drawing.Point(237, 0);
             this.lblRetITBISMonto.Name = "lblRetITBISMonto";
-            this.lblRetITBISMonto.Size = new System.Drawing.Size(94, 39);
+            this.lblRetITBISMonto.Size = new System.Drawing.Size(144, 39);
             this.lblRetITBISMonto.TabIndex = 2;
             this.lblRetITBISMonto.Text = "RD$ 0.00";
             this.lblRetITBISMonto.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1613,7 +1609,7 @@
             // 
             this.lblITBISDiferencia.AutoSize = true;
             this.lblITBISDiferencia.ForeColor = System.Drawing.Color.Gray;
-            this.lblITBISDiferencia.Location = new System.Drawing.Point(1068, 55);
+            this.lblITBISDiferencia.Location = new System.Drawing.Point(1104, 55);
             this.lblITBISDiferencia.Name = "lblITBISDiferencia";
             this.lblITBISDiferencia.Size = new System.Drawing.Size(76, 21);
             this.lblITBISDiferencia.TabIndex = 7;
@@ -1624,7 +1620,7 @@
             // 
             this.lblDif.AutoSize = true;
             this.lblDif.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lblDif.Location = new System.Drawing.Point(969, 54);
+            this.lblDif.Location = new System.Drawing.Point(1005, 54);
             this.lblDif.Name = "lblDif";
             this.lblDif.Size = new System.Drawing.Size(93, 21);
             this.lblDif.TabIndex = 7;
@@ -1634,7 +1630,7 @@
             // txtITBISManual
             // 
             this.txtITBISManual.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtITBISManual.Location = new System.Drawing.Point(815, 49);
+            this.txtITBISManual.Location = new System.Drawing.Point(851, 49);
             this.txtITBISManual.Name = "txtITBISManual";
             this.txtITBISManual.Size = new System.Drawing.Size(148, 29);
             this.txtITBISManual.TabIndex = 6;
