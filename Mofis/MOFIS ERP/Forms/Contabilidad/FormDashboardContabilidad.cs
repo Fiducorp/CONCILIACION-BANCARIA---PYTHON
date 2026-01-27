@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using MOFIS_ERP.Controls;
 using MOFIS_ERP.Classes;
 using MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar;
+using MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria;
 
 namespace MOFIS_ERP.Forms.Contabilidad
 {
@@ -310,12 +311,20 @@ namespace MOFIS_ERP.Forms.Contabilidad
         /// </summary>
         private void AbrirConciliaciones()
         {
-            MessageBox.Show(
-                "Módulo de Conciliaciones\n(Próximamente)",
-                "En Desarrollo",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
+            try
+            {
+                FormConciliacion formConciliacion = new FormConciliacion(formPrincipal);
+                formPrincipal.CargarContenidoPanel(formConciliacion);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al abrir Conciliaciones:\n{ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+            }
         }
 
         /// <summary>
