@@ -36,7 +36,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
             
             // HARDCODED SCRIPT PATH (NOT IN UI)
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            scriptPythonPath = Path.GetFullPath(Path.Combine(baseDir, @"..\..\..\..\Conciliacion\conciliacion_bancaria_v0.9.6.py"));
+            scriptPythonPath = Path.GetFullPath(Path.Combine(baseDir, @"..\..\..\..\Conciliacion\conciliacion_bancaria.py"));
             
             // Ruta de configuración para persistencia
             configFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config_conciliacion.txt");
