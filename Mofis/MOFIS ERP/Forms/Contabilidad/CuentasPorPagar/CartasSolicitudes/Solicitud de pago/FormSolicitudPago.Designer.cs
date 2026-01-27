@@ -209,7 +209,6 @@
             // btnExcel
             // 
             this.btnExcel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(136)))), ((int)(((byte)(61)))));
-            this.btnExcel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnExcel.FlatAppearance.BorderSize = 0;
             this.btnExcel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnExcel.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -225,7 +224,6 @@
             // btnPDF
             // 
             this.btnPDF.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
-            this.btnPDF.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnPDF.FlatAppearance.BorderSize = 0;
             this.btnPDF.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnPDF.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -241,7 +239,6 @@
             // btnImprimir
             // 
             this.btnImprimir.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(123)))), ((int)(((byte)(255)))));
-            this.btnImprimir.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnImprimir.FlatAppearance.BorderSize = 0;
             this.btnImprimir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnImprimir.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -257,7 +254,6 @@
             // btnGuardar
             // 
             this.btnGuardar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
-            this.btnGuardar.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnGuardar.FlatAppearance.BorderSize = 0;
             this.btnGuardar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnGuardar.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -273,7 +269,6 @@
             // btnLimpiar
             // 
             this.btnLimpiar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
-            this.btnLimpiar.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnLimpiar.FlatAppearance.BorderSize = 0;
             this.btnLimpiar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnLimpiar.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -469,7 +464,6 @@
             // btnBuscar
             // 
             this.btnBuscar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
-            this.btnBuscar.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnBuscar.Dock = System.Windows.Forms.DockStyle.Right;
             this.btnBuscar.FlatAppearance.BorderSize = 0;
             this.btnBuscar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -794,7 +788,6 @@
             // btnConfigConversion
             // 
             this.btnConfigConversion.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
-            this.btnConfigConversion.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnConfigConversion.Enabled = false;
             this.btnConfigConversion.FlatAppearance.BorderSize = 0;
             this.btnConfigConversion.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -912,7 +905,6 @@
             // btnAgregarFideicomiso
             // 
             this.btnAgregarFideicomiso.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
-            this.btnAgregarFideicomiso.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnAgregarFideicomiso.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnAgregarFideicomiso.FlatAppearance.BorderSize = 0;
             this.btnAgregarFideicomiso.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -975,7 +967,6 @@
             // btnAgregarProveedor
             // 
             this.btnAgregarProveedor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
-            this.btnAgregarProveedor.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnAgregarProveedor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnAgregarProveedor.FlatAppearance.BorderSize = 0;
             this.btnAgregarProveedor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -1096,7 +1087,6 @@
             // btnAgregarComprobante
             // 
             this.btnAgregarComprobante.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
-            this.btnAgregarComprobante.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnAgregarComprobante.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnAgregarComprobante.FlatAppearance.BorderSize = 0;
             this.btnAgregarComprobante.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -1146,7 +1136,6 @@
             // btnConfigOtros
             // 
             this.btnConfigOtros.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
-            this.btnConfigOtros.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnConfigOtros.FlatAppearance.BorderSize = 0;
             this.btnConfigOtros.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnConfigOtros.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
@@ -1323,7 +1312,6 @@
             // btnConfigND
             // 
             this.btnConfigND.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
-            this.btnConfigND.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnConfigND.FlatAppearance.BorderSize = 0;
             this.btnConfigND.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnConfigND.ForeColor = System.Drawing.Color.White;
@@ -1358,7 +1346,6 @@
             // btnConfigNC
             // 
             this.btnConfigNC.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
-            this.btnConfigNC.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnConfigNC.FlatAppearance.BorderSize = 0;
             this.btnConfigNC.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnConfigNC.ForeColor = System.Drawing.Color.White;

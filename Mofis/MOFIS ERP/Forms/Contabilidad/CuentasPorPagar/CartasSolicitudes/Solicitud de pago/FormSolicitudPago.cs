@@ -1859,7 +1859,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                     if (metodoConversionSeleccionado.HasValue)
                     {
                         chkMostrarConversion.Checked = true;
-                        chkMostrarConversion.Text = $"Conversión: {metodoConversionNombre}";
+                        chkMostrarConversion.Text = $"{metodoConversionNombre}";
                     }
                 }
             }

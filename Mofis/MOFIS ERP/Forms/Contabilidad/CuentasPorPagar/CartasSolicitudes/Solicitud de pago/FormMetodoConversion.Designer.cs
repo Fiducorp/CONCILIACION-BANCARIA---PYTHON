@@ -111,7 +111,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             // 
             // panelIzquierdo
             // 
-            this.panelIzquierdo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
+            this.panelIzquierdo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
             this.panelIzquierdo.Controls.Add(this.btnMetodoBase);
             this.panelIzquierdo.Controls.Add(this.btnMetodoDirecto);
             this.panelIzquierdo.Controls.Add(this.lblTituloMetodos);
@@ -129,7 +129,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             this.btnMetodoBase.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnMetodoBase.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
             this.btnMetodoBase.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnMetodoBase.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnMetodoBase.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnMetodoBase.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.btnMetodoBase.Location = new System.Drawing.Point(10, 85);
             this.btnMetodoBase.Margin = new System.Windows.Forms.Padding(0, 5, 0, 5);
@@ -147,7 +147,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             this.btnMetodoDirecto.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnMetodoDirecto.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
             this.btnMetodoDirecto.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnMetodoDirecto.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnMetodoDirecto.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnMetodoDirecto.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.btnMetodoDirecto.Location = new System.Drawing.Point(10, 40);
             this.btnMetodoDirecto.Margin = new System.Windows.Forms.Padding(0, 5, 0, 5);
@@ -223,7 +223,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             this.panelEncabezado.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelEncabezado.Location = new System.Drawing.Point(0, 0);
             this.panelEncabezado.Name = "panelEncabezado";
-            this.panelEncabezado.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.panelEncabezado.Size = new System.Drawing.Size(550, 50);
             this.panelEncabezado.TabIndex = 2;
             // 
@@ -232,12 +231,12 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             this.lblTitulo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTitulo.ForeColor = System.Drawing.Color.White;
-            this.lblTitulo.Location = new System.Drawing.Point(15, 0);
+            this.lblTitulo.Location = new System.Drawing.Point(0, 0);
             this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(535, 50);
+            this.lblTitulo.Size = new System.Drawing.Size(550, 50);
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "💱 Método de Conversión de Moneda";
-            this.lblTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // FormMetodoConversion
             // 
@@ -249,7 +248,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             this.Controls.Add(this.panelPrincipal);
             this.Controls.Add(this.panelBotones);
             this.Controls.Add(this.panelEncabezado);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormMetodoConversion";
