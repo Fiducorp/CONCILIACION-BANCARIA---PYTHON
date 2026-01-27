@@ -398,6 +398,9 @@
     <EmbeddedResource Include="FormPruebaBCrypt.resx">
       <DependentUpon>FormPruebaBCrypt.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Contabilidad\ConciliacionBancaria\FormConciliacion.resx">
+      <DependentUpon>FormConciliacion.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\FormMenuCartasSolicitudes.resx">
       <DependentUpon>FormMenuCartasSolicitudes.cs</DependentUpon>
     </EmbeddedResource>

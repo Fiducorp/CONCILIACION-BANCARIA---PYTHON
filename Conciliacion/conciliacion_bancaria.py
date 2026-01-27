@@ -1,23 +1,21 @@
 """
 ============================================================================
-CONCILIACIÓN BANCARIA INTELIGENTE v6.5 DEFINITIVO
+CONCILIACIÓN BANCARIA INTELIGENTE v0.9.6
 ============================================================================
 Proyecto: GREEN PARK - BANRESERVAS
-
-MOTOR DEFINITIVO = v0.6 (completo) + v0.6.1 (estrategias 1.6 y 7) + OPTIMIZACIONES
 
 ✅ TODAS LAS ESTRATEGIAS (7 estrategias completas):
    1.   Monto Exacto (1:1)
    1.5  Transferencias + Comisión ($7)
-   1.6  Comisiones Agrupadas Multi-fecha [v0.6.1]
+   1.6  Comisiones Agrupadas Multi-fecha
    2.   Agrupaciones N→1 (4 métodos)
    3.   Agrupaciones 1→N
    4.   Agrupaciones N↔M
    5.   Impuestos DGII (0.15%)
    6.   Segunda Pasada Flexible
-   7.   Búsqueda Exhaustiva Final [v0.6.1]
+   7.   Búsqueda Exhaustiva Final
 
-✅ OPTIMIZACIONES v0.6.5:
+✅ OPTIMIZACIONES:
    - Lectura rápida: solo filas con Fecha Y Valor válidos
    - Límites por estrategia para evitar timeouts
    - Alias TC/LEGAL mejorados: TC LEGAL ↔ TC Corporativa ↔ Legalizaciones ↔ IPI
