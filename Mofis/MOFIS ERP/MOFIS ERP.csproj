@@ -650,6 +650,7 @@
     <Content Include="bin\Debug\System.ValueTuple.xml" />
     <Content Include="CONTEXTO\ANÁLISIS INFORMAR - MÓDULO SOLICITUD DE PAGO.txt" />
     <Content Include="Database\01_Schema\01_CreateDatabase.sql" />
+    <Content Include="Database\01_Schema\2026_01_27_Update_SolicitudesPago_Conversion.sql" />
     <Content Include="Database\01_Schema\SCRIPT_06_CrearTablaCatalogoCategorias.sql" />
     <Content Include="Database\01_Schema\SCRIPT_07_CrearTablaCatalogoModulos.sql" />
     <Content Include="Database\01_Schema\SCRIPT_08_CrearTablaCatalogoFormularios.sql" />

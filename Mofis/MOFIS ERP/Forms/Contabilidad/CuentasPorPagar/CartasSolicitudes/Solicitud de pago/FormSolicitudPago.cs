@@ -56,6 +56,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             public string Descripcion;
             public bool AfectaSubtotal; // Modo 2: Afecta base imponible
             public bool EsManual;       // Si true, se ignora todo lo anterior y se usa el valor del TextBox directo
+            public bool MostrarDetalle;
         }
 
         private NotaInfo notaCredito = new NotaInfo { EsManual = true };
@@ -70,6 +71,12 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         // Método de conversión seleccionado (1=DIRECTO, 2=BASE, null si no hay)
         private int? metodoConversionSeleccionado = null;
         private string metodoConversionNombre = string.Empty;
+
+        // Montos Convertidos (Moneda Local / DOP)
+        private decimal subtotalL, itbisL, exentoL, dirTecnicaL, descuentoL, horasExtrasL, otrosImpuestosL;
+        private decimal notaCreditoL, notaDebitoL, anticipoL, avanceParaPagarL;
+        private decimal retItbisL, retIsrL, retSfsL, retAfpL, totalRetencionL;
+        private decimal totalFacturaL, totalAPagarL, itbisDiferenciaL;
 
         // =========================================================
 
@@ -344,6 +351,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
             // Evento del botón Limpiar
             btnLimpiar.Click += BtnLimpiar_Click;
+
+            // Botón Guardar
+            btnGuardar.Click += BtnGuardar_Click;
 
             // Eventos del DataGridView Subtotales
 
@@ -844,27 +854,157 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
 
 
-                // Update Subtotal Header
-                if (lblTotalSubtotalTitulo != null) 
-                {
-                    lblTotalSubtotalTitulo.Text = $"SUBTOTAL: {FormatearMoneda(baseImponibleReal)}";
-                    lblTotalSubtotalTitulo.ForeColor = (notaCredito.AfectaSubtotal || notaDebito.AfectaSubtotal) ? Color.Orange : Color.White;
-                }
+                // =========================================================
+                // 7. CONVERSIÓN DE MONEDA (SI APLICA)
+                // =========================================================
                 
-                // =========================================================
-                // 7. ACTUALIZACIÓN AUTOMÁTICA AFP/SFS (Si aplica)
-                // =========================================================
-                // Si los checks están activos, queremos que el valor se mantenga actualizado con el subtotal
-                // SIEMPRE QUE el usuario no lo haya editado a mano.
-                // Esto es complejo de detectar sin un flag extra. 
-                // Simplificación: Recalculamos siempre si el check está activo, SALVO que estemos editando ese campo específico.
-                // Pero el user quiere poder editar. 
-                // Estrategia: Solo actualizar AFP/SFS cuando cambie la Base (Subtotal) o se activen los checks.
-                // Lo haré en un método aparte llamado desde los eventos pertinentes, no aquí en RecalcularTodo para evitar sobrescritura constante.
+                decimal tasa = 0m;
+                string textoTasa = txtTasa?.Text.Trim().Replace(",", "").Replace(" ", "");
+                decimal.TryParse(textoTasa, NumberStyles.Any, CultureInfo.InvariantCulture, out tasa);
+
+                if (tasa > 0 && metodoConversionSeleccionado.HasValue)
+                {
+                    // Determinar montos en Moneda Local (L)
+                    if (metodoConversionSeleccionado == 1) // DIRECTO
+                    {
+                        subtotalL = Math.Round(baseImponibleReal * tasa, 2);
+                        itbisL = Math.Round(itbisFinal * tasa, 2);
+                        itbisDiferenciaL = Math.Round((itbisCalculadoAuto - itbisFinal) * tasa, 2);
+                        exentoL = Math.Round(montoExento * tasa, 2);
+                        dirTecnicaL = Math.Round(montoDirTecnica * tasa, 2);
+                        descuentoL = Math.Round(montoDescuento * tasa, 2);
+                        horasExtrasL = Math.Round(montoHorasExtras * tasa, 2);
+                        otrosImpuestosL = Math.Round(montoOtrosImp * tasa, 2);
+                        
+                        notaCreditoL = Math.Round((notaCredito.EsManual ? valNC_UI : notaCredito.Total) * tasa, 2);
+                        notaDebitoL = Math.Round((notaDebito.EsManual ? valND_UI : notaDebito.Total) * tasa, 2);
+                        anticipoL = Math.Round(montoAnticipo * tasa, 2);
+                        avanceParaPagarL = Math.Round(montoAvance * tasa, 2);
+                        
+                        retItbisL = Math.Round(retItbisMonto * tasa, 2);
+                        retIsrL = Math.Round(retIsrMonto * tasa, 2);
+                        retSfsL = Math.Round(valSFS * tasa, 2);
+                        retAfpL = Math.Round(valAFP * tasa, 2);
+                        totalRetencionL = Math.Round(totalRetenciones * tasa, 2);
+                        
+                        totalFacturaL = Math.Round(totalFactura * tasa, 2);
+                        totalAPagarL = Math.Round(totalAPagar * tasa, 2);
+                    }
+                    else if (metodoConversionSeleccionado == 2) // BASE + RECÁLCULO
+                    {
+                        // 1. Convertir Base
+                        subtotalL = Math.Round(baseImponibleReal * tasa, 2);
+                        dirTecnicaL = Math.Round(montoDirTecnica * tasa, 2);
+                        
+                        // 2. Recalcular ITBIS Local
+                        decimal baseParaITBISL = (rbBaseDirTec != null && rbBaseDirTec.Checked) ? dirTecnicaL : subtotalL;
+                        
+                        // Obtener Porcentaje (mismo que original)
+                        decimal pctITBIS = 0.18m;
+                        if (cboITBISPorcentaje != null && cboITBISPorcentaje.SelectedItem != null)
+                        {
+                             string sPct = cboITBISPorcentaje.SelectedItem.ToString().Replace("%", "").Trim();
+                             if (decimal.TryParse(sPct, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal p))
+                                 pctITBIS = p / 100m;
+                        }
+                        
+                        decimal itbisCalculadoL = Math.Round(baseParaITBISL * pctITBIS, 2);
+                        
+                        if (chkITBISManual != null && chkITBISManual.Checked)
+                        {
+                            // Si es manual, convertimos el manual directamente
+                            itbisL = Math.Round(itbisFinal * tasa, 2);
+                        }
+                        else
+                        {
+                            itbisL = itbisCalculadoL;
+                        }
+                        
+                        itbisDiferenciaL = itbisCalculadoL - itbisL;
+
+                        // 3. Recalcular Retenciones Locales
+                        // Retención ITBIS (Sobre ITBIS L)
+                        decimal pRetItbis = 0m;
+                        if (cboRetITBIS != null && cboRetITBIS.SelectedItem != null)
+                        {
+                            string s = cboRetITBIS.SelectedItem.ToString().Replace("%", "").Trim();
+                            decimal.TryParse(s, out pRetItbis);
+                        }
+                        retItbisL = Math.Round(itbisL * (pRetItbis / 100m), 2);
+                        
+                        // Retención ISR (Sobre Subtotal L)
+                        decimal pRetIsr = 0m;
+                        if (cboRetISR != null && cboRetISR.SelectedItem != null)
+                        {
+                            string s = cboRetISR.SelectedItem.ToString().Replace("%", "").Trim();
+                            decimal.TryParse(s, out pRetIsr);
+                        }
+                        retIsrL = Math.Round(subtotalL * (pRetIsr / 100m), 2);
+                        
+                        // AFP / SFS (Sobre Subtotal L)
+                        retAfpL = (chkRetAFP != null && chkRetAFP.Checked) ? Math.Round(subtotalL * CONST_RET_AFP_PCT, 2) : 0m;
+                        retSfsL = (chkRetSFS != null && chkRetSFS.Checked) ? Math.Round(subtotalL * CONST_RET_SFS_PCT, 2) : 0m;
+                        
+                        totalRetencionL = retItbisL + retIsrL + retAfpL + retSfsL;
+
+                        // 4. Otros montos (Conversión Directa)
+                        exentoL = Math.Round(montoExento * tasa, 2);
+                        descuentoL = Math.Round(montoDescuento * tasa, 2);
+                        horasExtrasL = Math.Round(montoHorasExtras * tasa, 2);
+                        otrosImpuestosL = Math.Round(montoOtrosImp * tasa, 2);
+                        
+                        notaCreditoL = Math.Round((notaCredito.EsManual ? valNC_UI : notaCredito.Total) * tasa, 2);
+                        notaDebitoL = Math.Round((notaDebito.EsManual ? valND_UI : notaDebito.Total) * tasa, 2);
+                        anticipoL = Math.Round(montoAnticipo * tasa, 2);
+                        avanceParaPagarL = Math.Round(montoAvance * tasa, 2);
+                        
+                        // 5. Totales Locales
+                        totalFacturaL = subtotalL + itbisL + exentoL + dirTecnicaL + horasExtrasL + otrosImpuestosL;
+                        
+                        decimal ajusteNotasL = 0m;
+                        if (notaCredito.EsManual) ajusteNotasL -= notaCreditoL;
+                        else if (!notaCredito.AfectaSubtotal) ajusteNotasL -= Math.Round(notaCredito.Total * tasa, 2);
+                        
+                        if (notaDebito.EsManual) ajusteNotasL += notaDebitoL;
+                        else if (!notaDebito.AfectaSubtotal) ajusteNotasL += Math.Round(notaDebito.Total * tasa, 2);
+                        
+                        totalAPagarL = totalFacturaL - totalRetencionL - descuentoL - anticipoL + ajusteNotasL;
+                    }
+
+                    // --- ACTUALIZACIÓN VISUAL (Si el usuario activó "Mostrar Conversión") ---
+                    if (chkMostrarConversion != null && chkMostrarConversion.Checked)
+                    {
+                        // Labels de grupos
+                        if (lblSubtotalTotal != null) lblSubtotalTotal.Text = $"SUBTOTAL: {FormatearMonedaLocal(subtotalL)}";
+                        if (lblITBISCalculado != null) lblITBISCalculado.Text = FormatearMonedaLocal(itbisL);
+                        if (lblRetITBISMonto != null) lblRetITBISMonto.Text = FormatearMonedaLocal(retItbisL);
+                        if (lblRetISRMonto != null) lblRetISRMonto.Text = FormatearMonedaLocal(retIsrL);
+                        if (lblITBISDiferencia != null) lblITBISDiferencia.Text = FormatearMonedaLocal(itbisDiferenciaL);
+                        
+                        // Panel Totales
+                        if (lblTotalSubtotalTitulo != null) lblTotalSubtotalTitulo.Text = $"SUBTOTAL: {FormatearMonedaLocal(subtotalL)}";
+                        if (lblTotalITBISTitulo != null) lblTotalITBISTitulo.Text = $"ITBIS: {FormatearMonedaLocal(itbisL)}";
+                        if (lblTotalExentoTitulo != null) lblTotalExentoTitulo.Text = $"EXENTO: {FormatearMonedaLocal(exentoL)}";
+                        if (lblTotalFacturaTitulo != null) lblTotalFacturaTitulo.Text = $"TOTAL FACTURA: {FormatearMonedaLocal(totalFacturaL)}";
+                        if (lblRetITBISTitulo != null) lblRetITBISTitulo.Text = $"RETENCIÓN ITBIS: {FormatearMonedaLocal(retItbisL)}";
+                        if (lblRetISRTitulo != null) lblRetISRTitulo.Text = $"RETENCIÓN ISR: {FormatearMonedaLocal(retIsrL)}";
+                        if (lblOtrasRetTitulo != null) lblOtrasRetTitulo.Text = $"OTRAS RETENCIONES: {FormatearMonedaLocal(retAfpL + retSfsL)}";
+                        if (lblTotalRetencionTitulo != null) lblTotalRetencionTitulo.Text = $"TOTAL RETENCIÓN: {FormatearMonedaLocal(totalRetencionL)}";
+                        if (lblTotalAPagar != null) lblTotalAPagar.Text = $"▶▶▶  TOTAL A PAGAR:  {FormatearMonedaLocal(totalAPagarL)}  ◀◀◀";
+                    }
+                }
+                else
+                {
+                    // Limpiar montos locales si no hay tasa o método
+                    subtotalL = itbisL = exentoL = dirTecnicaL = descuentoL = horasExtrasL = otrosImpuestosL = 0;
+                    notaCreditoL = notaDebitoL = anticipoL = avanceParaPagarL = 0;
+                    retItbisL = retIsrL = retSfsL = retAfpL = totalRetencionL = 0;
+                    totalFacturaL = totalAPagarL = itbisDiferenciaL = 0;
+                }
             }
             catch (Exception ex)
             {
-               System.Diagnostics.Debug.WriteLine("Error al recalcular: " + ex.Message);
+                System.Diagnostics.Debug.WriteLine("Error al recalcular: " + ex.Message);
             }
             finally
             {
@@ -933,6 +1073,15 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         {
              var nfi = monedaNumberFormat ?? BuildNumberFormat();
              return valor.ToString("N2", nfi);
+        }
+
+        private string FormatearMonedaLocal(decimal valor)
+        {
+            // Forzamos el formato de Moneda Local (RD$)
+            NumberFormatInfo dopFormat = new CultureInfo("es-DO").NumberFormat;
+            dopFormat.NumberGroupSeparator = ",";
+            dopFormat.NumberDecimalSeparator = ".";
+            return "RD$ " + valor.ToString("N2", dopFormat);
         }
 
         private decimal ObtenerValorLabel(Label lbl)
@@ -2722,6 +2871,273 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                     cboTipoNCF.SelectedIndex = -1;
                     // restablecer placeholder (si lo deseas)
                     SetNumeroNCFPlaceholder();
+                }
+            }
+        }
+        // =========================================================
+        // GUARDAR DATOS
+        // =========================================================
+        private void BtnGuardar_Click(object sender, EventArgs e)
+        {
+            if (ValidarFormulario())
+            {
+                if (GuardarDatos())
+                {
+                    MessageBox.Show("Solicitud de pago guardada exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    // Opcional: Bloquear formulario o limpiar
+                    // this.Close(); // O lo que se prefiera
+                }
+            }
+        }
+
+        private bool ValidarFormulario()
+        {
+            // 1. Validar Fideicomiso
+            if (cboFideicomiso.SelectedIndex < 0 || cboFideicomiso.SelectedValue == null)
+            {
+                MessageBox.Show("Debe seleccionar un Fideicomiso.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                cboFideicomiso.Focus();
+                return false;
+            }
+
+            // 2. Validar Proveedor
+            if (cboProveedor.SelectedIndex < 0 || cboProveedor.SelectedValue == null)
+            {
+                MessageBox.Show("Debe seleccionar un Proveedor.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                cboProveedor.Focus();
+                return false;
+            }
+
+            // 3. Validar Concepto
+            if (string.IsNullOrWhiteSpace(txtConcepto.Text))
+            {
+                MessageBox.Show("Debe ingresar un concepto para la solicitud.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtConcepto.Focus();
+                return false;
+            }
+
+            // 4. Validar Tasa si no es local
+            DataRowView drvMon = cboMoneda.SelectedItem as DataRowView;
+            if (drvMon != null && !Convert.ToBoolean(drvMon["EsLocal"]))
+            {
+                decimal tasa = 0m;
+                decimal.TryParse(txtTasa.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out tasa);
+                if (tasa <= 0)
+                {
+                    MessageBox.Show("Debe ingresar una tasa de cambio válida para la moneda seleccionada.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtTasa.Focus();
+                    return false;
+                }
+            }
+
+            // 5. Validar que haya al menos un subtotal
+            if (ObtenerSubtotalSimple() <= 0)
+            {
+                MessageBox.Show("Debe agregar al menos un monto/subtotal a la solicitud.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                btnAgregarSubtotal.Focus();
+                return false;
+            }
+
+            // 6. Validar que el Total a Pagar no sea negativo (permitir 0 si es ajuste)
+            decimal totalPagar = ParseMoneda(lblTotalAPagar.Text);
+            if (totalPagar < 0)
+            {
+                MessageBox.Show("El total a pagar no puede ser negativo. Revise los descuentos y retenciones.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool GuardarDatos()
+        {
+            using (SqlConnection conn = DatabaseConnection.GetConnection())
+            {
+                conn.Open();
+                SqlTransaction trans = conn.BeginTransaction();
+                try
+                {
+                    // 1. Guardar/Actualizar Tabla Principal: SolicitudesPago
+                    string sqlMain = esNuevoRegistro ?
+                        @"INSERT INTO dbo.SolicitudesPago (
+                            NumeroSolicitud, FechaSolicitud, FideicomisoID, ProveedorID, TipoPagoID, TipoComprobanteID, NumeroSolicitudExterno,
+                            Concepto, Observaciones, SubtotalCalculado, Exento, DireccionTecnica, Descuento, HorasExtras, OtrosImpuestos, OtrosImpuestosDescripcion,
+                            NotaCreditoMonto, NotaCreditoITBIS, NotaCreditoDescripcion, NotaCreditoManera, NotaCreditoMostrarDetalle,
+                            NotaDebitoMonto, NotaDebitoITBIS, NotaDebitoDescripcion, NotaDebitoManera, NotaDebitoMostrarDetalle,
+                            ITBISPorcentaje, ITBISBase, ITBISCalculado, ITBISIngresado, ITBISUsarIngresado,
+                            RetencionITBISPorcentaje, RetencionITBISMonto, RetencionISRPorcentaje, RetencionISRMonto, RetencionSFSMonto, RetencionAFPMonto,
+                            Anticipo, AvanceParaPagar, TotalFactura, TotalRetencion, TotalDescuento, TotalAPagar,
+                            MonedaID, TasaCambio, MetodoConversionID, MostrarConversionEnFormulario,
+                            UsuarioPropietarioID, CreadoPorUsuarioID, FechaCreacion, Estado,
+                            OtrosImpuestosSumar, ITBISDiferencia
+                        ) VALUES (
+                            @Num, @Fecha, @Fid, @Prov, @TPago, @TComp, @NumExt,
+                            @Concepto, @Obs, @Sub, @Exe, @DirTec, @Desc, @HE, @Otros, @OtrosDesc,
+                            @NC_M, @NC_I, @NC_D, @NC_Man, @NC_Det,
+                            @ND_M, @ND_I, @ND_D, @ND_Man, @ND_Det,
+                            @IT_P, @IT_B, @IT_C, @IT_I, @IT_U,
+                            @RIT_P, @RIT_M, @RIS_P, @RIS_M, @RSFS, @RAFP,
+                            @Ant, @Avance, @TFact, @TRet, @TDesc, @TPag,
+                            @Mon, @Tasa, @MetConv, @MostConv,
+                            @User, @User, GETDATE(), 'GUARDADO',
+                            @OtrosS, @ITDif
+                        ); SELECT SCOPE_IDENTITY();" :
+                        @"UPDATE dbo.SolicitudesPago SET 
+                            FechaSolicitud=@Fecha, FideicomisoID=@Fid, ProveedorID=@Prov, TipoPagoID=@TPago, TipoComprobanteID=@TComp, NumeroSolicitudExterno=@NumExt,
+                            Concepto=@Concepto, Observaciones=@Obs, SubtotalCalculado=@Sub, Exento=@Exe, DireccionTecnica=@DirTec, Descuento=@Desc, HorasExtras=@HE, OtrosImpuestos=@Otros, OtrosImpuestosDescripcion=@OtrosDesc,
+                            NotaCreditoMonto=@NC_M, NotaCreditoITBIS=@NC_I, NotaCreditoDescripcion=@NC_D, NotaCreditoManera=@NC_Man, NotaCreditoMostrarDetalle=@NC_Det,
+                            NotaDebitoMonto=@ND_M, NotaDebitoITBIS=@ND_I, NotaDebitoDescripcion=@ND_D, NotaDebitoManera=@ND_Man, NotaDebitoMostrarDetalle=@ND_Det,
+                            ITBISPorcentaje=@IT_P, ITBISBase=@IT_B, ITBISCalculado=@IT_C, ITBISIngresado=@IT_I, ITBISUsarIngresado=@IT_U,
+                            RetencionITBISPorcentaje=@RIT_P, RetencionITBISMonto=@RIT_M, RetencionISRPorcentaje=@RIS_P, RetencionISRMonto=@RIS_M, RetencionSFSMonto=@RSFS, RetencionAFPMonto=@RAFP,
+                            Anticipo=@Ant, AvanceParaPagar=@Avance, TotalFactura=@TFact, TotalRetencion=@TRet, TotalDescuento=@TDesc, TotalAPagar=@TPag,
+                            MonedaID=@Mon, TasaCambio=@Tasa, MetodoConversionID=@MetConv, MostrarConversionEnFormulario=@MostConv,
+                            FechaModificacion=GETDATE(), ModificadoPorUsuarioID=@User,
+                            OtrosImpuestosSumar=@OtrosS, ITBISDiferencia=@ITDif
+                        WHERE SolicitudPagoID = @ID";
+
+                    SqlCommand cmdMain = new SqlCommand(sqlMain, conn, trans);
+                    if (!esNuevoRegistro) cmdMain.Parameters.AddWithValue("@ID", solicitudPagoID);
+                    cmdMain.Parameters.AddWithValue("@Num", lblNumeroSolicitud.Text);
+                    cmdMain.Parameters.AddWithValue("@Fecha", dtpFecha.Value);
+                    cmdMain.Parameters.AddWithValue("@Fid", cboFideicomiso.SelectedValue);
+                    cmdMain.Parameters.AddWithValue("@Prov", cboProveedor.SelectedValue);
+                    cmdMain.Parameters.AddWithValue("@TPago", cboTipoPago.SelectedValue);
+                    cmdMain.Parameters.AddWithValue("@TComp", cboTipoComprobante.SelectedValue ?? DBNull.Value);
+                    cmdMain.Parameters.AddWithValue("@NumExt", txtNumeroExterno.Text);
+                    cmdMain.Parameters.AddWithValue("@Concepto", txtConcepto.Text);
+                    cmdMain.Parameters.AddWithValue("@Obs", txtObservaciones.Text);
+                    
+                    cmdMain.Parameters.AddWithValue("@Sub", ParseMoneda(lblTotalSubtotalTitulo.Text));
+                    cmdMain.Parameters.AddWithValue("@Exe", ParseMoneda(txtExento.Text));
+                    cmdMain.Parameters.AddWithValue("@DirTec", ParseMoneda(txtDireccionTecnica.Text));
+                    cmdMain.Parameters.AddWithValue("@Desc", ParseMoneda(txtDescuento.Text));
+                    cmdMain.Parameters.AddWithValue("@HE", ParseMoneda(txtHorasExtras.Text));
+                    cmdMain.Parameters.AddWithValue("@Otros", ParseMoneda(txtOtrosImpuestos.Text));
+                    cmdMain.Parameters.AddWithValue("@OtrosDesc", otrosImpuestosNombre);
+                    
+                    cmdMain.Parameters.AddWithValue("@NC_M", notaCredito.Subtotal);
+                    cmdMain.Parameters.AddWithValue("@NC_I", notaCredito.MontoITBIS);
+                    cmdMain.Parameters.AddWithValue("@NC_D", notaCredito.Descripcion ?? "");
+                    cmdMain.Parameters.AddWithValue("@NC_Man", notaCredito.AfectaSubtotal ? 2 : 1);
+                    cmdMain.Parameters.AddWithValue("@NC_Det", notaCredito.MostrarDetalle);
+                    
+                    cmdMain.Parameters.AddWithValue("@ND_M", notaDebito.Subtotal);
+                    cmdMain.Parameters.AddWithValue("@ND_I", notaDebito.MontoITBIS);
+                    cmdMain.Parameters.AddWithValue("@ND_D", notaDebito.Descripcion ?? "");
+                    cmdMain.Parameters.AddWithValue("@ND_Man", notaDebito.AfectaSubtotal ? 2 : 1);
+                    cmdMain.Parameters.AddWithValue("@ND_Det", notaDebito.MostrarDetalle);
+                    
+                    cmdMain.Parameters.AddWithValue("@IT_P", Convert.ToDecimal(cboITBISPorcentaje.Text.Replace("%","")));
+                    cmdMain.Parameters.AddWithValue("@IT_B", rbBaseSubtotal.Checked ? "S" : "D");
+                    cmdMain.Parameters.AddWithValue("@IT_C", ParseMoneda(lblITBISCalculado.Text));
+                    cmdMain.Parameters.AddWithValue("@IT_I", ParseMoneda(txtITBISManual.Text));
+                    cmdMain.Parameters.AddWithValue("@IT_U", chkITBISManual.Checked);
+                    
+                    cmdMain.Parameters.AddWithValue("@RIT_P", Convert.ToDecimal(cboRetITBIS.Text.Replace("%","")));
+                    cmdMain.Parameters.AddWithValue("@RIT_M", ParseMoneda(lblRetITBISMonto.Text));
+                    cmdMain.Parameters.AddWithValue("@RIS_P", Convert.ToDecimal(cboRetISR.Text.Replace("%","")));
+                    cmdMain.Parameters.AddWithValue("@RIS_M", ParseMoneda(lblRetISRMonto.Text));
+                    cmdMain.Parameters.AddWithValue("@RSFS", ParseMoneda(txtRetSFS.Text));
+                    cmdMain.Parameters.AddWithValue("@RAFP", ParseMoneda(txtRetAFP.Text));
+                    
+                    cmdMain.Parameters.AddWithValue("@Ant", ParseMoneda(txtAnticipo.Text));
+                    cmdMain.Parameters.AddWithValue("@Avance", ParseMoneda(txtAvancePagar.Text));
+                    cmdMain.Parameters.AddWithValue("@TFact", ParseMoneda(lblTotalFacturaTitulo.Text));
+                    cmdMain.Parameters.AddWithValue("@TRet", ParseMoneda(lblTotalRetencionTitulo.Text));
+                    cmdMain.Parameters.AddWithValue("@TDesc", 0m); // Se calcula en BD o app si es necesario
+                    cmdMain.Parameters.AddWithValue("@TPag", ParseMoneda(lblTotalAPagar.Text));
+                    
+                    cmdMain.Parameters.AddWithValue("@Mon", cboMoneda.SelectedValue);
+                    decimal tVal = 1m; decimal.TryParse(txtTasa.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out tVal);
+                    cmdMain.Parameters.AddWithValue("@Tasa", tVal);
+                    cmdMain.Parameters.AddWithValue("@MetConv", metodoConversionSeleccionado ?? (object)DBNull.Value);
+                    cmdMain.Parameters.AddWithValue("@MostConv", chkMostrarConversion.Checked);
+                    cmdMain.Parameters.AddWithValue("@User", SesionActual.UsuarioID);
+                    cmdMain.Parameters.AddWithValue("@OtrosS", otrosImpuestosSumar);
+                    cmdMain.Parameters.AddWithValue("@ITDif", ParseMoneda(lblITBISDiferencia.Text));
+
+                    if (esNuevoRegistro)
+                        solicitudPagoID = Convert.ToInt32(cmdMain.ExecuteScalar());
+                    else
+                        cmdMain.ExecuteNonQuery();
+
+                    // 2. Guardar Tabla Satélite: SolicitudesPagoMonedaLocal (si hay conversión)
+                    // Eliminar previo
+                    new SqlCommand($"DELETE FROM dbo.SolicitudesPagoMonedaLocal WHERE SolicitudPagoID = {solicitudPagoID}", conn, trans).ExecuteNonQuery();
+                    
+                    if (metodoConversionSeleccionado != null)
+                    {
+                        string sqlLocal = @"INSERT INTO dbo.SolicitudesPagoMonedaLocal (
+                            SolicitudPagoID, SubtotalL, ITBISL, ExentoL, DireccionTecnicaL, DescuentoL, HorasExtrasL, OtrosImpuestosL,
+                            NotaCreditoL, NotaDebitoL, AnticipoL, AvanceParaPagarL,
+                            RetencionITBISL, RetencionISRL, RetencionSFSL, RetencionAFPL, TotalRetencionL,
+                            TotalFacturaL, TotalAPagarL
+                        ) VALUES (
+                            @ID, @Sub, @ITB, @Exe, @Dir, @Des, @HE, @Otr,
+                            @NC, @ND, @Ant, @Ava,
+                            @RIT, @RIS, @RSFS, @RAFP, @TRet,
+                            @TFact, @TPag
+                        )";
+                        SqlCommand cmdLocal = new SqlCommand(sqlLocal, conn, trans);
+                        cmdLocal.Parameters.AddWithValue("@ID", solicitudPagoID);
+                        cmdLocal.Parameters.AddWithValue("@Sub", subtotalL);
+                        cmdLocal.Parameters.AddWithValue("@ITB", itbisL);
+                        cmdLocal.Parameters.AddWithValue("@Exe", exentoL);
+                        cmdLocal.Parameters.AddWithValue("@Dir", dirTecnicaL);
+                        cmdLocal.Parameters.AddWithValue("@Des", descuentoL);
+                        cmdLocal.Parameters.AddWithValue("@HE", horasExtrasL);
+                        cmdLocal.Parameters.AddWithValue("@Otr", otrosImpuestosL);
+                        cmdLocal.Parameters.AddWithValue("@NC", notaCreditoL);
+                        cmdLocal.Parameters.AddWithValue("@ND", notaDebitoL);
+                        cmdLocal.Parameters.AddWithValue("@Ant", anticipoL);
+                        cmdLocal.Parameters.AddWithValue("@Ava", avanceParaPagarL);
+                        cmdLocal.Parameters.AddWithValue("@RIT", retItbisL);
+                        cmdLocal.Parameters.AddWithValue("@RIS", retIsrL);
+                        cmdLocal.Parameters.AddWithValue("@RSFS", retSfsL);
+                        cmdLocal.Parameters.AddWithValue("@RAFP", retAfpL);
+                        cmdLocal.Parameters.AddWithValue("@TRet", totalRetencionL);
+                        cmdLocal.Parameters.AddWithValue("@TFact", totalFacturaL);
+                        cmdLocal.Parameters.AddWithValue("@TPag", totalAPagarL);
+                        cmdLocal.ExecuteNonQuery();
+                    }
+
+                    // 3. Guardar Subtotales
+                    new SqlCommand($"DELETE FROM dbo.SolicitudesPagoSubtotales WHERE SolicitudPagoID = {solicitudPagoID}", conn, trans).ExecuteNonQuery();
+                    int ordenSub = 1;
+                    foreach (Control ctrl in flpSubtotales.Controls)
+                    {
+                        if (ctrl is SubtotalItemControl item)
+                        {
+                            SqlCommand cmdSub = new SqlCommand("INSERT INTO dbo.SolicitudesPagoSubtotales (SolicitudPagoID, Orden, Monto, Cantidad, SubtotalLinea) VALUES (@ID, @O, @M, 1, @M)", conn, trans);
+                            cmdSub.Parameters.AddWithValue("@ID", solicitudPagoID);
+                            cmdSub.Parameters.AddWithValue("@O", ordenSub++);
+                            cmdSub.Parameters.AddWithValue("@M", item.Monto);
+                            cmdSub.ExecuteNonQuery();
+                        }
+                    }
+
+                    // 4. Guardar Comprobantes
+                    new SqlCommand($"DELETE FROM dbo.SolicitudesPagoComprobantes WHERE SolicitudPagoID = {solicitudPagoID}", conn, trans).ExecuteNonQuery();
+                    int ordenComp = 1;
+                    foreach (var comp in ObtenerComprobantes())
+                    {
+                        SqlCommand cmdComp = new SqlCommand("INSERT INTO dbo.SolicitudesPagoComprobantes (SolicitudPagoID, Orden, TipoNCFID, NumeroComprobante) VALUES (@ID, @O, @TID, @Num)", conn, trans);
+                        cmdComp.Parameters.AddWithValue("@ID", solicitudPagoID);
+                        cmdComp.Parameters.AddWithValue("@O", ordenComp++);
+                        cmdComp.Parameters.AddWithValue("@TID", (object)comp.TipoNCFID ?? 1); // Mock 1 si es null, ajustar según BD
+                        cmdComp.Parameters.AddWithValue("@Num", comp.NumeroNCF);
+                        cmdComp.ExecuteNonQuery();
+                    }
+
+                    trans.Commit();
+                    esNuevoRegistro = false;
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    MessageBox.Show($"Error al guardar en base de datos: {ex.Message}", "Error Crítico", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
                 }
             }
         }

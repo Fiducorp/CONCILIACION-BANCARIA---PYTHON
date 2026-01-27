@@ -15,6 +15,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
         private class ComprobanteItem
         {
+            public int? TipoNCFID { get; set; }        // ID de la tabla TiposNCF
             public string TipoComprobanteNombre { get; set; }
             public string TipoNCFDisplay { get; set; } // puede ser null
             public string NumeroNCF { get; set; }      // NCF completo (prefijo + secuencial) o referencia
@@ -102,8 +103,12 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                         return;
                     }
 
+                    int ncfId = 0;
+                    if (cboTipoNCF.SelectedValue != null) ncfId = Convert.ToInt32(cboTipoNCF.SelectedValue);
+
                     var item = new ComprobanteItem
                     {
+                        TipoNCFID = ncfId,
                         TipoComprobanteNombre = tipoNombre,
                         TipoNCFDisplay = cboTipoNCF.Text,
                         NumeroNCF = fullNCF,
@@ -144,6 +149,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
                     var item = new ComprobanteItem
                     {
+                        TipoNCFID = null, // No es un NCF tipificado
                         TipoComprobanteNombre = tipoNombre,
                         TipoNCFDisplay = null,
                         NumeroNCF = entered,
@@ -153,8 +159,10 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                     comprobantes.Add(item);
                     AddComprobanteControl(item);
 
+                    // Restaurar placeholder
                     SetNumeroNCFPlaceholder();
                 }
+
             }
             catch (Exception ex)
             {
@@ -232,9 +240,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         }
 
         // Método público para obtener la lista (si es necesario al guardar)
-        public IEnumerable<(string Tipo, string TipoNCF, string NumeroNCF, string Secuencial)> ObtenerComprobantes()
+        public IEnumerable<(int? TipoNCFID, string Tipo, string TipoNCF, string NumeroNCF, string Secuencial)> ObtenerComprobantes()
         {
-            return comprobantes.Select(c => (c.TipoComprobanteNombre, c.TipoNCFDisplay, c.NumeroNCF, c.NumeroSecuencial));
+            return comprobantes.Select(c => (c.TipoNCFID, c.TipoComprobanteNombre, c.TipoNCFDisplay, c.NumeroNCF, c.NumeroSecuencial));
         }
     }
 }
