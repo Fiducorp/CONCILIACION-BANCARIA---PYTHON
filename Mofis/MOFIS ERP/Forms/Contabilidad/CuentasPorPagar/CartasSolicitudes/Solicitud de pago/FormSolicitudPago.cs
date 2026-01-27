@@ -1859,7 +1859,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                     if (metodoConversionSeleccionado.HasValue)
                     {
                         chkMostrarConversion.Checked = true;
-                        chkMostrarConversion.Text = $"Conversión: {metodoConversionNombre}";
+                        chkMostrarConversion.Text = $"{metodoConversionNombre}";
                     }
                 }
             }
@@ -1867,9 +1867,19 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
         /// <summary>
         /// Cuando el usuario desmarca el checkbox, se limpia la selección del método de conversión.
+        /// Se bloquea el marcado manual si no hay un método preseleccionado.
         /// </summary>
         private void ChkMostrarConversion_CheckedChanged(object sender, EventArgs e)
         {
+            // Evitar marcado manual si no se ha seleccionado un método mediante el diálogo de configuración
+            if (chkMostrarConversion.Checked && !metodoConversionSeleccionado.HasValue)
+            {
+                // Si intenta marcarse sin método, lo revertimos
+                // No mostramos mensaje para evitar interrumpir el flujo del usuario si fue un click accidental
+                chkMostrarConversion.Checked = false;
+                return;
+            }
+
             if (!chkMostrarConversion.Checked)
             {
                 // El usuario desmarcó manualmente => limpiar método seleccionado

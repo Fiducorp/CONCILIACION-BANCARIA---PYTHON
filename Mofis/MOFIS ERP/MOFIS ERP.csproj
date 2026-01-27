@@ -419,6 +419,9 @@
     <EmbeddedResource Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormInputSubtotal.resx">
       <DependentUpon>FormInputSubtotal.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormMetodoConversion.resx">
+      <DependentUpon>FormMetodoConversion.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormSolicitudPago.resx">
       <DependentUpon>FormSolicitudPago.cs</DependentUpon>
     </EmbeddedResource>
@@ -566,6 +569,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="bin\Release\" />
     <Folder Include="obj\Debug\TempPE\" />
   </ItemGroup>
   <ItemGroup>
