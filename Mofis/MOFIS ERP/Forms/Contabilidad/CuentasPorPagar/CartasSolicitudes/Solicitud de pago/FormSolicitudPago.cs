@@ -67,6 +67,10 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         private const decimal CONST_RET_AFP_PCT = 0.0287m; // 2.87%
         private const decimal CONST_RET_SFS_PCT = 0.0304m; // 3.04%
 
+        // Método de conversión seleccionado (1=DIRECTO, 2=BASE, null si no hay)
+        private int? metodoConversionSeleccionado = null;
+        private string metodoConversionNombre = string.Empty;
+
         // =========================================================
 
         // =========================================================
@@ -150,6 +154,10 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
             // Evento de Moneda (mostrar/ocultar tasa)
             cboMoneda.SelectedIndexChanged += CboMoneda_SelectedIndexChanged;
+
+            // Eventos de Conversión de Moneda
+            btnConfigConversion.Click += BtnConfigConversion_Click;
+            chkMostrarConversion.CheckedChanged += ChkMostrarConversion_CheckedChanged;
 
             // Evento de Concepto (contador de caracteres)
             txtConcepto.TextChanged += TxtConcepto_TextChanged;
@@ -695,7 +703,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 if (lblITBISDiferencia != null)
                 {
                      decimal dif = itbisCalculadoAuto - itbisFinal;
-                     lblITBISDiferencia.Text = $"Dif: {FormatearMoneda(dif)}";
+                     lblITBISDiferencia.Text = $"{FormatearMoneda(dif)}";
                      // Color coding opcional
                      lblITBISDiferencia.ForeColor = (Math.Abs(dif) > 0.01m) ? Color.Red : Color.Green;
                 }
@@ -1813,6 +1821,61 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
 
                 // Reaplicar formatos según la nueva moneda
                 UpdateAllCurrencyDisplays();
+            }
+        }
+
+        /// <summary>
+        /// Abre el miniformulario de selección de método de conversión.
+        /// Requiere que txtTasa tenga un valor > 0.
+        /// </summary>
+        private void BtnConfigConversion_Click(object sender, EventArgs e)
+        {
+            // Validar que exista una tasa válida
+            decimal tasa = 0m;
+            string textoTasa = txtTasa.Text.Trim().Replace(",", "").Replace(" ", "");
+            decimal.TryParse(textoTasa, NumberStyles.Any, CultureInfo.InvariantCulture, out tasa);
+
+            if (tasa <= 0m)
+            {
+                MessageBox.Show(
+                    "Debe ingresar una tasa de cambio mayor a 0 antes de configurar el método de conversión.",
+                    "Tasa Requerida",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                txtTasa.Focus();
+                return;
+            }
+
+            // Abrir miniformulario de selección
+            using (var formConversion = new FormMetodoConversion(metodoConversionSeleccionado))
+            {
+                if (formConversion.ShowDialog(this) == DialogResult.OK)
+                {
+                    // Guardar el método seleccionado
+                    metodoConversionSeleccionado = formConversion.MetodoSeleccionado;
+                    metodoConversionNombre = formConversion.NombreMetodo;
+
+                    // Actualizar el checkbox para indicar que hay método seleccionado
+                    if (metodoConversionSeleccionado.HasValue)
+                    {
+                        chkMostrarConversion.Checked = true;
+                        chkMostrarConversion.Text = $"Conversión: {metodoConversionNombre}";
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Cuando el usuario desmarca el checkbox, se limpia la selección del método de conversión.
+        /// </summary>
+        private void ChkMostrarConversion_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!chkMostrarConversion.Checked)
+            {
+                // El usuario desmarcó manualmente => limpiar método seleccionado
+                metodoConversionSeleccionado = null;
+                metodoConversionNombre = string.Empty;
+                chkMostrarConversion.Text = "Cambiar Conversión:";
             }
         }
 

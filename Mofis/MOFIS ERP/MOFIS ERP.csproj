@@ -200,6 +200,10 @@
     <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormInputSubtotal.Designer.cs">
       <DependentUpon>FormInputSubtotal.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormMetodoConversion.cs" />
+    <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormMetodoConversion.Designer.cs">
+      <DependentUpon>FormMetodoConversion.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\Solicitud de pago\FormSolicitudPago.Comprobantes.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -375,6 +379,7 @@
     <Compile Include="FORMULARIOS - LOGIN\FormLogin.Designer.cs">
       <DependentUpon>FormLogin.cs</DependentUpon>
     </Compile>
+    <Compile Include="obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Controls\CardControl.resx">
@@ -467,6 +472,37 @@
     <EmbeddedResource Include="FORMULARIOS - LOGIN\FormLogin.resx">
       <DependentUpon>FormLogin.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Controls.CardControl.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.FormCambiarPassword.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.FormLogin.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.FormPruebaBCrypt.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.FormConfigOtrosImpuestos.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.FormInputSubtotal.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.FormMenuCartasSolicitudes.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.FormSolicitudPago.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicitud_de_pago.FormAgregarFideicomiso.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicitud_de_pago.FormAgregarProveedor.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicitud_de_pago.FormConfigNota.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.FormMain.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Sistema.Auditoria.FormAuditoria.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Sistema.Auditoria.FormBusquedaAvanzadaAuditoria.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Sistema.Auditoria.FormConfiguracionReportePDF.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Sistema.Auditoria.FormDashboardAuditoria.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Sistema.Auditoria.FormDetalleAuditoria.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Sistema.GestionRoles.FormAdministrarPermisos.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Sistema.GestionRoles.FormConfirmarPassword.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Sistema.GestionRoles.FormConsultarPermisos.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Sistema.GestionRoles.FormCopiarPermisos.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Sistema.GestionRoles.FormCrearRol.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Sistema.GestionRoles.FormDashboardRoles.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Sistema.GestionRoles.FormGenerarReporte.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Sistema.GestionRoles.FormReportesPermisos.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Sistema.GestionRoles.FormVistaPreviaCambios.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Sistema.GestionUsuarios.FormConfirmarEliminacion.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Sistema.GestionUsuarios.FormGestionUsuarios.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Sistema.GestionUsuarios.FormResetPassword.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Forms.Sistema.GestionUsuarios.FormUsuario.resources" />
+    <EmbeddedResource Include="obj\Debug\MOFIS_ERP.Properties.Resources.resources" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -489,11 +525,18 @@
     <None Include="bin\Debug\runtimes\osx-x64\native\libqpdf.dylib" />
     <None Include="bin\Debug\runtimes\osx-x64\native\libQuestPdfSkia.dylib" />
     <None Include="CONTEXTO\PLAN_DESARROLLO_FormSolicitudPago.md" />
+    <None Include="CONTEXTO\PROJECT_CONTEXT.md" />
+    <None Include="CONTEXTO\PRONT - FORMULARIO DE SOLICITUD DE PAGO.md" />
     <None Include="CONTEXTO\RESUMEN_IMPLEMENTACION_FormSolicitudPago.md" />
     <None Include="CONTEXTO\RESUMEN_IMPLEMENTACION_MOFIS_ERP.md" />
     <None Include="Database\README.md" />
     <None Include="Database\README_CXP.md" />
     <None Include="Docs\PROJECT_CONTEXT.md" />
+    <None Include="obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
+    <None Include="obj\Debug\MOFIS ERP.csproj.AssemblyReference.cache" />
+    <None Include="obj\Debug\MOFIS ERP.csproj.CoreCompileInputs.cache" />
+    <None Include="obj\Debug\MOFIS ERP.csproj.GenerateResource.cache" />
+    <None Include="obj\Debug\MOFIS ERP.csproj.Up2Date" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -509,7 +552,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="obj\Debug\TempPE\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="bin\Debug\BCrypt.Net-Next.dll" />
     <Content Include="bin\Debug\BCrypt.Net-Next.xml" />
@@ -616,7 +661,12 @@
     <Content Include="Database\03_Updates\UPDATE_004_AgregarColumnaEsSistema.sql" />
     <Content Include="Database\03_Updates\UPDATE_002_AgregarRolesFaltantes.sql" />
     <Content Include="Database\03_Updates\UPDATE_003_AgregarPermisosNuevosRoles.sql" />
+    <Content Include="Database\03_Updates\UPDATE_005_AgregarColumnasConversionCXP.sql" />
     <Content Include="Database\SCRIPT_MAESTRO_CXP.sql" />
+    <Content Include="img\MOFIS ERP - LOGO.png" />
+    <Content Include="obj\Debug\MOFIS ERP.csproj.FileListAbsolute.txt" />
+    <Content Include="obj\Debug\MOFIS ERP.exe" />
+    <Content Include="obj\Debug\MOFIS ERP.pdb" />
     <Content Include="Resources\LOGOTIPO.png" />
     <Content Include="Resources\LOGO.png" />
     <None Include="Resources\icon_Adv.png" />
