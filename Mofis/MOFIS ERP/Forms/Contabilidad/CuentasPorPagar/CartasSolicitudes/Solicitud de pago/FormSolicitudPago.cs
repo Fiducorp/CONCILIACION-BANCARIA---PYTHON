@@ -1264,7 +1264,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 {
                     conn.Open();
 
-                    string query = "SELECT NEXT VALUE FOR SEQ_SolicitudPago";
+                    string query = "SELECT ISNULL(MAX(SolicitudPagoID), 0) + 1 FROM SolicitudesPago";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         int siguiente = Convert.ToInt32(cmd.ExecuteScalar());
