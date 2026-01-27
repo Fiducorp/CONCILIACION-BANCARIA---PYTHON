@@ -45,6 +45,7 @@ from itertools import combinations
 import warnings
 warnings.filterwarnings('ignore')
 import sys
+import argparse
 from pathlib import Path
 
 def base_path():
@@ -3270,18 +3271,56 @@ def aplicar_formato_profesional(ruta):
 # 🚀 FUNCIÓN PRINCIPAL
 # ============================================================================
 
-def ejecutar_conciliacion():
-    """Función principal de conciliación - VERSIÓN MULTI-FIDEICOMISO"""
+def ejecutar_conciliacion(arg_dir=None, arg_bank=None, arg_ledger=None, arg_currency=None, **kwargs):
+    """Función principal de conciliación - VERSIÓN MULTI-PARA-C#"""
     import time
     tiempo_inicio = time.time()
     
-    print("\n" + "="*70)
-    print("  🔥 Motor: v6.5 + Gestión de Fideicomisos")
-    print("="*70)
-    print(f"\n📅 {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+    # Sobrescribir parámetros globales si se pasan por kwargs
+    global TOLERANCIA_VALOR_EXACTA, TOLERANCIA_VALOR_AGRUPACION, TOLERANCIA_PORCENTAJE_PARCIAL
+    global VENTANA_DIAS_EXACTA, VENTANA_DIAS_AGRUPACION, VENTANA_DIAS_FLEXIBLE, VENTANA_DIAS_COMISIONES
+    global UMBRAL_SIMILITUD_BAJA, UMBRAL_SIMILITUD_MEDIA, UMBRAL_SIMILITUD_ALTA
+    global PERMITIR_SOLO_MONTO, USAR_FECHAS_PARA_DESAMBIGUAR, DETECTAR_CASOS_ESPECIALES
+    global APLICAR_FORMATO_PROFESIONAL, EJECUTAR_SEGUNDA_PASADA, EJECUTAR_BUSQUEDA_EXHAUSTIVA
+    global COMISION_TRANSFERENCIA_USD, DETECTAR_COMISIONES
+    global MAX_PARTIDAS_AGRUPACION, MAX_COMBINACIONES_POR_BUSQUEDA
+    global UMBRAL_PARTIDAS_EXHAUSTIVA, MAX_COMBINACIONES_EXHAUSTIVA
+
+    if 'tol_exacta' in kwargs and kwargs['tol_exacta'] is not None: TOLERANCIA_VALOR_EXACTA = float(kwargs['tol_exacta'])
+    if 'tol_agrup' in kwargs and kwargs['tol_agrup'] is not None: TOLERANCIA_VALOR_AGRUPACION = float(kwargs['tol_agrup'])
+    if 'tol_parcial' in kwargs and kwargs['tol_parcial'] is not None: TOLERANCIA_PORCENTAJE_PARCIAL = float(kwargs['tol_parcial'])
+    if 'ven_exacta' in kwargs and kwargs['ven_exacta'] is not None: VENTANA_DIAS_EXACTA = int(kwargs['ven_exacta'])
+    if 'ven_agrup' in kwargs and kwargs['ven_agrup'] is not None: VENTANA_DIAS_AGRUPACION = int(kwargs['ven_agrup'])
+    if 'ven_flex' in kwargs and kwargs['ven_flex'] is not None: VENTANA_DIAS_FLEXIBLE = int(kwargs['ven_flex'])
+    if 'ven_comis' in kwargs and kwargs['ven_comis'] is not None: VENTANA_DIAS_COMISIONES = int(kwargs['ven_comis'])
+    if 'umb_baja' in kwargs and kwargs['umb_baja'] is not None: UMBRAL_SIMILITUD_BAJA = float(kwargs['umb_baja'])
+    if 'umb_media' in kwargs and kwargs['umb_media'] is not None: UMBRAL_SIMILITUD_MEDIA = float(kwargs['umb_media'])
+    if 'umb_alta' in kwargs and kwargs['umb_alta'] is not None: UMBRAL_SIMILITUD_ALTA = float(kwargs['umb_alta'])
+    if 'solo_monto' in kwargs and kwargs['solo_monto'] is not None: PERMITIR_SOLO_MONTO = kwargs['solo_monto']
+    if 'usar_fechas' in kwargs and kwargs['usar_fechas'] is not None: USAR_FECHAS_PARA_DESAMBIGUAR = kwargs['usar_fechas']
+    if 'especiales' in kwargs and kwargs['especiales'] is not None: DETECTAR_CASOS_ESPECIALES = kwargs['especiales']
+    if 'profesional' in kwargs and kwargs['profesional'] is not None: APLICAR_FORMATO_PROFESIONAL = kwargs['profesional']
+    if 'segunda_pasada' in kwargs and kwargs['segunda_pasada'] is not None: EJECUTAR_SEGUNDA_PASADA = kwargs['segunda_pasada']
+    if 'exhaustiva' in kwargs and kwargs['exhaustiva'] is not None: EJECUTAR_BUSQUEDA_EXHAUSTIVA = kwargs['exhaustiva']
+    if 'comision_usd' in kwargs and kwargs['comision_usd'] is not None: COMISION_TRANSFERENCIA_USD = float(kwargs['comision_usd'])
+    if 'det_comis' in kwargs and kwargs['det_comis'] is not None: DETECTAR_COMISIONES = kwargs['det_comis']
+    if 'max_partidas' in kwargs and kwargs['max_partidas'] is not None: MAX_PARTIDAS_AGRUPACION = int(kwargs['max_partidas'])
+    if 'max_comb' in kwargs and kwargs['max_comb'] is not None: MAX_COMBINACIONES_POR_BUSQUEDA = int(kwargs['max_comb'])
+    if 'umb_exh' in kwargs and kwargs['umb_exh'] is not None: UMBRAL_PARTIDAS_EXHAUSTIVA = int(kwargs['umb_exh'])
+    if 'max_exh' in kwargs and kwargs['max_exh'] is not None: MAX_COMBINACIONES_EXHAUSTIVA = int(kwargs['max_exh'])
     
-    # 🆕 NUEVO: Selección de fideicomiso
-    carpeta_caso = seleccionar_fideicomiso()
+    print("\n" + "="*70)
+    print("  [SYSTEM] Motor: v6.5 + Integracion C# ERP")
+    print("="*70)
+    print(f"\nFecha: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+    
+    # 🆕 NUEVO: Lógica de selección de fideicomiso / carpetas
+    if arg_dir:
+        print(f"🚀 Ejecutando en modo HEADLESS (pasan argumentos)")
+        carpeta_caso = arg_dir
+    else:
+        # Selección interactiva (fallback)
+        carpeta_caso = seleccionar_fideicomiso()
     
     if not carpeta_caso:
         print("\n❌ No se seleccionó ningún fideicomiso. Saliendo...")
@@ -3313,12 +3352,22 @@ def ejecutar_conciliacion():
     print("📂 CARGANDO DATOS")
     print("="*70)
     
-    # Búsqueda automática de archivos
-    archivo_banco, archivo_contable, codigo_banco, nombre_banco = buscar_archivos_en_carpeta()
+    # Búsqueda de archivos
+    if arg_bank and arg_ledger:
+        archivo_banco = arg_bank
+        archivo_contable = arg_ledger
+        
+        # Detectar banco por nombre de archivo
+        nombre_file_banco = os.path.basename(archivo_banco)
+        codigo_banco, nombre_banco = detectar_banco_en_nombre_archivo(nombre_file_banco)
+        if not codigo_banco:
+            codigo_banco = "BANRESERVAS" # Fallback
+            nombre_banco = "BanReservas"
+    else:
+        archivo_banco, archivo_contable, codigo_banco, nombre_banco = buscar_archivos_en_carpeta()
     
     if not archivo_banco or not archivo_contable:
         print("\n❌ No se pudieron encontrar los archivos necesarios")
-        print("   Asegúrate de que los archivos de banco y contable estén en la carpeta del script")
         return
     
     # Carga de Banco
@@ -3329,16 +3378,19 @@ def ejecutar_conciliacion():
         return
         
     # Carga de Contable
-    while True:
-        op = input("¿Está utilizando dólares? (s/n): ").strip().lower()
-        if op == 's':   
-            usa_dolares = True
-        elif op == 'n':
-            usa_dolares = False
-        if op in ['s', 'n']:
-            break
-        else:
-            print(f"❌ Entrada inválida.")
+    if arg_currency:
+        usa_dolares = (arg_currency.upper() == 'USD')
+    else:
+        while True:
+            op = input("¿Está utilizando dólares? (s/n): ").strip().lower()
+            if op == 's':   
+                usa_dolares = True
+            elif op == 'n':
+                usa_dolares = False
+            if op in ['s', 'n']:
+                break
+            else:
+                print(f"❌ Entrada inválida.")
             
     try:
         contable = cargar_contable(archivo_contable, usa_dolares, "CONTABLE")
@@ -3603,4 +3655,70 @@ def menu_principal():
             print("\n❌ Opción inválida. Intente de nuevo.")
 
 if __name__ == "__main__":
-    menu_principal()
+    parser = argparse.ArgumentParser(description="Conciliación Bancaria Headless")
+    parser.add_argument("--dir", help="Directorio de trabajo")
+    parser.add_argument("--bank", help="Archivo de banco")
+    parser.add_argument("--ledger", help="Archivo de libro contable")
+    parser.add_argument("--currency", choices=["DOP", "USD"], help="Moneda")
+    
+    # Parámetros adicionales
+    parser.add_argument("--tol_exacta", type=float)
+    parser.add_argument("--tol_agrup", type=float)
+    parser.add_argument("--tol_parcial", type=float)
+    parser.add_argument("--ven_exacta", type=int)
+    parser.add_argument("--ven_agrup", type=int)
+    parser.add_argument("--ven_flex", type=int)
+    parser.add_argument("--ven_comis", type=int)
+    parser.add_argument("--umb_baja", type=float)
+    parser.add_argument("--umb_media", type=float)
+    parser.add_argument("--umb_alta", type=float)
+    parser.add_argument("--solo_monto", type=str)
+    parser.add_argument("--usar_fechas", type=str)
+    parser.add_argument("--especiales", type=str)
+    parser.add_argument("--profesional", type=str)
+    parser.add_argument("--segunda_pasada", type=str)
+    parser.add_argument("--exhaustiva", type=str)
+    parser.add_argument("--comision_usd", type=float)
+    parser.add_argument("--det_comis", type=str)
+    parser.add_argument("--max_partidas", type=int)
+    parser.add_argument("--max_comb", type=int)
+    parser.add_argument("--umb_exh", type=int)
+    parser.add_argument("--max_exh", type=int)
+    
+    # Parse arguments
+    args, unknown = parser.parse_known_args()
+    
+    def str_to_bool(v):
+        if v is None: return None
+        return v.lower() in ("yes", "true", "t", "1")
+
+    if args.dir and args.bank and args.ledger:
+        # Modo Headless
+        kwargs = {
+            'tol_exacta': args.tol_exacta,
+            'tol_agrup': args.tol_agrup,
+            'tol_parcial': args.tol_parcial,
+            'ven_exacta': args.ven_exacta,
+            'ven_agrup': args.ven_agrup,
+            'ven_flex': args.ven_flex,
+            'ven_comis': args.ven_comis,
+            'umb_baja': args.umb_baja,
+            'umb_media': args.umb_media,
+            'umb_alta': args.umb_alta,
+            'solo_monto': str_to_bool(args.solo_monto),
+            'usar_fechas': str_to_bool(args.usar_fechas),
+            'especiales': str_to_bool(args.especiales),
+            'profesional': str_to_bool(args.profesional),
+            'segunda_pasada': str_to_bool(args.segunda_pasada),
+            'exhaustiva': str_to_bool(args.exhaustiva),
+            'comision_usd': args.comision_usd,
+            'det_comis': str_to_bool(args.det_comis),
+            'max_partidas': args.max_partidas,
+            'max_comb': args.max_comb,
+            'umb_exh': args.umb_exh,
+            'max_exh': args.max_exh
+        }
+        ejecutar_conciliacion(args.dir, args.bank, args.ledger, args.currency, **kwargs)
+    else:
+        # Modo Interactivo
+        menu_principal()
