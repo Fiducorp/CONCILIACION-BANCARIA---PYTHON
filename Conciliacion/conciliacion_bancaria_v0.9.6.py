@@ -56,6 +56,19 @@ def base_path():
 # 🆕 NUEVO: GESTIÓN DE FIDEICOMISOS
 # ============================================================================
 
+def natural_sort_key(text):
+    """
+    Genera una clave para ordenamiento natural (números ordenados numéricamente)
+    Ejemplo: '1', '2', '10', '11' en lugar de '1', '10', '11', '2'
+    """
+    parts = []
+    for part in re.split(r'(\d+)', str(text)):
+        if part.isdigit():
+            parts.append(int(part))
+        else:
+            parts.append(part.lower())
+    return parts
+
 def detectar_fideicomisos():
     """
     Detecta todos los fideicomisos (carpetas) en el directorio actual
@@ -75,7 +88,8 @@ def detectar_fideicomisos():
             if archivos_banco.exists() or archivos_contable.exists():
                 fideicomisos.append(item.name)
     
-    return sorted(fideicomisos)
+    # Ordenar usando ordenamiento natural (números se ordenan numéricamente)
+    return sorted(fideicomisos, key=natural_sort_key)
 
 def crear_estructura_fideicomiso(nombre_fideicomiso):
     """
@@ -136,7 +150,7 @@ def seleccionar_fideicomiso():
             n_contable = len([f for f in archivos_contable if f.suffix in ['.xlsx', '.xls', '.csv']])
             
             print(f"   {i}) {fideicomiso}")
-            print(f"      📊 Banco: {n_banco} archivo(s) | Contable: {n_contable} archivo(s)")
+            print(f"      📊 Banco: {n_banco} archivo(s) | Contable: {n_contable} archivo(s) \n")
     else:
         print("\n⚠️  No se encontraron fideicomisos existentes")
     
