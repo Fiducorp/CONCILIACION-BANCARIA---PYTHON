@@ -342,6 +342,9 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
             // Evento del botón Agregar Subtotal
             btnAgregarSubtotal.Click += BtnAgregarSubtotal_Click;
 
+            // Evento del botón Limpiar
+            btnLimpiar.Click += BtnLimpiar_Click;
+
             // Eventos del DataGridView Subtotales
 
 
@@ -1607,6 +1610,121 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         }
 
         #endregion
+
+        // =========================================================
+        // LIMPIAR FORMULARIO
+        // =========================================================
+        private void BtnLimpiar_Click(object sender, EventArgs e)
+        {
+            // Panel Encabezado
+            GenerarNumeroSolicitud();
+
+            // Datos Generales
+            dtpFecha.Value = DateTime.Today;
+            
+            // Buscar y seleccionar "Transferencia" en cboTipoPago
+            if (cboTipoPago.Items.Count > 0)
+            {
+                foreach (DataRowView item in cboTipoPago.Items)
+                {
+                    if (item["Nombre"].ToString().ToUpper().Contains("TRANSFERENCIA"))
+                    {
+                        cboTipoPago.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
+
+            // Buscar y seleccionar "Peso dominicano" en cboMoneda
+            foreach (DataRowView item in cboMoneda.Items)
+            {
+                if (item["Nombre"].ToString().ToUpper().Contains("PESO DOMINICANO") || item["CodigoISO"].ToString() == "DOP")
+                {
+                    cboMoneda.SelectedItem = item;
+                    break;
+                }
+            }
+
+            txtTasa.Clear();
+            chkMostrarConversion.Checked = false;
+            txtNumeroExterno.Clear();
+            txtCodigoFideicomiso.Clear();
+            cboFideicomiso.SelectedIndex = -1;
+            txtRNCProveedor.Clear();
+            cboProveedor.SelectedIndex = -1;
+
+            // Comprobantes
+            cboTipoComprobante.SelectedIndex = -1;
+            cboTipoNCF.SelectedIndex = -1;
+            txtNumeroNCF.Clear();
+            flpComprobantes.Controls.Clear();
+            SetNumeroNCFPlaceholder();
+
+            // Concepto
+            txtConcepto.Clear();
+
+            // Montos (Subtotales)
+            flpSubtotales.Controls.Clear();
+            ActualizarTotalSubtotales();
+
+            // RadioButton
+            rbBaseSubtotal.Checked = true;
+
+            // Otros Montos
+            txtExento.Clear();
+            txtDireccionTecnica.Clear();
+            txtDescuento.Clear();
+            txtHorasExtras.Clear();
+            
+            // Resetear configuración de "Otros Impuestos"
+            otrosImpuestosNombre = "Otros Impuestos:";
+            otrosImpuestosSumar = true;
+            lblOtrosImpuestos.Text = otrosImpuestosNombre;
+            txtOtrosImpuestos.Clear();
+
+            // Notas Crédito / Débito
+            notaCredito = new NotaInfo { EsManual = true, Total = 0 };
+            notaDebito = new NotaInfo { EsManual = true, Total = 0 };
+            txtNotaCredito.Clear();
+            txtNotaDebito.Clear();
+
+            txtAnticipo.Clear();
+            txtAvancePagar.Clear();
+
+            // Impuestos
+            chkCalcularITBIS.Checked = true;
+            
+            // Seleccionar 18% en cboITBISPorcentaje
+            foreach (var item in cboITBISPorcentaje.Items)
+            {
+                if (item.ToString() == "18%")
+                {
+                    cboITBISPorcentaje.SelectedItem = item;
+                    break;
+                }
+            }
+
+            cboRetITBIS.SelectedIndex = -1;
+            cboRetISR.SelectedIndex = -1;
+
+            
+            chkITBISManual.Checked = false;
+            chkRetAFP.Checked = false;
+            chkRetSFS.Checked = false;
+
+            // Observaciones
+            txtObservaciones.Clear();
+            chkIncluirFirma.Checked = false;
+            cboFirma.SelectedIndex = -1;
+            cboFirma.Enabled = false;
+
+            // Actualizar formatos y cálculos
+            UpdateAllCurrencyDisplays();
+            RecalcularTodo();
+
+            // Posicionarse en el primer campo lógico
+            dtpFecha.Focus();
+        }
 
         // =========================================================
         // AUTOCOMPLETADO PROVEEDOR
