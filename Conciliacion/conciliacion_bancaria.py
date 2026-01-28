@@ -4,7 +4,7 @@ CONCILIACIÓN BANCARIA INTELIGENTE v0.9.6
 ============================================================================
 Proyecto: GREEN PARK - BANRESERVAS
 
-✅ TODAS LAS ESTRATEGIAS (7 estrategias completas):
+[OK] TODAS LAS ESTRATEGIAS (7 estrategias completas):
    1.   Monto Exacto (1:1)
    1.5  Transferencias + Comisión ($7)
    1.6  Comisiones Agrupadas Multi-fecha
@@ -15,14 +15,14 @@ Proyecto: GREEN PARK - BANRESERVAS
    6.   Segunda Pasada Flexible
    7.   Búsqueda Exhaustiva Final
 
-✅ OPTIMIZACIONES:
+[OK] OPTIMIZACIONES:
    - Lectura rápida: solo filas con Fecha Y Valor válidos
    - Límites por estrategia para evitar timeouts
    - Alias TC/LEGAL mejorados: TC LEGAL ↔ TC Corporativa ↔ Legalizaciones ↔ IPI
    - Descripción vacía funcional (crea columna si no existe)
    - Score combinado para desempate (Concepto_Norm del v5 restaurado)
 
-🎯 OBJETIVO: < 1 minuto de ejecución con máxima conciliación
+[TARGET] OBJETIVO: < 1 minuto de ejecución con máxima conciliación
 ============================================================================
 """
 
@@ -52,7 +52,7 @@ def base_path():
     return Path(__file__).parent
 
 # ============================================================================
-# 🆕 NUEVO: GESTIÓN DE FIDEICOMISOS
+# [NEW] NUEVO: GESTIÓN DE FIDEICOMISOS
 # ============================================================================
 
 def natural_sort_key(text):
@@ -105,7 +105,7 @@ def crear_estructura_fideicomiso(nombre_fideicomiso):
     
     # Verificar si ya existe
     if carpeta_fideicomiso.exists():
-        print(f"⚠️  El fideicomiso '{nombre_fideicomiso}' ya existe")
+        print(f"[WARN]  El fideicomiso '{nombre_fideicomiso}' ya existe")
         return None
     
     # Crear carpeta principal del fideicomiso
@@ -116,13 +116,13 @@ def crear_estructura_fideicomiso(nombre_fideicomiso):
     (carpeta_fideicomiso / 'Archivos Libro Contable').mkdir(exist_ok=True)
     (carpeta_fideicomiso / 'Resultados').mkdir(exist_ok=True)
 
-    print(f"\n✅ Fideicomiso '{nombre_fideicomiso}' creado exitosamente")
+    print(f"\n[OK] Fideicomiso '{nombre_fideicomiso}' creado exitosamente")
     print(f"📁 Ubicación: {carpeta_fideicomiso}")
-    print(f"\n📋 Estructura creada:")
+    print(f"\n[LIST] Estructura creada:")
     print(f"   ├── Archivos Banco/")
     print(f"   ├── Archivos Libro Contable/")
     print(f"   └── Resultados/")
-    print(f"\n💡 Ahora coloca los archivos en las carpetas correspondientes")
+    print(f"\n[INFO] Ahora coloca los archivos en las carpetas correspondientes")
     
     return str(carpeta_fideicomiso)
 
@@ -132,13 +132,13 @@ def seleccionar_fideicomiso():
     Retorna: ruta del fideicomiso seleccionado/creado
     """
     print("\n" + "="*70)
-    print("📂 GESTIÓN DE FIDEICOMISOS")
+    print("[DIR] GESTIÓN DE FIDEICOMISOS")
     print("="*70)
     
     fideicomisos = detectar_fideicomisos()
     
     if fideicomisos:
-        print(f"\n📋 Fideicomisos encontrados: {len(fideicomisos)}\n")
+        print(f"\n[LIST] Fideicomisos encontrados: {len(fideicomisos)}\n")
         for i, fideicomiso in enumerate(fideicomisos, 1):
             # Mostrar info adicional del fideicomiso
             carpeta_fideicomiso = base_path() / fideicomiso
@@ -149,11 +149,11 @@ def seleccionar_fideicomiso():
             n_contable = len([f for f in archivos_contable if f.suffix in ['.xlsx', '.xls', '.csv']])
             
             print(f"   {i}) {fideicomiso}")
-            print(f"      📊 Banco: {n_banco} archivo(s) | Contable: {n_contable} archivo(s) \n")
+            print(f"      [STATS] Banco: {n_banco} archivo(s) | Contable: {n_contable} archivo(s) \n")
     else:
-        print("\n⚠️  No se encontraron fideicomisos existentes")
+        print("\n[WARN]  No se encontraron fideicomisos existentes")
     
-    print(f"\n   {'0' if fideicomisos else '1'}) ➕ Crear nuevo fideicomiso")
+    print(f"\n   {'0' if fideicomisos else '1'}) [PLUS] Crear nuevo fideicomiso")
     
     while True:
         if fideicomisos:
@@ -164,19 +164,19 @@ def seleccionar_fideicomiso():
         # Opción: Crear nuevo fideicomiso
         if entrada == '0' or (not fideicomisos and entrada == '1'):
             print("\n" + "─"*70)
-            print("➕ CREAR NUEVO FIDEICOMISO")
+            print("[PLUS] CREAR NUEVO FIDEICOMISO")
             print("─"*70)
             
             while True:
-                nombre_caso = input("\n📝 Nombre del nuevo fideicomiso: ").strip()
+                nombre_caso = input("\n[NOTE] Nombre del nuevo fideicomiso: ").strip()
                 
                 if not nombre_caso:
-                    print("❌ El nombre no puede estar vacío")
+                    print("[ERROR] El nombre no puede estar vacío")
                     continue
                 
                 # Validar nombre (sin caracteres especiales peligrosos)
                 if not re.match(r'^[\w\s\-\.]+$', nombre_caso):
-                    print("❌ El nombre contiene caracteres inválidos")
+                    print("[ERROR] El nombre contiene caracteres inválidos")
                     print("   Usa solo letras, números, espacios, guiones y puntos")
                     continue
                 
@@ -190,7 +190,7 @@ def seleccionar_fideicomiso():
                         # Si ya existe, volver al menú
                         break
                 else:
-                    print("❌ Creación cancelada")
+                    print("[ERROR] Creación cancelada")
                     break
 
         # Opción: Seleccionar fideicomiso existente
@@ -198,12 +198,12 @@ def seleccionar_fideicomiso():
             caso_seleccionado = fideicomisos[int(entrada) - 1]
             carpeta_caso = base_path() / caso_seleccionado
             
-            print(f"\n✅ Fideicomiso seleccionado: {caso_seleccionado}")
+            print(f"\n[OK] Fideicomiso seleccionado: {caso_seleccionado}")
             print(f"📁 Ubicación: {carpeta_caso}")
             
             return str(carpeta_caso)
         else:
-            print("❌ Selección inválida")
+            print("[ERROR] Selección inválida")
 
 def configurar_rutas_caso(carpeta_caso):
     """
@@ -221,32 +221,32 @@ def configurar_rutas_caso(carpeta_caso):
     CARPETA_CONTABLE.mkdir(exist_ok=True)
     CARPETA_RESULTADOS.mkdir(exist_ok=True)
     
-    print(f"\n📂 Rutas configuradas:")
-    print(f"   🏦 Bancos:     {CARPETA_BANCOS}")
-    print(f"   📖 Contable:   {CARPETA_CONTABLE}")
-    print(f"   💾 Resultados: {CARPETA_RESULTADOS}")
+    print(f"\n[DIR] Rutas configuradas:")
+    print(f"   [BANK] Bancos:     {CARPETA_BANCOS}")
+    print(f"   [BOOK] Contable:   {CARPETA_CONTABLE}")
+    print(f"   [SAVE] Resultados: {CARPETA_RESULTADOS}")
 
 # ============================================================================
-# ⚙️ PARÁMETROS AJUSTABLES
+# [CONFIG] PARÁMETROS AJUSTABLES
 # ============================================================================
 
-# 💰 TOLERANCIAS DE VALOR
+# [MONEY] TOLERANCIAS DE VALOR
 TOLERANCIA_VALOR_EXACTA = 0.01
 TOLERANCIA_VALOR_AGRUPACION = 1.00
 TOLERANCIA_PORCENTAJE_PARCIAL = 0.02
 
-# 📅 VENTANAS DE TIEMPO
+# [DATE] VENTANAS DE TIEMPO
 VENTANA_DIAS_EXACTA = 10
 VENTANA_DIAS_AGRUPACION = 20
 VENTANA_DIAS_FLEXIBLE = 30
 VENTANA_DIAS_COMISIONES = 45
 
-# 🎯 UMBRALES DE SIMILITUD
+# [TARGET] UMBRALES DE SIMILITUD
 UMBRAL_SIMILITUD_BAJA = 0.05
 UMBRAL_SIMILITUD_MEDIA = 0.20
 UMBRAL_SIMILITUD_ALTA = 0.40
 
-# 🔧 CONFIGURACIÓN AVANZADA
+# [TOOL] CONFIGURACIÓN AVANZADA
 PERMITIR_SOLO_MONTO = True
 USAR_FECHAS_PARA_DESAMBIGUAR = True
 DETECTAR_CASOS_ESPECIALES = True
@@ -254,18 +254,18 @@ APLICAR_FORMATO_PROFESIONAL = True
 EJECUTAR_SEGUNDA_PASADA = True
 EJECUTAR_BUSQUEDA_EXHAUSTIVA = True
 
-# 💵 COMISIONES BANCARIAS
+# [USD] COMISIONES BANCARIAS
 COMISION_TRANSFERENCIA_USD = 7.00
 DETECTAR_COMISIONES = True
 
-# ⚡ LÍMITES DE RENDIMIENTO (OPTIMIZACIÓN)
+# [PERF] LÍMITES DE RENDIMIENTO (OPTIMIZACIÓN)
 MAX_PARTIDAS_AGRUPACION = 30        # Reducido de 100 a 15 para velocidad
 MAX_COMBINACIONES_POR_BUSQUEDA = 10000  # Límite por cada búsqueda individual
 UMBRAL_PARTIDAS_EXHAUSTIVA = 25     # Aumentado de 20 a 25
 MAX_COMBINACIONES_EXHAUSTIVA = 100000
 
 # ============================================================================
-# ⚙️ CONFIGURACIÓN DE RUTAS Y ARCHIVOS RESULTADO
+# [CONFIG] CONFIGURACIÓN DE RUTAS Y ARCHIVOS RESULTADO
 # ============================================================================
 
 import calendar
@@ -308,7 +308,7 @@ def obtener_ruta_unica(ruta_base):
         contador += 1
 
 # ============================================================================
-# 🏦 PASO 1: SISTEMA DE RECONOCIMIENTO AUTOMÁTICO DE BANCOS
+# [BANK] PASO 1: SISTEMA DE RECONOCIMIENTO AUTOMÁTICO DE BANCOS
 # ============================================================================
 
 # Lista de bancos dominicanos soportados
@@ -356,11 +356,11 @@ def buscar_archivos_en_carpeta():
     """
 
     print("\n" + "="*70)
-    print("🔍 PASO 1: BUSCANDO ARCHIVOS")
+    print("[SEARCH] PASO 1: BUSCANDO ARCHIVOS")
     print("="*70)
 
-    print(f"🏦 Carpeta Bancos:   {CARPETA_BANCOS}")
-    print(f"📖 Carpeta Contable: {CARPETA_CONTABLE}\n")
+    print(f"[BANK] Carpeta Bancos:   {CARPETA_BANCOS}")
+    print(f"[BOOK] Carpeta Contable: {CARPETA_CONTABLE}\n")
 
     # ─────────────────────────────────────────────
     # Buscar archivos de BANCO
@@ -374,8 +374,8 @@ def buscar_archivos_en_carpeta():
             banco_det, nombre_det = detectar_banco_en_nombre_archivo(nombre_sin_ext)
             if banco_det:
                 archivos_banco.append((ruta_archivo, banco_det, nombre_det, nombre_archivo))
-                print(f"✅ BANCO identificado: {nombre_archivo}")
-                print(f"   🏦 Banco: {banco_det} ({nombre_det})")
+                print(f"[OK] BANCO identificado: {nombre_archivo}")
+                print(f"   [BANK] Banco: {banco_det} ({nombre_det})")
 
     # ─────────────────────────────────────────────
     # Buscar archivo CONTABLE
@@ -385,7 +385,7 @@ def buscar_archivos_en_carpeta():
         for ruta_archivo in glob.glob(os.path.join(CARPETA_CONTABLE, extension)):
             nombre_archivo = os.path.basename(ruta_archivo)
             archivos_contable.append((ruta_archivo, 'CONTABLE', 'Libro Contable', nombre_archivo))
-            print(f"✅ CONTABLE identificado: {nombre_archivo}")
+            print(f"[OK] CONTABLE identificado: {nombre_archivo}")
 
     print("\n" + "─"*70)
 
@@ -393,18 +393,18 @@ def buscar_archivos_en_carpeta():
     # Validaciones
     # ─────────────────────────────────────────────
     if not archivos_banco:
-        print("❌ ERROR: No se encontraron archivos de banco")
+        print("[ERROR] ERROR: No se encontraron archivos de banco")
         return None, None, None, None
 
     if not archivos_contable:
-        print("❌ ERROR: No se encontró archivo del libro contable")
+        print("[ERROR] ERROR: No se encontró archivo del libro contable")
         return None, None, None, None
 
     # ─────────────────────────────────────────────
     # Selección BANCO
     # ─────────────────────────────────────────────
     if len(archivos_banco) > 1:
-        print("\n❗ MÚLTIPLES ARCHIVOS DE BANCO:\n")
+        print("\n[!] MÚLTIPLES ARCHIVOS DE BANCO:\n")
         for i, (_, codigo, nombre, archivo) in enumerate(archivos_banco, 1):
             print(f"   {i}) {archivo} — {codigo} ({nombre})")
 
@@ -413,7 +413,7 @@ def buscar_archivos_en_carpeta():
             if entrada.isdigit() and 1 <= int(entrada) <= len(archivos_banco):
                 archivo_banco, codigo_banco, nombre_banco, _ = archivos_banco[int(entrada) - 1]
                 break
-            print("❌ Selección inválida")
+            print("[ERROR] Selección inválida")
     else:
         archivo_banco, codigo_banco, nombre_banco, _ = archivos_banco[0]
 
@@ -421,7 +421,7 @@ def buscar_archivos_en_carpeta():
     # Selección CONTABLE
     # ─────────────────────────────────────────────
     if len(archivos_contable) > 1:
-        print("\n❗ MÚLTIPLES ARCHIVOS CONTABLES:\n")
+        print("\n[!] MÚLTIPLES ARCHIVOS CONTABLES:\n")
         for i, (_, _, _, archivo) in enumerate(archivos_contable, 1):
             print(f"   {i}) {archivo}")
 
@@ -430,21 +430,21 @@ def buscar_archivos_en_carpeta():
             if entrada.isdigit() and 1 <= int(entrada) <= len(archivos_contable):
                 archivo_contable, _, _, _ = archivos_contable[int(entrada) - 1]
                 break
-            print("❌ Selección inválida")
+            print("[ERROR] Selección inválida")
     else:
         archivo_contable, _, _, _ = archivos_contable[0]
 
     # ─────────────────────────────────────────────
     # Resultado final
     # ─────────────────────────────────────────────
-    print("\n✅ Archivos validados correctamente")
-    print(f"   🏦 Banco:    {os.path.basename(archivo_banco)}")
-    print(f"   📖 Contable: {os.path.basename(archivo_contable)}")
+    print("\n[OK] Archivos validados correctamente")
+    print(f"   [BANK] Banco:    {os.path.basename(archivo_banco)}")
+    print(f"   [BOOK] Contable: {os.path.basename(archivo_contable)}")
 
     return archivo_banco, archivo_contable, codigo_banco, nombre_banco
 
 # ============================================================================
-# 📝 ALIAS DE EMPRESAS Y CONCEPTOS (AMPLIADO PARA TC/LEGAL)
+# [NOTE] ALIAS DE EMPRESAS Y CONCEPTOS (AMPLIADO PARA TC/LEGAL)
 # ============================================================================
 
 ALIAS_EMPRESAS = {
@@ -488,7 +488,7 @@ PALABRAS_COMUNES = {
 }
 
 # ============================================================================
-# 📝 PATRONES PARA CAJA CHICA (AÑADIR A LA SECCIÓN DE ALIAS)
+# [NOTE] PATRONES PARA CAJA CHICA (AÑADIR A LA SECCIÓN DE ALIAS)
 # ============================================================================
 
 PATRONES_CAJA_CHICA = [
@@ -497,7 +497,7 @@ PATRONES_CAJA_CHICA = [
 ]
 
 # ============================================================================
-# 🔧 FUNCIONES DE NORMALIZACIÓN
+# [TOOL] FUNCIONES DE NORMALIZACIÓN
 # ============================================================================
 
 def quitar_acentos(texto):
@@ -606,7 +606,7 @@ def es_patron_transferencia(texto):
     return any(patron in texto_norm for patron in PATRONES_TRANSFERENCIA)
 
 # ============================================================================
-# 🏦 PASO 2: SISTEMA DE LIMPIEZA ESPECÍFICO POR BANCO
+# [BANK] PASO 2: SISTEMA DE LIMPIEZA ESPECÍFICO POR BANCO
 # ============================================================================
 
 def limpiar_banco_popular(df_original):
@@ -670,9 +670,9 @@ def limpiar_banco_popular(df_original):
             break
 
     if idx_separador is not None:
-        print(f"  🔀 Segunda cabecera detectada en fila: {idx_separador}")
+        print(f"  [MERGE] Segunda cabecera detectada en fila: {idx_separador}")
     else:
-        print("  ⚠️ No se detectó segunda cabecera (Débitos)")
+        print("  [WARN] No se detectó segunda cabecera (Débitos)")
 
     # Normalizar nombres de columnas mínimamente (sin cambiar valores)
     rename_map = {}
@@ -761,7 +761,7 @@ def limpiar_banco_popular_csv(ruta_archivo):
         # 1. Detectar delimitador
         # ─────────────────────────────────────────────
         sep = detectar_delimitador_popular(ruta_archivo)
-        print(f"  🔍 Delimitador detectado: '{sep}'")
+        print(f"  [SEARCH] Delimitador detectado: '{sep}'")
 
         # ─────────────────────────────────────────────
         # 2. Leer archivo CSV ignorando basura
@@ -769,7 +769,7 @@ def limpiar_banco_popular_csv(ruta_archivo):
         df = read_dirty_csv_popular(ruta_archivo, sep)
 
 
-        print(f"  📊 CSV cargado: {df.shape[0]} filas × {df.shape[1]} columnas")
+        print(f"  [STATS] CSV cargado: {df.shape[0]} filas × {df.shape[1]} columnas")
 
         # ─────────────────────────────────────────────
         # 3. Detectar cabeceras dentro del DF
@@ -782,9 +782,9 @@ def limpiar_banco_popular_csv(ruta_archivo):
         idx_creditos = headers[0]
         idx_debitos = headers[1] if len(headers) > 1 else None
 
-        print(f"  🔍 Inicio Créditos: fila {idx_creditos}")
+        print(f"  [SEARCH] Inicio Créditos: fila {idx_creditos}")
         if idx_debitos is not None:
-            print(f"  🔍 Inicio Débitos: fila {idx_debitos}")
+            print(f"  [SEARCH] Inicio Débitos: fila {idx_debitos}")
 
         # ─────────────────────────────────────────────
         # 4. Recortar DF a partir de Créditos
@@ -832,7 +832,7 @@ def limpiar_banco_popular_csv(ruta_archivo):
         # 8. Aplicar signo Débitos
         # ─────────────────────────────────────────────
         if idx_debitos_df is not None:
-            print(f"  🔀 Aplicando Débitos desde fila {idx_debitos_df}")
+            print(f"  [MERGE] Aplicando Débitos desde fila {idx_debitos_df}")
             df_limpio.loc[idx_debitos_df + 1:, 'Valor'] *= -1
             df_limpio = df_limpio.drop(index=idx_debitos_df).reset_index(drop=True)
 
@@ -841,11 +841,11 @@ def limpiar_banco_popular_csv(ruta_archivo):
         # ─────────────────────────────────────────────
         df_limpio = df_limpio.dropna(subset=['Valor']).reset_index(drop=True)
 
-        print(f"  ✅ Limpieza POPULAR CSV completada: {df_limpio.shape[0]} filas")
+        print(f"  [OK] Limpieza POPULAR CSV completada: {df_limpio.shape[0]} filas")
         return df_limpio
 
     except Exception as e:
-        print(f"  ❌ Error al limpiar CSV de POPULAR: {e}")
+        print(f"  [ERROR] Error al limpiar CSV de POPULAR: {e}")
         raise
 
 def limpiar_banreservas(df_original):
@@ -944,14 +944,14 @@ def limpiar_bhd_csv(ruta_archivo):
     try:
         # Leer CSV sin headers (no_column_names)
         df = pd.read_csv(ruta_archivo, header=None)
-        print(f"  📊 CSV cargado: {df.shape[0]} filas × {df.shape[1]} columnas")
+        print(f"  [STATS] CSV cargado: {df.shape[0]} filas × {df.shape[1]} columnas")
         
         # Asignar nombres temporales a las columnas (0-indexed)
         df.columns = [f'col_{i}' for i in range(df.shape[1])]
         
         # Saltar la primera fila (resumen/encabezado)
         df = df.iloc[1:].reset_index(drop=True)
-        print(f"  ✅ Salteada primera fila (resumen), quedaron: {df.shape[0]} filas")
+        print(f"  [OK] Salteada primera fila (resumen), quedaron: {df.shape[0]} filas")
         
         # Mapear columnas: Fecha=0, Concepto=4, Debito=5, Credito=6
         # Las demás columnas (1,2,3,7,8,9) son inútiles
@@ -972,11 +972,11 @@ def limpiar_bhd_csv(ruta_archivo):
         df_limpio['Debito'] = pd.to_numeric(df_limpio['Debito'], errors='coerce')
         df_limpio['Credito'] = pd.to_numeric(df_limpio['Credito'], errors='coerce')
         
-        print(f"  ✅ Limpieza BHD CSV completada: {df_limpio.shape[0]} filas")
+        print(f"  [OK] Limpieza BHD CSV completada: {df_limpio.shape[0]} filas")
         return df_limpio
         
     except Exception as e:
-        print(f"  ❌ Error al limpiar CSV de BHD: {e}")
+        print(f"  [ERROR] Error al limpiar CSV de BHD: {e}")
         raise
 
 def limpiar_santa_cruz(df_original):
@@ -1208,7 +1208,7 @@ FUNCIONES_LIMPIEZA_BANCO_CSV = {
 }
 
 # ============================================================================
-# 🏦 PASO 2B: LIMPIEZA DEL ARCHIVO CONTABLE (UNIVERSAL)
+# [BANK] PASO 2B: LIMPIEZA DEL ARCHIVO CONTABLE (UNIVERSAL)
 # ============================================================================
 
 def limpiar_archivo_contable(ruta_archivo, moneda='RD$'):
@@ -1229,7 +1229,7 @@ def limpiar_archivo_contable(ruta_archivo, moneda='RD$'):
     try:
         df = pd.read_excel(ruta_archivo)
     except Exception as e:
-        raise ValueError(f"❌ Error al leer contable '{ruta_archivo}': {e}")
+        raise ValueError(f"[ERROR] Error al leer contable '{ruta_archivo}': {e}")
 
     df = df.reset_index(drop=True)
     df = df.dropna(how='all')
@@ -1263,7 +1263,7 @@ def limpiar_archivo_contable(ruta_archivo, moneda='RD$'):
     return df
 
 # ============================================================================
-# 📂 CARGA DE DATOS OPTIMIZADA (SOLO FILAS VÁLIDAS)
+# [DIR] CARGA DE DATOS OPTIMIZADA (SOLO FILAS VÁLIDAS)
 # ============================================================================
 
 # Carga de Archivos
@@ -1272,7 +1272,7 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
     Si se proporciona `codigo_banco`, se aplicará la función de limpieza
     específica definida en `FUNCIONES_LIMPIEZA_BANCO` antes del mapeo general.
     """
-    print(f"\n  📂 Cargando: {nombre.upper() if nombre else ruta}")
+    print(f"\n  [DIR] Cargando: {nombre.upper() if nombre else ruta}")
 
     # Resolver ruta relativa: si el usuario pasa solo el nombre de archivo,
     # buscarlo en el mismo directorio del script y en el cwd.
@@ -1312,10 +1312,10 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
     try:
         # Detectar si es CSV o Excel basado en la extensión del archivo
         if ruta.lower().endswith('.csv'):
-            print(f"  📋 Detectado archivo CSV")
+            print(f"  [LIST] Detectado archivo CSV")
             # Aplicar limpieza específica si existe para CSV
             if codigo_banco and codigo_banco in FUNCIONES_LIMPIEZA_BANCO_CSV:
-                print(f"  🧹 Aplicando limpieza específica para {codigo_banco} (CSV)...")
+                print(f"  [CLEAN] Aplicando limpieza específica para {codigo_banco} (CSV)...")
                 df = FUNCIONES_LIMPIEZA_BANCO_CSV[codigo_banco](ruta)
             else:
                 # Para otros CSVs, cargar directamente
@@ -1324,7 +1324,7 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
             # Leer Excel
             df = pd.read_excel(ruta)
 
-        # ⚡ OPTIMIZACIÓN 1: Eliminar filas completamente vacías PRIMERO
+        # [PERF] OPTIMIZACIÓN 1: Eliminar filas completamente vacías PRIMERO
         df = df.dropna(how='all')
 
         # Si se indicó un código de banco y existe una función de limpieza,
@@ -1332,10 +1332,10 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
         # (Para CSV de BHD, la limpieza ya se aplicó arriba)
         if codigo_banco and codigo_banco in FUNCIONES_LIMPIEZA_BANCO and not (ruta.lower().endswith('.csv')):
             try:
-                print(f"  🧹 Aplicando limpieza específica para {codigo_banco}...")
+                print(f"  [CLEAN] Aplicando limpieza específica para {codigo_banco}...")
                 df = FUNCIONES_LIMPIEZA_BANCO[codigo_banco](df)
             except Exception as e:
-                raise ValueError(f"❌ Error en limpieza específica de {codigo_banco}: {e}")
+                raise ValueError(f"[ERROR] Error en limpieza específica de {codigo_banco}: {e}")
 
         # Evitar errores por columnas duplicadas en el Excel (por ejemplo cabeceras repetidas).
         # Hacemos los nombres de columnas únicos antes del mapeo (col -> col, col_1, col_2...)
@@ -1353,9 +1353,9 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
         df.columns = unique_cols
 
     except Exception as e:
-        raise ValueError(f"❌ Error al cargar '{ruta}': {e}")
+        raise ValueError(f"[ERROR] Error al cargar '{ruta}': {e}")
     
-    print(f"  📋 Columnas encontradas: {list(df.columns)}")
+    print(f"  [LIST] Columnas encontradas: {list(df.columns)}")
     
     # Mapeo automático de columnas
     columnas_map = {}
@@ -1385,12 +1385,12 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
     
     # Detectar si hay Debito y/o Credito
     tiene_debito_credito = ('Debito' in columnas_map) or ('Credito' in columnas_map)
-    print(f"  🔍 Formato detectado: {'Debito/Credito' if tiene_debito_credito else 'Valor Único'}")
+    print(f"  [SEARCH] Formato detectado: {'Debito/Credito' if tiene_debito_credito else 'Valor Único'}")
     # Si no hay Descripción, crearla vacía
     if 'Descripción' not in columnas_map:
         df['Descripción'] = ''
         columnas_map['Descripción'] = 'Descripción'
-        print("  ⚠️ Columna 'Descripción' no encontrada - creada vacía")
+        print("  [WARN] Columna 'Descripción' no encontrada - creada vacía")
     
     # Verificar columnas requeridas
     if tiene_debito_credito:
@@ -1405,7 +1405,7 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
     
     faltantes = [r for r in requeridas if r not in columnas_map]
     if faltantes:
-        raise ValueError(f"❌ Faltan columnas requeridas: {faltantes}")
+        raise ValueError(f"[ERROR] Faltan columnas requeridas: {faltantes}")
     
     # Renombrar columnas - hacerlo de forma segura para evitar reindex errors
     try:
@@ -1454,14 +1454,14 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
     else:
         df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce')
     
-    # ⚡ OPTIMIZACIÓN 2: Filtrar SOLO filas con Fecha Y Valor válidos
+    # [PERF] OPTIMIZACIÓN 2: Filtrar SOLO filas con Fecha Y Valor válidos
     registros_antes = len(df)
     df = df.dropna(subset=['Fecha', 'Valor'])
     df = df[df['Valor'] != 0]  # Eliminar valores $0
     registros_despues = len(df)
     
     if registros_antes != registros_despues:
-        print(f"  ⚠️ Filtradas {registros_antes - registros_despues} filas sin Fecha/Valor válidos")
+        print(f"  [WARN] Filtradas {registros_antes - registros_despues} filas sin Fecha/Valor válidos")
     
     # Campos de búsqueda
     df['Texto_Busqueda'] = (df['Concepto'].astype(str) + ' ' + df['Descripción'].astype(str)).apply(normalizar_texto)
@@ -1477,13 +1477,13 @@ def cargar_banco(ruta, nombre="", codigo_banco=None):
     df['ID_Original'] = range(len(df))
     df['Conciliado'] = False
     
-    print(f"  ✅ Cargados: {len(df)} registros válidos")
+    print(f"  [OK] Cargados: {len(df)} registros válidos")
     return df
 
 # Cargas de Archivos CONTABLE
 def cargar_contable(ruta, usa_dolares, nombre=""):
     """Carga datos - OPTIMIZACIÓN: solo lee filas con Fecha Y Valor válidos"""
-    print(f"\n  📂 Cargando: {nombre.upper() if nombre else ruta}")
+    print(f"\n  [DIR] Cargando: {nombre.upper() if nombre else ruta}")
 
     # Resolver ruta relativa: si el usuario pasa solo el nombre de archivo,
     # buscarlo en el mismo directorio del script y en el cwd.
@@ -1527,9 +1527,9 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
         moneda_str = 'USD' if usa_dolares else 'RD$'
         df = limpiar_archivo_contable(ruta, moneda_str)
     except Exception as e:
-        raise ValueError(f"❌ Error al cargar contable '{ruta}': {e}")
+        raise ValueError(f"[ERROR] Error al cargar contable '{ruta}': {e}")
     
-    print(f"  📋 Columnas encontradas: {list(df.columns)}")
+    print(f"  [LIST] Columnas encontradas: {list(df.columns)}")
     
     # Mapeo automático de columnas (normaliza espacios/acentos al buscar)
     columnas_map = {}
@@ -1568,7 +1568,7 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
     if 'Descripción' not in columnas_map:
         df['Descripción'] = ''
         columnas_map['Descripción'] = 'Descripción'
-        print("  ⚠️ Columna 'Descripción' no encontrada - creada vacía")
+        print("  [WARN] Columna 'Descripción' no encontrada - creada vacía")
     
     # Verificar columnas requeridas según moneda
     if usa_dolares and 'Valor_USD' in columnas_map:
@@ -1583,16 +1583,16 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
     
     faltantes = [r for r in requeridas if r not in columnas_map]
     if faltantes:
-        raise ValueError(f"❌ Faltan columnas requeridas: {faltantes}")
+        raise ValueError(f"[ERROR] Faltan columnas requeridas: {faltantes}")
     
     # Renombrar columnas
     df = df.rename(columns={v: k for k, v in columnas_map.items()})
     
-    # ⚡ OPTIMIZACIÓN 3: Eliminar filas completamente vacías (espacios en blanco bajo encabezados)
+    # [PERF] OPTIMIZACIÓN 3: Eliminar filas completamente vacías (espacios en blanco bajo encabezados)
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
     
-    # 🚫 FILTRO ESTADO: Ignorar filas marcadas como "A" o "X" en la columna Estado
+    # [BLOCK] FILTRO ESTADO: Ignorar filas marcadas como "A" o "X" en la columna Estado
     if 'Estado' in df.columns:
         registros_antes_estado = len(df)
         # Convertir Estado a string y eliminar filas con A o X
@@ -1600,7 +1600,7 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
         df = df[~df['Estado'].isin(['A', 'X'])]
         registros_eliminados_estado = registros_antes_estado - len(df)
         if registros_eliminados_estado > 0:
-            print(f"  🚫 Eliminadas {registros_eliminados_estado} filas con Estado 'A' o 'X'")
+            print(f"  [BLOCK] Eliminadas {registros_eliminados_estado} filas con Estado 'A' o 'X'")
         df = df.drop(columns=['Estado'], errors='ignore')  # Eliminar la columna Estado después de filtrar
     
     # Convertir tipos y combinar/ajustar columnas según formato
@@ -1610,12 +1610,12 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
 
     # Procesar Valor según moneda detectada
     if es_limpio:
-        print("  🧼 Libro contable ya limpio — usando Valor directamente")
+        print("  [CLEAN] Libro contable ya limpio — usando Valor directamente")
         df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce')
     
     elif usa_dolares == True and 'Valor_USD' in df.columns:
         # USD: usar Valor Moneda Extranjera directamente (ya tiene signos correctos)
-        print("  💵 Detectada moneda USD - usando 'Valor Moneda Extranjera'")
+        print("  [USD] Detectada moneda USD - usando 'Valor Moneda Extranjera'")
         # Descartar columnas RD primero
         if 'Valor' in df.columns:
             df = df.drop(columns=['Valor'], errors='ignore')
@@ -1633,7 +1633,7 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
         if 'Natu' in df.columns:
             df['Natu'] = df['Natu'].astype(str).str.strip().str.upper()
 
-            # 🔹 APLICAR SIGNO SEGÚN NATU
+            # [-] APLICAR SIGNO SEGÚN NATU
             df.loc[df['Natu'] == 'E', 'Valor'] *= -1
             df.loc[df['Natu'] == 'I', 'Valor'] = df.loc[df['Natu'] == 'I', 'Valor'].abs()
 
@@ -1643,14 +1643,14 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
         if 'Valor_USD' in df.columns:
             df = df.drop(columns=['Valor_USD'], errors='ignore')
     
-    # ⚡ OPTIMIZACIÓN 2: Filtrar SOLO filas con Fecha Y Valor válidos
+    # [PERF] OPTIMIZACIÓN 2: Filtrar SOLO filas con Fecha Y Valor válidos
     registros_antes = len(df)
     df = df.dropna(subset=['Fecha', 'Valor'])
     df = df[df['Valor'] != 0]  # Eliminar valores $0
     registros_despues = len(df)
     
     if registros_antes != registros_despues:
-        print(f"  ⚠️ Filtradas {registros_antes - registros_despues} filas sin Fecha/Valor válidos")
+        print(f"  [WARN] Filtradas {registros_antes - registros_despues} filas sin Fecha/Valor válidos")
     
     # Campos de búsqueda
     df['Texto_Busqueda'] = (df['Concepto'].astype(str) + ' ' + df['Descripción'].astype(str)).apply(normalizar_texto)
@@ -1665,16 +1665,16 @@ def cargar_contable(ruta, usa_dolares, nombre=""):
     df['ID_Original'] = range(len(df))
     df['Conciliado'] = False
     
-    print(f"  ✅ Cargados: {len(df)} registros válidos")
+    print(f"  [OK] Cargados: {len(df)} registros válidos")
     return df
 
 # ============================================================================
-# 🎯 ESTRATEGIA 1: MONTO EXACTO (1:1) - CON SCORE COMBINADO
+# [TARGET] ESTRATEGIA 1: MONTO EXACTO (1:1) - CON SCORE COMBINADO
 # ============================================================================
 
 def conciliacion_por_monto_exacto(banco, contable, conciliaciones):
     print("\n" + "="*70)
-    print("🎯 ESTRATEGIA 1: MONTO EXACTO (1:1)")
+    print("[TARGET] ESTRATEGIA 1: MONTO EXACTO (1:1)")
     print("="*70)
     
     contador = 0
@@ -1718,7 +1718,7 @@ def conciliacion_por_monto_exacto(banco, contable, conciliaciones):
                 contador += 1
                 id_conc += 1
         else:
-            # ⭐ SCORE COMBINADO para desempatar (restaurado del v5)
+            # [*] SCORE COMBINADO para desempatar (restaurado del v5)
             cands = cands.copy()
             cands['Sim'] = cands['Texto_Busqueda'].apply(
                 lambda x: calcular_similitud(reg_b['Texto_Busqueda'], x)
@@ -1750,11 +1750,11 @@ def conciliacion_por_monto_exacto(banco, contable, conciliaciones):
                 contador += 1
                 id_conc += 1
     
-    print(f"✓ Conciliaciones 1:1: {contador}")
+    print(f"[v] Conciliaciones 1:1: {contador}")
     return contador
 
 # ============================================================================
-# 🎯 ESTRATEGIA 1.5: TRANSFERENCIAS CON COMISIÓN ($7)
+# [TARGET] ESTRATEGIA 1.5: TRANSFERENCIAS CON COMISIÓN ($7)
 # ============================================================================
 
 def conciliacion_con_comisiones(banco, contable, conciliaciones):
@@ -1762,7 +1762,7 @@ def conciliacion_con_comisiones(banco, contable, conciliaciones):
         return 0
     
     print("\n" + "="*70)
-    print("🎯 ESTRATEGIA 1.5: TRANSFERENCIAS CON COMISIÓN ($7)")
+    print("[TARGET] ESTRATEGIA 1.5: TRANSFERENCIAS CON COMISIÓN ($7)")
     print("="*70)
     
     contador = 0
@@ -1837,16 +1837,16 @@ def conciliacion_con_comisiones(banco, contable, conciliaciones):
                 id_conc += 1
                 break
     
-    print(f"✓ Transferencias con comisión: {contador}")
+    print(f"[v] Transferencias con comisión: {contador}")
     return contador
 
 # ============================================================================
-# 🎯 ESTRATEGIA 1.6: COMISIONES AGRUPADAS MULTI-FECHA [v6.1]
+# [TARGET] ESTRATEGIA 1.6: COMISIONES AGRUPADAS MULTI-FECHA [v6.1]
 # ============================================================================
 
 def conciliacion_comisiones_agrupadas(banco, contable, conciliaciones):
     print("\n" + "="*70)
-    print("🎯 ESTRATEGIA 1.6: COMISIONES AGRUPADAS (Multi-fecha)")
+    print("[TARGET] ESTRATEGIA 1.6: COMISIONES AGRUPADAS (Multi-fecha)")
     print("="*70)
     
     contador = 0
@@ -1855,13 +1855,13 @@ def conciliacion_comisiones_agrupadas(banco, contable, conciliaciones):
     contable_com = contable[(~contable['Conciliado']) & (contable['Es_Comision'])].copy()
     
     if len(contable_com) == 0:
-        print("⊘ No hay comisiones pendientes en contable")
+        print("(0) No hay comisiones pendientes en contable")
         return 0
     
     banco_com = banco[(~banco['Conciliado']) & (banco['Es_Comision'])].copy()
     
     if len(banco_com) == 0:
-        print("⊘ No hay comisiones pendientes en banco")
+        print("(0) No hay comisiones pendientes en banco")
         return 0
     
     for idx_c, reg_c in contable_com.iterrows():
@@ -1937,16 +1937,16 @@ def conciliacion_comisiones_agrupadas(banco, contable, conciliaciones):
             contador += 1
             id_conc += 1
     
-    print(f"✓ Comisiones agrupadas: {contador}")
+    print(f"[v] Comisiones agrupadas: {contador}")
     return contador
 
 # ============================================================================
-# 🎯 ESTRATEGIA 2: N→1 INTELIGENTE (4 MÉTODOS) - RESTAURADO DEL v5
+# [TARGET] ESTRATEGIA 2: N→1 INTELIGENTE (4 MÉTODOS) - RESTAURADO DEL v5
 # ============================================================================
 
 def conciliacion_n_a_1_inteligente(banco, contable, conciliaciones):
     print("\n" + "="*70)
-    print("🎯 ESTRATEGIA 2: N→1 (Varios Contable → Uno Banco)")
+    print("[TARGET] ESTRATEGIA 2: N→1 (Varios Contable → Uno Banco)")
     print("="*70)
     
     contador = 0
@@ -2021,7 +2021,7 @@ def conciliacion_n_a_1_inteligente(banco, contable, conciliaciones):
         if encontrado:
             continue
         
-        # ⭐ MÉTODO 2: Por Concepto_Norm (RESTAURADO del v5)
+        # [*] MÉTODO 2: Por Concepto_Norm (RESTAURADO del v5)
         for concepto in cands['Concepto_Norm'].unique():
             if encontrado or not concepto:
                 break
@@ -2139,16 +2139,16 @@ def conciliacion_n_a_1_inteligente(banco, contable, conciliaciones):
                     id_conc += 1
                     break
     
-    print(f"✓ Agrupaciones N→1: {contador}")
+    print(f"[v] Agrupaciones N→1: {contador}")
     return contador
 
 # ============================================================================
-# 🎯 ESTRATEGIA 3: 1→N
+# [TARGET] ESTRATEGIA 3: 1→N
 # ============================================================================
 
 def conciliacion_1_a_n_inteligente(banco, contable, conciliaciones):
     print("\n" + "="*70)
-    print("🎯 ESTRATEGIA 3: 1→N (Uno Contable → Varios Banco)")
+    print("[TARGET] ESTRATEGIA 3: 1→N (Uno Contable → Varios Banco)")
     print("="*70)
     
     contador = 0
@@ -2207,16 +2207,16 @@ def conciliacion_1_a_n_inteligente(banco, contable, conciliaciones):
                     id_conc += 1
                     break
     
-    print(f"✓ Agrupaciones 1→N: {contador}")
+    print(f"[v] Agrupaciones 1→N: {contador}")
     return contador
 
 # ============================================================================
-# 🎯 ESTRATEGIA 4: N↔M
+# [TARGET] ESTRATEGIA 4: N↔M
 # ============================================================================
 
 def conciliacion_n_a_m_inteligente(banco, contable, conciliaciones):
     print("\n" + "="*70)
-    print("🎯 ESTRATEGIA 4: N↔M (Varios ↔ Varios)")
+    print("[TARGET] ESTRATEGIA 4: N↔M (Varios ↔ Varios)")
     print("="*70)
     
     contador = 0
@@ -2298,16 +2298,16 @@ def conciliacion_n_a_m_inteligente(banco, contable, conciliaciones):
                     id_conc += 1
                     break
     
-    print(f"✓ Agrupaciones N↔M: {contador}")
+    print(f"[v] Agrupaciones N↔M: {contador}")
     return contador
 
 # ============================================================================
-# 🎯 ESTRATEGIA 5: IMPUESTOS DGII
+# [TARGET] ESTRATEGIA 5: IMPUESTOS DGII
 # ============================================================================
 
 def conciliacion_impuestos(banco, contable, conciliaciones):
     print("\n" + "="*70)
-    print("🎯 ESTRATEGIA 5: IMPUESTOS DGII (0.15%)")
+    print("[TARGET] ESTRATEGIA 5: IMPUESTOS DGII (0.15%)")
     print("="*70)
     
     contador = 0
@@ -2316,7 +2316,7 @@ def conciliacion_impuestos(banco, contable, conciliaciones):
     banco_imp = banco[(~banco['Conciliado']) & (banco['Es_Impuesto'])].copy()
     
     if len(banco_imp) == 0:
-        print("⊘ No hay impuestos pendientes en banco")
+        print("(0) No hay impuestos pendientes en banco")
         return 0
     
     contable_imp = contable[
@@ -2325,7 +2325,7 @@ def conciliacion_impuestos(banco, contable, conciliaciones):
     ].copy()
     
     if len(contable_imp) == 0:
-        print("⊘ No hay impuestos pendientes en contable")
+        print("(0) No hay impuestos pendientes en contable")
         return 0
     
     banco_imp['Mes'] = banco_imp['Fecha'].dt.to_period('M')
@@ -2360,11 +2360,11 @@ def conciliacion_impuestos(banco, contable, conciliaciones):
                 id_conc += 1
                 break
     
-    print(f"✓ Impuestos conciliados: {contador}")
+    print(f"[v] Impuestos conciliados: {contador}")
     return contador
 
 # ============================================================================
-# 🎯 ESTRATEGIA 6: SEGUNDA PASADA FLEXIBLE - OPTIMIZADA
+# [TARGET] ESTRATEGIA 6: SEGUNDA PASADA FLEXIBLE - OPTIMIZADA
 # ============================================================================
 
 def segunda_pasada_inteligente(banco, contable, conciliaciones):
@@ -2372,7 +2372,7 @@ def segunda_pasada_inteligente(banco, contable, conciliaciones):
         return 0
     
     print("\n" + "="*70)
-    print("🎯 ESTRATEGIA 6: SEGUNDA PASADA (Búsqueda Flexible)")
+    print("[TARGET] ESTRATEGIA 6: SEGUNDA PASADA (Búsqueda Flexible)")
     print("="*70)
     
     contador = 0
@@ -2397,7 +2397,7 @@ def segunda_pasada_inteligente(banco, contable, conciliaciones):
         valor_objetivo = reg_b['Valor']
         mejor_combo, mejor_diff = None, float('inf')
         
-        # ⚡ OPTIMIZACIÓN: Limitar partidas y combinaciones
+        # [PERF] OPTIMIZACIÓN: Limitar partidas y combinaciones
         max_items = min(len(cands), MAX_PARTIDAS_AGRUPACION)
         cands_limitados = cands.head(max_items)
         
@@ -2452,11 +2452,11 @@ def segunda_pasada_inteligente(banco, contable, conciliaciones):
             contador += 1
             id_conc += 1
     
-    print(f"✓ Segunda pasada: {contador}")
+    print(f"[v] Segunda pasada: {contador}")
     return contador
 
 # ============================================================================
-# 🎯 ESTRATEGIA 7: BÚSQUEDA EXHAUSTIVA FINAL [v6.1] - OPTIMIZADA
+# [TARGET] ESTRATEGIA 7: BÚSQUEDA EXHAUSTIVA FINAL [v6.1] - OPTIMIZADA
 # ============================================================================
 
 def busqueda_exhaustiva_final(banco, contable, conciliaciones):
@@ -2464,7 +2464,7 @@ def busqueda_exhaustiva_final(banco, contable, conciliaciones):
         return 0
     
     print("\n" + "="*70)
-    print("🎯 ESTRATEGIA 7: BÚSQUEDA EXHAUSTIVA (Sin restricción fechas)")
+    print("[TARGET] ESTRATEGIA 7: BÚSQUEDA EXHAUSTIVA (Sin restricción fechas)")
     print("="*70)
     
     contador = 0
@@ -2476,19 +2476,19 @@ def busqueda_exhaustiva_final(banco, contable, conciliaciones):
     n_banco_pend = len(banco_pend)
     n_contable_pend = len(contable_pend)
     
-    print(f"  📊 Pendientes: Banco={n_banco_pend}, Contable={n_contable_pend}")
+    print(f"  [STATS] Pendientes: Banco={n_banco_pend}, Contable={n_contable_pend}")
     
     if n_banco_pend > UMBRAL_PARTIDAS_EXHAUSTIVA or n_contable_pend > UMBRAL_PARTIDAS_EXHAUSTIVA:
-        print(f"  ⊘ Demasiadas partidas (umbral={UMBRAL_PARTIDAS_EXHAUSTIVA})")
+        print(f"  (0) Demasiadas partidas (umbral={UMBRAL_PARTIDAS_EXHAUSTIVA})")
         return 0
     
     if n_banco_pend == 0 or n_contable_pend == 0:
-        print("  ⊘ No hay partidas en ambos lados")
+        print("  (0) No hay partidas en ambos lados")
         return 0
     
     # CASO 1: Buscar N contable → 1 banco
     if n_contable_pend <= 10:
-        print(f"\n  🔍 Buscando: Banco → Contable...")
+        print(f"\n  [SEARCH] Buscando: Banco → Contable...")
         for idx_c, reg_c in contable_pend.iterrows():
             if contable.loc[idx_c, 'Conciliado']:
                 continue
@@ -2524,7 +2524,7 @@ def busqueda_exhaustiva_final(banco, contable, conciliaciones):
             
             if mejor_combo and mejor_diff < TOLERANCIA_VALOR_AGRUPACION:
                 grupo = banco.loc[list(mejor_combo)]
-                print(f"    ✓ {len(grupo)} banco → 1 contable (diff=${mejor_diff:.2f})")
+                print(f"    [v] {len(grupo)} banco → 1 contable (diff=${mejor_diff:.2f})")
                 
                 for i, (idx_b, reg_b) in enumerate(grupo.sort_values(['Fecha', 'Valor']).iterrows()):
                     conciliaciones.append({
@@ -2550,7 +2550,7 @@ def busqueda_exhaustiva_final(banco, contable, conciliaciones):
     # CASO 2: Buscar N banco → 1 contable
     banco_pend = banco[~banco['Conciliado']].copy()
     if len(banco_pend) <= 10 and len(banco_pend) > 0:
-        print(f"\n  🔍 Buscando: Contable → Banco...")
+        print(f"\n  [SEARCH] Buscando: Contable → Banco...")
         for idx_b, reg_b in banco_pend.iterrows():
             if banco.loc[idx_b, 'Conciliado']:
                 continue
@@ -2586,7 +2586,7 @@ def busqueda_exhaustiva_final(banco, contable, conciliaciones):
             
             if mejor_combo and mejor_diff < TOLERANCIA_VALOR_AGRUPACION:
                 grupo = contable.loc[list(mejor_combo)]
-                print(f"    ✓ 1 banco → {len(grupo)} contable (diff=${mejor_diff:.2f})")
+                print(f"    [v] 1 banco → {len(grupo)} contable (diff=${mejor_diff:.2f})")
                 
                 for i, (_, reg_c) in enumerate(grupo.sort_values(['Fecha', 'Valor']).iterrows()):
                     conciliaciones.append({
@@ -2609,11 +2609,11 @@ def busqueda_exhaustiva_final(banco, contable, conciliaciones):
                 contador += 1
                 id_conc += 1
     
-    print(f"\n✓ Búsqueda exhaustiva: {contador}")
+    print(f"\n[v] Búsqueda exhaustiva: {contador}")
     return contador
 
 # ============================================================================
-# 🔧 FUNCIONES AUXILIARES PARA CAJA CHICA (AÑADIR DESPUÉS DE LAS FUNCIONES DE NORMALIZACIÓN)
+# [TOOL] FUNCIONES AUXILIARES PARA CAJA CHICA (AÑADIR DESPUÉS DE LAS FUNCIONES DE NORMALIZACIÓN)
 # ============================================================================
 
 def es_patron_caja_chica(texto):
@@ -2702,7 +2702,7 @@ def similitud_nombres(nombre1, nombre2):
     return coincidencias / max_palabras
 
 # ============================================================================
-# 🎯 ESTRATEGIA 8: REPOSICIÓN DE CAJA CHICA [NUEVA v6.6]
+# [TARGET] ESTRATEGIA 8: REPOSICIÓN DE CAJA CHICA [NUEVA v6.6]
 # ============================================================================
 
 def conciliacion_caja_chica(banco, contable, conciliaciones):
@@ -2717,7 +2717,7 @@ def conciliacion_caja_chica(banco, contable, conciliaciones):
     5. Concilia si la suma coincide con la reposición del banco
     """
     print("\n" + "="*70)
-    print("🎯 ESTRATEGIA 8: REPOSICIÓN DE CAJA CHICA")
+    print("[TARGET] ESTRATEGIA 8: REPOSICIÓN DE CAJA CHICA")
     print("="*70)
     
     contador = 0
@@ -2730,10 +2730,10 @@ def conciliacion_caja_chica(banco, contable, conciliaciones):
     ].copy()
     
     if len(banco_caja_chica) == 0:
-        print("⊘ No hay reposiciones de caja chica pendientes en banco")
+        print("(0) No hay reposiciones de caja chica pendientes en banco")
         return 0
     
-    print(f"  📋 Encontradas {len(banco_caja_chica)} reposiciones de caja chica en banco")
+    print(f"  [LIST] Encontradas {len(banco_caja_chica)} reposiciones de caja chica en banco")
     
     for idx_b, reg_b in banco_caja_chica.iterrows():
         if banco.loc[idx_b, 'Conciliado']:
@@ -2743,10 +2743,10 @@ def conciliacion_caja_chica(banco, contable, conciliaciones):
         nombre_banco = extraer_nombre_persona(reg_b['Texto_Busqueda'])
         
         if not nombre_banco:
-            print(f"  ⚠️  No se pudo extraer nombre de persona de: '{reg_b['Concepto']}'")
+            print(f"  [WARN]  No se pudo extraer nombre de persona de: '{reg_b['Concepto']}'")
             continue
         
-        print(f"\n  🔍 Buscando gastos de: {nombre_banco}")
+        print(f"\n  [SEARCH] Buscando gastos de: {nombre_banco}")
         print(f"      Banco: {reg_b['Concepto']} - ${reg_b['Valor']:,.2f}")
         
         # PASO 2: Buscar TODAS las partidas contables con ese nombre
@@ -2824,7 +2824,7 @@ def conciliacion_caja_chica(banco, contable, conciliaciones):
             print(f"      (DEBUG) Partidas seleccionadas (sin flags): {len(partidas_persona)}; suma={suma_seleccionadas:,.2f}")
         
         if len(partidas_persona) == 0:
-            print(f"      ❌ No se encontraron gastos de '{nombre_banco}' en contable")
+            print(f"      [ERROR] No se encontraron gastos de '{nombre_banco}' en contable")
             continue
         
         # PASO 3: Agrupar todas las partidas de esa persona
@@ -2834,17 +2834,17 @@ def conciliacion_caja_chica(banco, contable, conciliaciones):
         suma_contable = grupo['Valor'].sum()
         diferencia = abs(reg_b['Valor'] - suma_contable)
         
-        print(f"      ✓ Encontradas {len(grupo)} partidas:")
+        print(f"      [v] Encontradas {len(grupo)} partidas:")
         for _, reg in grupo.head(5).iterrows():  # Mostrar solo las primeras 5
             print(f"        • {reg['Concepto'][:40]:40} ${reg['Valor']:>10,.2f}")
         if len(grupo) > 5:
             print(f"        ... y {len(grupo) - 5} partidas más")
-        print(f"      📊 Suma contable: ${suma_contable:,.2f}")
-        print(f"      📊 Diferencia:    ${diferencia:,.2f}")
+        print(f"      [STATS] Suma contable: ${suma_contable:,.2f}")
+        print(f"      [STATS] Diferencia:    ${diferencia:,.2f}")
         
         # PASO 4: Conciliar si la suma coincide
         if diferencia < TOLERANCIA_VALOR_AGRUPACION:
-            print(f"      ✅ CONCILIADO - Diferencia aceptable: ${diferencia:.2f}")
+            print(f"      [OK] CONCILIADO - Diferencia aceptable: ${diferencia:.2f}")
             
             # Registrar conciliación
             for i, (idx_c, reg_c) in enumerate(grupo.sort_values(['Fecha', 'Valor']).iterrows()):
@@ -2885,7 +2885,7 @@ def conciliacion_caja_chica(banco, contable, conciliaciones):
                 diff_grupal = abs(suma_bancos - suma_contable)
                 print(f"      (DEBUG) Suma reposiciones banco para {nombre_banco}: {suma_bancos:,.2f}; diff_grupal={diff_grupal:,.2f}")
                 if diff_grupal < TOLERANCIA_VALOR_AGRUPACION:
-                    print(f"      ✅ CONCILIADO COMO GRUPO - {len(similares_banco)} reposiciones suman {suma_bancos:,.2f}")
+                    print(f"      [OK] CONCILIADO COMO GRUPO - {len(similares_banco)} reposiciones suman {suma_bancos:,.2f}")
                     # Registrar conciliaciones: map each banco y cada contable registro
                     for i_b, binfo in enumerate(sorted(similares_banco, key=lambda x: x['registro']['Fecha'])):
                         for i_c, (idx_c, reg_c) in enumerate(grupo.sort_values(['Fecha', 'Valor']).iterrows()):
@@ -2910,26 +2910,26 @@ def conciliacion_caja_chica(banco, contable, conciliaciones):
                     contador += 1
                     id_conc += 1
                 else:
-                    print(f"      ⚠️  Diferencia muy alta: ${diferencia:.2f} > ${TOLERANCIA_VALOR_AGRUPACION:.2f}")
+                    print(f"      [WARN]  Diferencia muy alta: ${diferencia:.2f} > ${TOLERANCIA_VALOR_AGRUPACION:.2f}")
             else:
-                print(f"      ⚠️  Diferencia muy alta: ${diferencia:.2f} > ${TOLERANCIA_VALOR_AGRUPACION:.2f}")
+                print(f"      [WARN]  Diferencia muy alta: ${diferencia:.2f} > ${TOLERANCIA_VALOR_AGRUPACION:.2f}")
     
-    print(f"\n✓ Reposiciones de caja chica conciliadas: {contador}")
+    print(f"\n[v] Reposiciones de caja chica conciliadas: {contador}")
     return contador
 
 # ============================================================================
-# 🔍 DETECCIÓN DE CASOS ESPECIALES
+# [SEARCH] DETECCIÓN DE CASOS ESPECIALES
 # ============================================================================
 
 def detectar_casos_especiales(banco, contable):
     print("\n" + "="*70)
-    print("🔍 DETECTANDO CASOS ESPECIALES")
+    print("[SEARCH] DETECTANDO CASOS ESPECIALES")
     print("="*70)
     
     casos_especiales = []
     
     if not DETECTAR_CASOS_ESPECIALES:
-        print("⊘ Detección desactivada")
+        print("(0) Detección desactivada")
         return casos_especiales
     
     banco_pend = banco[~banco['Conciliado']].copy()
@@ -3006,11 +3006,11 @@ def detectar_casos_especiales(banco, contable):
             valores_vistos.add(key)
             casos_unicos.append(caso)
     
-    print(f"⚠️ Casos especiales detectados: {len(casos_unicos)}")
+    print(f"[WARN] Casos especiales detectados: {len(casos_unicos)}")
     return casos_unicos
 
 # ============================================================================
-# 🎨 FORMATO EXCEL PROFESIONAL
+# [STYLE] FORMATO EXCEL PROFESIONAL
 # ============================================================================
 
 def aplicar_formato_profesional(ruta):
@@ -3063,7 +3063,7 @@ def aplicar_formato_profesional(ruta):
         ws.insert_rows(1, 3)
         
         ws.merge_cells('A1:B1')
-        ws['A1'].value = "📊 CONCILIACIÓN BANCARIA v6.5 DEFINITIVO"
+        ws['A1'].value = "[STATS] CONCILIACIÓN BANCARIA v6.5 DEFINITIVO"
         ws['A1'].font = f_tit
         ws['A1'].fill = r_pri
         ws['A1'].alignment = Alignment(horizontal='center', vertical='center')
@@ -3076,7 +3076,7 @@ def aplicar_formato_profesional(ruta):
         ws.row_dimensions[2].height = 28
         
         ws.merge_cells('A3:B3')
-        ws['A3'].value = f"📅 Generado: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
+        ws['A3'].value = f"[DATE] Generado: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
         ws['A3'].font = f_sub
         ws['A3'].alignment = Alignment(horizontal='center', vertical='center')
         ws.row_dimensions[3].height = 24
@@ -3114,7 +3114,7 @@ def aplicar_formato_profesional(ruta):
             max_c = ws.max_column
             
             ws.merge_cells(f'A1:{get_column_letter(max_c)}1')
-            ws['A1'].value = "✅ PARTIDAS CONCILIADAS"
+            ws['A1'].value = "[OK] PARTIDAS CONCILIADAS"
             ws['A1'].font = f_tit
             ws['A1'].fill = r_exi
             ws['A1'].alignment = Alignment(horizontal='center', vertical='center')
@@ -3174,7 +3174,7 @@ def aplicar_formato_profesional(ruta):
             max_c = ws.max_column
             
             ws.merge_cells(f'A1:{get_column_letter(max_c)}1')
-            ws['A1'].value = "⚠️ PARTIDAS PENDIENTES DE CONCILIACIÓN"
+            ws['A1'].value = "[WARN] PARTIDAS PENDIENTES DE CONCILIACIÓN"
             ws['A1'].font = f_tit
             ws['A1'].fill = r_err
             ws['A1'].alignment = Alignment(horizontal='center', vertical='center')
@@ -3229,7 +3229,7 @@ def aplicar_formato_profesional(ruta):
             max_c = ws.max_column
             
             ws.merge_cells(f'A1:{get_column_letter(max_c)}1')
-            ws['A1'].value = "🔍 CASOS ESPECIALES - Requieren Revisión Manual"
+            ws['A1'].value = "[SEARCH] CASOS ESPECIALES - Requieren Revisión Manual"
             ws['A1'].font = f_tit
             ws['A1'].fill = r_adv
             ws['A1'].alignment = Alignment(horizontal='center', vertical='center')
@@ -3312,7 +3312,7 @@ def ejecutar_conciliacion(arg_dir=None, arg_bank=None, arg_ledger=None, arg_curr
     print("="*70)
     print(f"\nFecha: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
     
-    # 🆕 NUEVO: Lógica de selección de fideicomiso / carpetas
+    # [NEW] NUEVO: Lógica de selección de fideicomiso / carpetas
     if arg_dir:
         print(f"🚀 Ejecutando en modo HEADLESS (pasan argumentos)")
         carpeta_caso = arg_dir
@@ -3321,7 +3321,7 @@ def ejecutar_conciliacion(arg_dir=None, arg_bank=None, arg_ledger=None, arg_curr
         carpeta_caso = seleccionar_fideicomiso()
     
     if not carpeta_caso:
-        print("\n❌ No se seleccionó ningún fideicomiso. Saliendo...")
+        print("\n[ERROR] No se seleccionó ningún fideicomiso. Saliendo...")
         return
     
     # Configurar rutas para el caso seleccionado
@@ -3330,16 +3330,16 @@ def ejecutar_conciliacion(arg_dir=None, arg_bank=None, arg_ledger=None, arg_curr
     # Cambiar al directorio del caso
     os.chdir(CARPETA_TRABAJO)
     
-    print("\n⚙️ PARÁMETROS:")
+    print("\n[CONFIG] PARÁMETROS:")
     print("─"*70)
-    print(f"  💰 Tolerancia exacta: ${TOLERANCIA_VALOR_EXACTA}")
-    print(f"  💰 Tolerancia agrupación: ${TOLERANCIA_VALOR_AGRUPACION}")
-    print(f"  📅 Ventanas: ±{VENTANA_DIAS_EXACTA}d / ±{VENTANA_DIAS_AGRUPACION}d / ±{VENTANA_DIAS_FLEXIBLE}d")
-    print(f"  ⚡ Límites: {MAX_PARTIDAS_AGRUPACION} partidas / {MAX_COMBINACIONES_POR_BUSQUEDA:,} comb")
-    print(f"  🔧 Segunda pasada: {'Sí' if EJECUTAR_SEGUNDA_PASADA else 'No'}")
-    print(f"  🔧 Búsqueda exhaustiva: {'Sí' if EJECUTAR_BUSQUEDA_EXHAUSTIVA else 'No'}")
+    print(f"  [MONEY] Tolerancia exacta: ${TOLERANCIA_VALOR_EXACTA}")
+    print(f"  [MONEY] Tolerancia agrupación: ${TOLERANCIA_VALOR_AGRUPACION}")
+    print(f"  [DATE] Ventanas: ±{VENTANA_DIAS_EXACTA}d / ±{VENTANA_DIAS_AGRUPACION}d / ±{VENTANA_DIAS_FLEXIBLE}d")
+    print(f"  [PERF] Límites: {MAX_PARTIDAS_AGRUPACION} partidas / {MAX_COMBINACIONES_POR_BUSQUEDA:,} comb")
+    print(f"  [TOOL] Segunda pasada: {'Sí' if EJECUTAR_SEGUNDA_PASADA else 'No'}")
+    print(f"  [TOOL] Búsqueda exhaustiva: {'Sí' if EJECUTAR_BUSQUEDA_EXHAUSTIVA else 'No'}")
     
-    print("\n🏦 BANCOS:")
+    print("\n[BANK] BANCOS:")
     print("─"*70)
     print(f"   BanReservas")
     print(f"   Popular")
@@ -3347,7 +3347,7 @@ def ejecutar_conciliacion(arg_dir=None, arg_bank=None, arg_ledger=None, arg_curr
     print(f"   Santa Cruz")
 
     print("\n" + "="*70)
-    print("📂 CARGANDO DATOS")
+    print("[DIR] CARGANDO DATOS")
     print("="*70)
     
     # Búsqueda de archivos
@@ -3365,14 +3365,14 @@ def ejecutar_conciliacion(arg_dir=None, arg_bank=None, arg_ledger=None, arg_curr
         archivo_banco, archivo_contable, codigo_banco, nombre_banco = buscar_archivos_en_carpeta()
     
     if not archivo_banco or not archivo_contable:
-        print("\n❌ No se pudieron encontrar los archivos necesarios")
+        print("\n[ERROR] No se pudieron encontrar los archivos necesarios")
         return
     
     # Carga de Banco
     try:
         banco = cargar_banco(archivo_banco, nombre_banco, codigo_banco)
     except Exception as e:
-        print(f"❌ Error al cargar banco: {e}")
+        print(f"[ERROR] Error al cargar banco: {e}")
         return
         
     # Carga de Contable
@@ -3388,12 +3388,12 @@ def ejecutar_conciliacion(arg_dir=None, arg_bank=None, arg_ledger=None, arg_curr
             if op in ['s', 'n']:
                 break
             else:
-                print(f"❌ Entrada inválida.")
+                print(f"[ERROR] Entrada inválida.")
             
     try:
         contable = cargar_contable(archivo_contable, usa_dolares, "CONTABLE")
     except Exception as e:
-        print(f"❌ Error al cargar contable: {e}")
+        print(f"[ERROR] Error al cargar contable: {e}")
         return
     
     print("\n" + "="*70)
@@ -3484,10 +3484,10 @@ def ejecutar_conciliacion(arg_dir=None, arg_bank=None, arg_ledger=None, arg_curr
             'Suma pendientes Contable',
             '',
             '─── INDICADORES ───',
-            '📊 % Conciliación Banco',
-            '📊 % Conciliación Contable',
-            '💰 DIFERENCIA MONETARIA TOTAL',
-            '⚠️  Casos especiales detectados',
+            '[STATS] % Conciliación Banco',
+            '[STATS] % Conciliación Contable',
+            '[MONEY] DIFERENCIA MONETARIA TOTAL',
+            '[WARN]  Casos especiales detectados',
             '⏱️  Tiempo de ejecución (seg)',
         ],
         'Valor': [
@@ -3524,7 +3524,7 @@ def ejecutar_conciliacion(arg_dir=None, arg_bank=None, arg_ledger=None, arg_curr
     })
     
     print("\n" + "="*70)
-    print("💾 EXPORTANDO RESULTADOS")
+    print("[SAVE] EXPORTANDO RESULTADOS")
     print("="*70)
 
     # ─────────────────────────────────────────────
@@ -3552,30 +3552,30 @@ def ejecutar_conciliacion(arg_dir=None, arg_bank=None, arg_ledger=None, arg_curr
         if len(df_especiales) > 0:
             df_especiales.to_excel(writer, sheet_name='CASOS_ESPECIALES', index=False)
     
-    print("✅ Datos exportados correctamente")
+    print("[OK] Datos exportados correctamente")
     
     if APLICAR_FORMATO_PROFESIONAL:
-        print("🎨 Aplicando formato profesional...")
+        print("[STYLE] Aplicando formato profesional...")
         try:
             aplicar_formato_profesional(RUTA_SALIDA)
         except Exception as e:
-            print(f"⚠️ Error al aplicar formato: {e}")
+            print(f"[WARN] Error al aplicar formato: {e}")
     
     perc_b = banco['Conciliado'].sum() / len(banco) * 100
     perc_c = contable['Conciliado'].sum() / len(contable) * 100
     
     print("\n" + "="*70)
-    print("       ✅ CONCILIACIÓN COMPLETADA EXITOSAMENTE")
+    print("       [OK] CONCILIACIÓN COMPLETADA EXITOSAMENTE")
     print("="*70)
     print(f"\n📁 Archivo generado: {RUTA_SALIDA}\n")
     
-    print("📊 RESUMEN EJECUTIVO:")
+    print("[STATS] RESUMEN EJECUTIVO:")
     print("─"*70)
     print(f"📥 Datos Originales:")
     print(f"   • Banco:     {len(banco):,} registros (${banco['Valor'].sum():,.2f})")
     print(f"   • Contable:  {len(contable):,} registros (${contable['Valor'].sum():,.2f})")
     
-    print(f"\n✅ Conciliaciones por Estrategia:")
+    print(f"\n[OK] Conciliaciones por Estrategia:")
     print(f"   1️⃣  Monto Exacto:             {t1:,}")
     print(f"   1.5 Transf + Comisión:        {t1_5:,}")
     print(f"   1.6 Comisiones Agrupadas:     {t1_6:,}")
@@ -3595,30 +3595,30 @@ def ejecutar_conciliacion(arg_dir=None, arg_bank=None, arg_ledger=None, arg_curr
     print(f"   • Pendientes: Banco {len(no_b):,} | Contable {len(no_c):,}")
     
     diferencia = banco['Valor'].sum() - contable['Valor'].sum()
-    print(f"\n💰 DIFERENCIA TOTAL: ${diferencia:,.2f}")
+    print(f"\n[MONEY] DIFERENCIA TOTAL: ${diferencia:,.2f}")
     
     if len(casos_especiales) > 0:
-        print(f"\n⚠️ Casos Especiales: {len(casos_especiales)}")
+        print(f"\n[WARN] Casos Especiales: {len(casos_especiales)}")
         print(f"   → Revisa la hoja 'CASOS_ESPECIALES' para más detalles")
     
     print(f"\n⏱️ Tiempo de Ejecución: {tiempo_total:.1f} segundos")
     
-    print(f"\n🎯 Evaluación:")
+    print(f"\n[TARGET] Evaluación:")
     if perc_b >= 99 and perc_c >= 99:
-        print("   ⭐⭐⭐⭐⭐ PERFECTA (≥99%)")
+        print("   [*][*][*][*][*] PERFECTA (≥99%)")
     elif perc_b >= 95 and perc_c >= 95:
-        print("   ⭐⭐⭐⭐ EXCELENTE (≥95%)")
+        print("   [*][*][*][*] EXCELENTE (≥95%)")
     elif perc_b >= 85 and perc_c >= 85:
-        print("   ⭐⭐⭐ MUY BUENA (≥85%)")
+        print("   [*][*][*] MUY BUENA (≥85%)")
     elif perc_b >= 75 and perc_c >= 75:
-        print("   ⭐⭐ BUENA (≥75%)")
+        print("   [*][*] BUENA (≥75%)")
     elif perc_b >= 60 and perc_c >= 60:
-        print("   ⭐ REGULAR (≥60%)")
+        print("   [*] REGULAR (≥60%)")
     else:
-        print("   ⚠️ NECESITA REVISIÓN (<60%)")
+        print("   [WARN] NECESITA REVISIÓN (<60%)")
     
     print("\n" + "="*70)
-    print("💡 TIPS:")
+    print("[INFO] TIPS:")
     print("─"*70)
     print("  1. Revisa RESUMEN para estadísticas generales")
     print("  2. Valida CONCILIADOS para verificar agrupaciones")
@@ -3631,7 +3631,7 @@ def ejecutar_conciliacion(arg_dir=None, arg_bank=None, arg_ledger=None, arg_curr
 def menu_principal():
     while True:
         print("\n" + "="*50)
-        print("         🏦 CONCILIACIÓN BANCARIA v0.9.6")
+        print("         [BANK] CONCILIACIÓN BANCARIA v0.9.6")
         print("                 --- MAIN MENU ---")
         print("="*50)
         print("1) Realizar Conciliación")
@@ -3650,7 +3650,7 @@ def menu_principal():
             break
 
         else:
-            print("\n❌ Opción inválida. Intente de nuevo.")
+            print("\n[ERROR] Opción inválida. Intente de nuevo.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Conciliación Bancaria Headless")

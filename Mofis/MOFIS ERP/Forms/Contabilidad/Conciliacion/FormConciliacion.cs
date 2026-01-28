@@ -21,7 +21,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
         private string pathUltimoResultado;
         private Dictionary<string, Control> paramControls = new Dictionary<string, Control>();
         private bool isSideMenuOpen = false;
-        
         // Colores (pueden usarse para lógica dinámica si es necesario)
         private readonly Color ColorPrimario = Color.ForestGreen;
         private readonly Color ColorExito = Color.FromArgb(16, 124, 16);
@@ -74,7 +73,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
             pnlSide.Visible = false;
 
             // Eventos nuevos para el rediseño
-            this.btnToggleLog.Click += new System.EventHandler(this.btnToggleLog_Click);
             this.btnMonedaDOP.Click += new System.EventHandler(this.btnMoneda_Click);
             this.btnMonedaUSD.Click += new System.EventHandler(this.btnMoneda_Click);
 
@@ -260,11 +258,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
             }
         }
 
-        private void btnToggleLog_Click(object sender, EventArgs e)
-        {
-            pnlLog.Visible = !pnlLog.Visible;
-            btnToggleLog.BackColor = pnlLog.Visible ? Color.FromArgb(0, 114, 198) : Color.FromArgb(83, 109, 122);
-        }
+
 
         private void btnRefrescar_Click(object sender, EventArgs e)
         {
@@ -766,6 +760,16 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
         }
 
         private void rtbConsola_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void rtbConsola_TextChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
         {
 
         }
