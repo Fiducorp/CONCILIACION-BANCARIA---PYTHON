@@ -244,10 +244,10 @@
     <Compile Include="Forms\Contabilidad\FormDashboardContabilidad.Designer.cs">
       <DependentUpon>FormDashboardContabilidad.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Contabilidad\ConciliacionBancaria\FormConciliacion.cs">
+    <Compile Include="Forms\Contabilidad\Conciliacion\FormConciliacion.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Contabilidad\ConciliacionBancaria\FormConciliacion.Designer.cs">
+    <Compile Include="Forms\Contabilidad\Conciliacion\FormConciliacion.Designer.cs">
       <DependentUpon>FormConciliacion.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\FormDashboardCategorias.cs">
@@ -398,7 +398,7 @@
     <EmbeddedResource Include="FormPruebaBCrypt.resx">
       <DependentUpon>FormPruebaBCrypt.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Contabilidad\ConciliacionBancaria\FormConciliacion.resx">
+    <EmbeddedResource Include="Forms\Contabilidad\Conciliacion\FormConciliacion.resx">
       <DependentUpon>FormConciliacion.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\FormMenuCartasSolicitudes.resx">
