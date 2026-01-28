@@ -72,12 +72,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
         private int? metodoConversionSeleccionado = null;
         private string metodoConversionNombre = string.Empty;
 
-        // Montos Convertidos (Moneda Local / DOP)
-        private decimal subtotalL, itbisL, exentoL, dirTecnicaL, descuentoL, horasExtrasL, otrosImpuestosL;
-        private decimal notaCreditoL, notaDebitoL, anticipoL, avanceParaPagarL;
-        private decimal retItbisL, retIsrL, retSfsL, retAfpL, totalRetencionL;
-        private decimal totalFacturaL, totalAPagarL, itbisDiferenciaL;
-
         // =========================================================
 
         // =========================================================
@@ -543,7 +537,8 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                                                 infoActual.AplicaITBIS, 
                                                 infoActual.PorcentajeITBIS > 0 ? infoActual.PorcentajeITBIS : 18m,
                                                 infoActual.Descripcion,
-                                                infoActual.AfectaSubtotal))
+                                                infoActual.AfectaSubtotal,
+                                                infoActual.MostrarDetalle))
             {
                 if (form.ShowDialog() == DialogResult.OK)
                 {
@@ -556,6 +551,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                         Total = form.TotalNota,
                         Descripcion = form.Descripcion,
                         AfectaSubtotal = form.AfectaSubtotal,
+                        MostrarDetalle = form.MostrarDetalle,
                         EsManual = false
                     };
 
@@ -849,158 +845,10 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                     decimal val = notaDebito.EsManual ? valND_UI : notaDebito.Total;
                     string res = val != 0 ? FormatearMoneda(val) : "";
                     if (txtNotaDebito.Text != res) txtNotaDebito.Text = res;
-                }
-
-
-
-
+                }                // =========================================================
+                // 7. CONVERSIÓN DE MONEDA (ELIMINADO DEL UI)
                 // =========================================================
-                // 7. CONVERSIÓN DE MONEDA (SI APLICA)
-                // =========================================================
-                
-                decimal tasa = 0m;
-                string textoTasa = txtTasa?.Text.Trim().Replace(",", "").Replace(" ", "");
-                decimal.TryParse(textoTasa, NumberStyles.Any, CultureInfo.InvariantCulture, out tasa);
-
-                if (tasa > 0 && metodoConversionSeleccionado.HasValue)
-                {
-                    // Determinar montos en Moneda Local (L)
-                    if (metodoConversionSeleccionado == 1) // DIRECTO
-                    {
-                        subtotalL = Math.Round(baseImponibleReal * tasa, 2);
-                        itbisL = Math.Round(itbisFinal * tasa, 2);
-                        itbisDiferenciaL = Math.Round((itbisCalculadoAuto - itbisFinal) * tasa, 2);
-                        exentoL = Math.Round(montoExento * tasa, 2);
-                        dirTecnicaL = Math.Round(montoDirTecnica * tasa, 2);
-                        descuentoL = Math.Round(montoDescuento * tasa, 2);
-                        horasExtrasL = Math.Round(montoHorasExtras * tasa, 2);
-                        otrosImpuestosL = Math.Round(montoOtrosImp * tasa, 2);
-                        
-                        notaCreditoL = Math.Round((notaCredito.EsManual ? valNC_UI : notaCredito.Total) * tasa, 2);
-                        notaDebitoL = Math.Round((notaDebito.EsManual ? valND_UI : notaDebito.Total) * tasa, 2);
-                        anticipoL = Math.Round(montoAnticipo * tasa, 2);
-                        avanceParaPagarL = Math.Round(montoAvance * tasa, 2);
-                        
-                        retItbisL = Math.Round(retItbisMonto * tasa, 2);
-                        retIsrL = Math.Round(retIsrMonto * tasa, 2);
-                        retSfsL = Math.Round(valSFS * tasa, 2);
-                        retAfpL = Math.Round(valAFP * tasa, 2);
-                        totalRetencionL = Math.Round(totalRetenciones * tasa, 2);
-                        
-                        totalFacturaL = Math.Round(totalFactura * tasa, 2);
-                        totalAPagarL = Math.Round(totalAPagar * tasa, 2);
-                    }
-                    else if (metodoConversionSeleccionado == 2) // BASE + RECÁLCULO
-                    {
-                        // 1. Convertir Base
-                        subtotalL = Math.Round(baseImponibleReal * tasa, 2);
-                        dirTecnicaL = Math.Round(montoDirTecnica * tasa, 2);
-                        
-                        // 2. Recalcular ITBIS Local
-                        decimal baseParaITBISL = (rbBaseDirTec != null && rbBaseDirTec.Checked) ? dirTecnicaL : subtotalL;
-                        
-                        // Obtener Porcentaje (mismo que original)
-                        decimal pctITBIS = 0.18m;
-                        if (cboITBISPorcentaje != null && cboITBISPorcentaje.SelectedItem != null)
-                        {
-                             string sPct = cboITBISPorcentaje.SelectedItem.ToString().Replace("%", "").Trim();
-                             if (decimal.TryParse(sPct, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal p))
-                                 pctITBIS = p / 100m;
-                        }
-                        
-                        decimal itbisCalculadoL = Math.Round(baseParaITBISL * pctITBIS, 2);
-                        
-                        if (chkITBISManual != null && chkITBISManual.Checked)
-                        {
-                            // Si es manual, convertimos el manual directamente
-                            itbisL = Math.Round(itbisFinal * tasa, 2);
-                        }
-                        else
-                        {
-                            itbisL = itbisCalculadoL;
-                        }
-                        
-                        itbisDiferenciaL = itbisCalculadoL - itbisL;
-
-                        // 3. Recalcular Retenciones Locales
-                        // Retención ITBIS (Sobre ITBIS L)
-                        decimal pRetItbis = 0m;
-                        if (cboRetITBIS != null && cboRetITBIS.SelectedItem != null)
-                        {
-                            string s = cboRetITBIS.SelectedItem.ToString().Replace("%", "").Trim();
-                            decimal.TryParse(s, out pRetItbis);
-                        }
-                        retItbisL = Math.Round(itbisL * (pRetItbis / 100m), 2);
-                        
-                        // Retención ISR (Sobre Subtotal L)
-                        decimal pRetIsr = 0m;
-                        if (cboRetISR != null && cboRetISR.SelectedItem != null)
-                        {
-                            string s = cboRetISR.SelectedItem.ToString().Replace("%", "").Trim();
-                            decimal.TryParse(s, out pRetIsr);
-                        }
-                        retIsrL = Math.Round(subtotalL * (pRetIsr / 100m), 2);
-                        
-                        // AFP / SFS (Sobre Subtotal L)
-                        retAfpL = (chkRetAFP != null && chkRetAFP.Checked) ? Math.Round(subtotalL * CONST_RET_AFP_PCT, 2) : 0m;
-                        retSfsL = (chkRetSFS != null && chkRetSFS.Checked) ? Math.Round(subtotalL * CONST_RET_SFS_PCT, 2) : 0m;
-                        
-                        totalRetencionL = retItbisL + retIsrL + retAfpL + retSfsL;
-
-                        // 4. Otros montos (Conversión Directa)
-                        exentoL = Math.Round(montoExento * tasa, 2);
-                        descuentoL = Math.Round(montoDescuento * tasa, 2);
-                        horasExtrasL = Math.Round(montoHorasExtras * tasa, 2);
-                        otrosImpuestosL = Math.Round(montoOtrosImp * tasa, 2);
-                        
-                        notaCreditoL = Math.Round((notaCredito.EsManual ? valNC_UI : notaCredito.Total) * tasa, 2);
-                        notaDebitoL = Math.Round((notaDebito.EsManual ? valND_UI : notaDebito.Total) * tasa, 2);
-                        anticipoL = Math.Round(montoAnticipo * tasa, 2);
-                        avanceParaPagarL = Math.Round(montoAvance * tasa, 2);
-                        
-                        // 5. Totales Locales
-                        totalFacturaL = subtotalL + itbisL + exentoL + dirTecnicaL + horasExtrasL + otrosImpuestosL;
-                        
-                        decimal ajusteNotasL = 0m;
-                        if (notaCredito.EsManual) ajusteNotasL -= notaCreditoL;
-                        else if (!notaCredito.AfectaSubtotal) ajusteNotasL -= Math.Round(notaCredito.Total * tasa, 2);
-                        
-                        if (notaDebito.EsManual) ajusteNotasL += notaDebitoL;
-                        else if (!notaDebito.AfectaSubtotal) ajusteNotasL += Math.Round(notaDebito.Total * tasa, 2);
-                        
-                        totalAPagarL = totalFacturaL - totalRetencionL - descuentoL - anticipoL + ajusteNotasL;
-                    }
-
-                    // --- ACTUALIZACIÓN VISUAL (Si el usuario activó "Mostrar Conversión") ---
-                    if (chkMostrarConversion != null && chkMostrarConversion.Checked)
-                    {
-                        // Labels de grupos
-                        if (lblSubtotalTotal != null) lblSubtotalTotal.Text = $"SUBTOTAL: {FormatearMonedaLocal(subtotalL)}";
-                        if (lblITBISCalculado != null) lblITBISCalculado.Text = FormatearMonedaLocal(itbisL);
-                        if (lblRetITBISMonto != null) lblRetITBISMonto.Text = FormatearMonedaLocal(retItbisL);
-                        if (lblRetISRMonto != null) lblRetISRMonto.Text = FormatearMonedaLocal(retIsrL);
-                        if (lblITBISDiferencia != null) lblITBISDiferencia.Text = FormatearMonedaLocal(itbisDiferenciaL);
-                        
-                        // Panel Totales
-                        if (lblTotalSubtotalTitulo != null) lblTotalSubtotalTitulo.Text = $"SUBTOTAL: {FormatearMonedaLocal(subtotalL)}";
-                        if (lblTotalITBISTitulo != null) lblTotalITBISTitulo.Text = $"ITBIS: {FormatearMonedaLocal(itbisL)}";
-                        if (lblTotalExentoTitulo != null) lblTotalExentoTitulo.Text = $"EXENTO: {FormatearMonedaLocal(exentoL)}";
-                        if (lblTotalFacturaTitulo != null) lblTotalFacturaTitulo.Text = $"TOTAL FACTURA: {FormatearMonedaLocal(totalFacturaL)}";
-                        if (lblRetITBISTitulo != null) lblRetITBISTitulo.Text = $"RETENCIÓN ITBIS: {FormatearMonedaLocal(retItbisL)}";
-                        if (lblRetISRTitulo != null) lblRetISRTitulo.Text = $"RETENCIÓN ISR: {FormatearMonedaLocal(retIsrL)}";
-                        if (lblOtrasRetTitulo != null) lblOtrasRetTitulo.Text = $"OTRAS RETENCIONES: {FormatearMonedaLocal(retAfpL + retSfsL)}";
-                        if (lblTotalRetencionTitulo != null) lblTotalRetencionTitulo.Text = $"TOTAL RETENCIÓN: {FormatearMonedaLocal(totalRetencionL)}";
-                        if (lblTotalAPagar != null) lblTotalAPagar.Text = $"▶▶▶  TOTAL A PAGAR:  {FormatearMonedaLocal(totalAPagarL)}  ◀◀◀";
-                    }
-                }
-                else
-                {
-                    // Limpiar montos locales si no hay tasa o método
-                    subtotalL = itbisL = exentoL = dirTecnicaL = descuentoL = horasExtrasL = otrosImpuestosL = 0;
-                    notaCreditoL = notaDebitoL = anticipoL = avanceParaPagarL = 0;
-                    retItbisL = retIsrL = retSfsL = retAfpL = totalRetencionL = 0;
-                    totalFacturaL = totalAPagarL = itbisDiferenciaL = 0;
-                }
+                // La conversión se realizará internamente al momento de guardar.
             }
             catch (Exception ex)
             {
@@ -2885,6 +2733,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                 {
                     MessageBox.Show("Solicitud de pago guardada exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     // Opcional: Bloquear formulario o limpiar
+                    BtnLimpiar_Click(null, null);
                     // this.Close(); // O lo que se prefiera
                 }
             }
@@ -3067,6 +2916,112 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes
                     
                     if (metodoConversionSeleccionado != null)
                     {
+                        // --- OBTENER VALORES PARA CONVERSIÓN ---
+                        decimal tasa = 1m;
+                        decimal.TryParse(txtTasa.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out tasa);
+                        if (tasa <= 0) tasa = 1m;
+
+                        // Valores Base (en moneda extranjera)
+                        decimal subtotalGrid = ObtenerSubtotalSimple();
+                        decimal montoDirTecnica = ParseMoneda(txtDireccionTecnica?.Text);
+                        decimal montoExento = ParseMoneda(txtExento?.Text);
+                        decimal montoOtrosImp = ParseMoneda(txtOtrosImpuestos?.Text);
+                        if (!otrosImpuestosSumar) montoOtrosImp = -montoOtrosImp;
+                        decimal montoHorasExtras = ParseMoneda(txtHorasExtras?.Text);
+                        decimal montoDescuento = ParseMoneda(txtDescuento?.Text);
+                        decimal montoAnticipo = ParseMoneda(txtAnticipo?.Text);
+                        decimal montoAvance = ParseMoneda(txtAvancePagar?.Text);
+
+                        decimal valNC = notaCredito.EsManual ? ParseMoneda(txtNotaCredito.Text) : notaCredito.Subtotal;
+                        decimal valND = notaDebito.EsManual ? ParseMoneda(txtNotaDebito.Text) : notaDebito.Subtotal;
+                        
+                        decimal ajusteSubtotalNotas = 0m;
+                        if (!notaCredito.EsManual && notaCredito.AfectaSubtotal) ajusteSubtotalNotas -= valNC;
+                        if (!notaDebito.EsManual && notaDebito.AfectaSubtotal) ajusteSubtotalNotas += valND;
+                        decimal baseImponibleReal = subtotalGrid + ajusteSubtotalNotas;
+
+                        bool calcularAutoITBIS = chkCalcularITBIS != null && chkCalcularITBIS.Checked;
+                        bool usarITBISManual = chkITBISManual != null && chkITBISManual.Checked;
+                        decimal itbisFinalExt = ParseMoneda(lblTotalITBISTitulo.Text);
+
+                        // Variables Locales (RD$)
+                        decimal subtotalL = 0, itbisL = 0, exentoL = 0, dirTecnicaL = 0, descuentoL = 0, horasExtrasL = 0, otrosImpuestosL = 0;
+                        decimal notaCreditoL = 0, notaDebitoL = 0, anticipoL = 0, avanceParaPagarL = 0;
+                        decimal retItbisL = 0, retIsrL = 0, retSfsL = 0, retAfpL = 0, totalRetencionL = 0;
+                        decimal totalFacturaL = 0, totalAPagarL = 0;
+
+                        if (metodoConversionSeleccionado == 1) // MÉTODO 1: MULTIPLICACIÓN DIRECTA
+                        {
+                            subtotalL = Math.Round(baseImponibleReal * tasa, 2);
+                            itbisL = Math.Round(itbisFinalExt * tasa, 2);
+                            exentoL = Math.Round(montoExento * tasa, 2);
+                            dirTecnicaL = Math.Round(montoDirTecnica * tasa, 2);
+                            descuentoL = Math.Round(montoDescuento * tasa, 2);
+                            horasExtrasL = Math.Round(montoHorasExtras * tasa, 2);
+                            otrosImpuestosL = Math.Round(montoOtrosImp * tasa, 2);
+                            notaCreditoL = Math.Round((notaCredito.EsManual ? ParseMoneda(txtNotaCredito.Text) : notaCredito.Total) * tasa, 2);
+                            notaDebitoL = Math.Round((notaDebito.EsManual ? ParseMoneda(txtNotaDebito.Text) : notaDebito.Total) * tasa, 2);
+                            anticipoL = Math.Round(montoAnticipo * tasa, 2);
+                            avanceParaPagarL = Math.Round(montoAvance * tasa, 2);
+                            
+                            retItbisL = Math.Round(ParseMoneda(lblRetITBISMonto.Text) * tasa, 2);
+                            retIsrL = Math.Round(ParseMoneda(lblRetISRMonto.Text) * tasa, 2);
+                            retSfsL = Math.Round(ParseMoneda(txtRetSFS.Text) * tasa, 2);
+                            retAfpL = Math.Round(ParseMoneda(txtRetAFP.Text) * tasa, 2);
+                        }
+                        else if (metodoConversionSeleccionado == 2) // MÉTODO 2: SUBTOTAL + RECÁLCULO
+                        {
+                            subtotalL = Math.Round(baseImponibleReal * tasa, 2);
+                            dirTecnicaL = Math.Round(montoDirTecnica * tasa, 2);
+                            
+                            // Recalcular ITBIS RD$
+                            decimal baseParaITBIS_L = (rbBaseDirTec != null && rbBaseDirTec.Checked) ? dirTecnicaL : subtotalL;
+                            decimal pctITBIS = 0.18m;
+                            if (cboITBISPorcentaje != null && cboITBISPorcentaje.SelectedItem != null)
+                            {
+                                string sPct = cboITBISPorcentaje.SelectedItem.ToString().Replace("%", "").Trim();
+                                decimal.TryParse(sPct, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal p);
+                                pctITBIS = p / 100m;
+                            }
+                            
+                            decimal itbisCalculadoL = Math.Round(baseParaITBIS_L * pctITBIS, 2);
+                            itbisL = usarITBISManual ? Math.Round(itbisFinalExt * tasa, 2) : itbisCalculadoL;
+
+                            // Recalcular Retenciones RD$
+                            decimal pRetItbis = 0m, pRetIsr = 0m;
+                            if (cboRetITBIS != null && cboRetITBIS.SelectedItem != null)
+                                decimal.TryParse(cboRetITBIS.SelectedItem.ToString().Replace("%", "").Trim(), out pRetItbis);
+                            if (cboRetISR != null && cboRetISR.SelectedItem != null)
+                                decimal.TryParse(cboRetISR.SelectedItem.ToString().Replace("%", "").Trim(), out pRetIsr);
+
+                            retItbisL = Math.Round(itbisL * (pRetItbis / 100m), 2);
+                            retIsrL = Math.Round(subtotalL * (pRetIsr / 100m), 2);
+                            retAfpL = (chkRetAFP != null && chkRetAFP.Checked) ? Math.Round(subtotalL * CONST_RET_AFP_PCT, 2) : 0m;
+                            retSfsL = (chkRetSFS != null && chkRetSFS.Checked) ? Math.Round(subtotalL * CONST_RET_SFS_PCT, 2) : 0m;
+
+                            // Conversión Directa para el resto
+                            exentoL = Math.Round(montoExento * tasa, 2);
+                            descuentoL = Math.Round(montoDescuento * tasa, 2);
+                            horasExtrasL = Math.Round(montoHorasExtras * tasa, 2);
+                            otrosImpuestosL = Math.Round(montoOtrosImp * tasa, 2);
+                            notaCreditoL = Math.Round((notaCredito.EsManual ? ParseMoneda(txtNotaCredito.Text) : notaCredito.Total) * tasa, 2);
+                            notaDebitoL = Math.Round((notaDebito.EsManual ? ParseMoneda(txtNotaDebito.Text) : notaDebito.Total) * tasa, 2);
+                            anticipoL = Math.Round(montoAnticipo * tasa, 2);
+                            avanceParaPagarL = Math.Round(montoAvance * tasa, 2);
+                        }
+
+                        totalRetencionL = retItbisL + retIsrL + retSfsL + retAfpL;
+                        totalFacturaL = subtotalL + itbisL + exentoL + dirTecnicaL + horasExtrasL + otrosImpuestosL;
+                        
+                        decimal ajusteNotasPagarL = 0m;
+                        if (notaCredito.EsManual) ajusteNotasPagarL -= notaCreditoL;
+                        else if (!notaCredito.AfectaSubtotal) ajusteNotasPagarL -= notaCreditoL;
+
+                        if (notaDebito.EsManual) ajusteNotasPagarL += notaDebitoL;
+                        else if (!notaDebito.AfectaSubtotal) ajusteNotasPagarL += notaDebitoL;
+
+                        totalAPagarL = totalFacturaL - totalRetencionL - descuentoL - anticipoL + ajusteNotasPagarL;
+
                         string sqlLocal = @"INSERT INTO dbo.SolicitudesPagoMonedaLocal (
                             SolicitudPagoID, SubtotalL, ITBISL, ExentoL, DireccionTecnicaL, DescuentoL, HorasExtrasL, OtrosImpuestosL,
                             NotaCreditoL, NotaDebitoL, AnticipoL, AvanceParaPagarL,

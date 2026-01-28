@@ -19,6 +19,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             this.pnlContenido = new System.Windows.Forms.Panel();
             this.lblInfoModo = new System.Windows.Forms.Label();
             this.chkAfectarSubtotal = new System.Windows.Forms.CheckBox();
+            this.chkMostrarDetalle = new System.Windows.Forms.CheckBox();
             this.groupBoxResultados = new System.Windows.Forms.GroupBox();
             this.lblTotalNota = new System.Windows.Forms.Label();
             this.lblMontoITBIS = new System.Windows.Forms.Label();
@@ -52,6 +53,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             // pnlContenido
             // 
             this.pnlContenido.BackColor = System.Drawing.Color.White;
+            this.pnlContenido.Controls.Add(this.chkMostrarDetalle);
             this.pnlContenido.Controls.Add(this.lblInfoModo);
             this.pnlContenido.Controls.Add(this.chkAfectarSubtotal);
             this.pnlContenido.Controls.Add(this.groupBoxResultados);
@@ -88,6 +90,16 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             this.chkAfectarSubtotal.TabIndex = 7;
             this.chkAfectarSubtotal.Text = "Afectar Base Imponible de Solicitud";
             this.chkAfectarSubtotal.UseVisualStyleBackColor = true;
+            // 
+            // chkMostrarDetalle
+            // 
+            this.chkMostrarDetalle.AutoSize = true;
+            this.chkMostrarDetalle.Location = new System.Drawing.Point(19, 320);
+            this.chkMostrarDetalle.Name = "chkMostrarDetalle";
+            this.chkMostrarDetalle.Size = new System.Drawing.Size(150, 23);
+            this.chkMostrarDetalle.TabIndex = 9;
+            this.chkMostrarDetalle.Text = "Mostrar Detalle";
+            this.chkMostrarDetalle.UseVisualStyleBackColor = true;
             // 
             // groupBoxResultados
             // 
@@ -276,6 +288,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.CheckBox chkAfectarSubtotal;
+        private System.Windows.Forms.CheckBox chkMostrarDetalle;
         private System.Windows.Forms.Label lblInfoModo;
         private System.Windows.Forms.Button btnAceptar;
         private System.Windows.Forms.Button btnCancelar;

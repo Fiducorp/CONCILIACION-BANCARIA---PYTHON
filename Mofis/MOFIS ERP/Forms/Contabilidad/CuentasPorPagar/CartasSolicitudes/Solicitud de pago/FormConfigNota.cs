@@ -15,6 +15,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
         public decimal TotalNota { get; private set; }
         public string Descripcion { get; private set; }
         public bool AfectaSubtotal { get; private set; }
+        public bool MostrarDetalle { get; private set; }
 
         // Variables de estado
         private bool esCredito;
@@ -29,7 +30,8 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                               bool aplicaITBIS = true, 
                               decimal porcentajeITBIS = 18m, 
                               string descripcion = "", 
-                              bool afectaSubtotal = false)
+                              bool afectaSubtotal = false,
+                              bool mostrarDetalle = false)
         {
             InitializeComponent();
             this.esCredito = esCredito;
@@ -47,6 +49,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
                 chkAplicaITBIS.Checked = aplicaITBIS;
                 numPorcentajeITBIS.Value = porcentajeITBIS;
                 txtDescripcion.Text = descripcion;
+                chkMostrarDetalle.Checked = mostrarDetalle;
                 
                 // Solo marcar afectar subtotal si es posible
                 if (tieneSubtotalSolicitud && aplicaITBIS)
@@ -168,6 +171,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.CuentasPorPagar.CartasSolicitudes.Solicit
             
             Descripcion = txtDescripcion.Text.Trim();
             AfectaSubtotal = chkAfectarSubtotal.Checked;
+            MostrarDetalle = chkMostrarDetalle.Checked;
 
             if (Subtotal <= 0)
             {

@@ -65,6 +65,7 @@ CREATE TABLE dbo.SolicitudesPago
     HorasExtras DECIMAL(18,2) NOT NULL DEFAULT 0,
     OtrosImpuestos DECIMAL(18,2) NOT NULL DEFAULT 0,
     OtrosImpuestosDescripcion NVARCHAR(200) NULL,
+    OtrosImpuestosSumar BIT NOT NULL DEFAULT 1,
     
     -- ========================================
     -- NOTA DE CRÉDITO
@@ -92,6 +93,7 @@ CREATE TABLE dbo.SolicitudesPago
     ITBISCalculado DECIMAL(18,2) NOT NULL DEFAULT 0,
     ITBISIngresado DECIMAL(18,2) NULL,          -- Si se ingresó manualmente
     ITBISUsarIngresado BIT NOT NULL DEFAULT 0,  -- Si usar el ingresado en vez del calculado
+    ITBISDiferencia DECIMAL(18,2) NOT NULL DEFAULT 0,
     
     -- ========================================
     -- RETENCIONES
@@ -126,12 +128,6 @@ CREATE TABLE dbo.SolicitudesPago
     TasaCambio DECIMAL(18,6) NULL,              -- Solo si moneda ≠ DOP
     MetodoConversionID INT NULL,                -- FK a MetodosConversion
     MostrarConversionEnFormulario BIT NOT NULL DEFAULT 0,
-    
-    -- Montos convertidos (para impresión/exportación)
-    SubtotalConvertido DECIMAL(18,2) NULL,
-    ITBISConvertido DECIMAL(18,2) NULL,
-    TotalFacturaConvertido DECIMAL(18,2) NULL,
-    TotalAPagarConvertido DECIMAL(18,2) NULL,
     
     -- ========================================
     -- FIRMA DIGITAL
@@ -307,7 +303,57 @@ CREATE NONCLUSTERED INDEX IX_SolicitudesPagoAvances_Solicitud
 ON dbo.SolicitudesPagoAvances(SolicitudPagoID, FechaAvance DESC);
 GO
 
+
 PRINT '✓ Tabla SolicitudesPagoAvances creada exitosamente';
+GO
+
+-- ============================================================================
+-- TABLA 5: SolicitudesPagoMonedaLocal (Para montos convertidos)
+-- ============================================================================
+IF OBJECT_ID('dbo.SolicitudesPagoMonedaLocal', 'U') IS NOT NULL
+BEGIN
+    DROP TABLE dbo.SolicitudesPagoMonedaLocal;
+    PRINT '✓ Tabla SolicitudesPagoMonedaLocal eliminada';
+END
+GO
+
+CREATE TABLE dbo.SolicitudesPagoMonedaLocal
+(
+    SolicitudPagoID INT NOT NULL,
+    
+    -- Montos Principales Convertidos (DOP o Moneda Local)
+    SubtotalL DECIMAL(18,2) NOT NULL DEFAULT 0,
+    ITBISL DECIMAL(18,2) NOT NULL DEFAULT 0,
+    ExentoL DECIMAL(18,2) NOT NULL DEFAULT 0,
+    DireccionTecnicaL DECIMAL(18,2) NOT NULL DEFAULT 0,
+    DescuentoL DECIMAL(18,2) NOT NULL DEFAULT 0,
+    HorasExtrasL DECIMAL(18,2) NOT NULL DEFAULT 0,
+    OtrosImpuestosL DECIMAL(18,2) NOT NULL DEFAULT 0,
+    
+    -- Notas y Ajustes Convertidos
+    NotaCreditoL DECIMAL(18,2) NOT NULL DEFAULT 0,
+    NotaDebitoL DECIMAL(18,2) NOT NULL DEFAULT 0,
+    AnticipoL DECIMAL(18,2) NOT NULL DEFAULT 0,
+    AvanceParaPagarL DECIMAL(18,2) NOT NULL DEFAULT 0,
+    
+    -- Retenciones Convertidas
+    RetencionITBISL DECIMAL(18,2) NOT NULL DEFAULT 0,
+    RetencionISRL DECIMAL(18,2) NOT NULL DEFAULT 0,
+    RetencionSFSL DECIMAL(18,2) NOT NULL DEFAULT 0,
+    RetencionAFPL DECIMAL(18,2) NOT NULL DEFAULT 0,
+    TotalRetencionL DECIMAL(18,2) NOT NULL DEFAULT 0,
+    
+    -- Totales Finales Convertidos
+    TotalFacturaL DECIMAL(18,2) NOT NULL DEFAULT 0,
+    TotalAPagarL DECIMAL(18,2) NOT NULL DEFAULT 0,
+    
+    CONSTRAINT PK_SolicitudesPagoMonedaLocal PRIMARY KEY CLUSTERED (SolicitudPagoID),
+    CONSTRAINT FK_SolicitudesPagoML_Solicitud FOREIGN KEY (SolicitudPagoID) 
+        REFERENCES dbo.SolicitudesPago(SolicitudPagoID) ON DELETE CASCADE
+);
+GO
+
+PRINT '✓ Tabla SolicitudesPagoMonedaLocal creada exitosamente';
 GO
 
 -- ============================================================================
@@ -389,7 +435,11 @@ PRINT '  4. SolicitudesPagoAvances';
 PRINT '     - Historial de avances realizados';
 PRINT '     - Tracking de continuaciones';
 PRINT '';
-PRINT '  5. SEQ_SolicitudPago (Secuencia)';
+PRINT '  5. SolicitudesPagoMonedaLocal (Tabla satélite)';
+PRINT '     - Almacena montos convertidos a moneda local (DOP)';
+PRINT '     - Provee soporte para cálculos internos sin afectar la tabla principal';
+PRINT '';
+PRINT '  6. SEQ_SolicitudPago (Secuencia)';
 PRINT '     - Generación automática de números SP-000001';
 PRINT '';
 PRINT 'Siguiente paso: Ejecutar Script 15 - Crear tabla FirmasUsuarios';
