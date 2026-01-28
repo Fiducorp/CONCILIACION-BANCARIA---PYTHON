@@ -18,11 +18,12 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
         private string configFilePath;
         private string fullPathBanco;
         private string fullPathContable;
+        private string pathUltimoResultado;
         private Dictionary<string, Control> paramControls = new Dictionary<string, Control>();
         private bool isSideMenuOpen = false;
         
         // Colores (pueden usarse para lógica dinámica si es necesario)
-        private readonly Color ColorPrimario = Color.FromArgb(0, 120, 212);
+        private readonly Color ColorPrimario = Color.ForestGreen;
         private readonly Color ColorExito = Color.FromArgb(16, 124, 16);
         private readonly Color ColorError = Color.FromArgb(168, 0, 0);
 
@@ -55,14 +56,31 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
                 }
             }
 
-            if (cmbMoneda.Items.Count > 0)
+            if (cmbMoneda.Items.Count > 0 && cmbMoneda.SelectedIndex == -1)
+            {
                 cmbMoneda.SelectedIndex = 0;
+                ActualizarEstiloMoneda();
+            }
+            else if (cmbMoneda.SelectedIndex != -1)
+            {
+                ActualizarEstiloMoneda();
+            }
+            cmbMoneda.SelectedIndexChanged += (s, e) => ValidarFideicomiso();
 
             InitializeParameters();
             CargarConfiguracion(); // Cargar de nuevo para sobreescribir con params guardados
             
             // Ajuste inicial del panel lateral
             pnlSide.Visible = false;
+
+            // Eventos nuevos para el rediseño
+            this.btnToggleLog.Click += new System.EventHandler(this.btnToggleLog_Click);
+            this.btnMonedaDOP.Click += new System.EventHandler(this.btnMoneda_Click);
+            this.btnMonedaUSD.Click += new System.EventHandler(this.btnMoneda_Click);
+
+            // Asegurar estado inicial correcto del botón
+            if (cmbCuenta.Items.Count > 0) cmbCuenta.SelectedIndex = 0;
+            ValidarFideicomiso();
         }
 
         private void InitializeParameters()
@@ -204,6 +222,50 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
             formPrincipal.CargarContenidoPanel(new FormDashboardContabilidad(formPrincipal));
         }
 
+        private void btnMoneda_Click(object sender, EventArgs e)
+        {
+            Button btn = (Button)sender;
+            string selected = btn.Text; // "DOP" o "USD"
+
+            // Actualizar el combo oculto (fuente de verdad)
+            cmbMoneda.SelectedItem = selected;
+
+            // Actualizar estilos visuales
+            ActualizarEstiloMoneda();
+
+            // Validar estado del botón ejecutar
+            ValidarFideicomiso();
+        }
+
+        private void ActualizarEstiloMoneda()
+        {
+            Color colorSeleccionado = Color.FromArgb(0, 114, 198);
+            Color colorDesactivado = Color.FromArgb(240, 240, 240);
+            Color textoSeleccionado = Color.White;
+            Color textoDesactivado = Color.FromArgb(64, 64, 64);
+
+            if (cmbMoneda.SelectedItem?.ToString() == "DOP")
+            {
+                btnMonedaDOP.BackColor = colorSeleccionado;
+                btnMonedaDOP.ForeColor = textoSeleccionado;
+                btnMonedaUSD.BackColor = colorDesactivado;
+                btnMonedaUSD.ForeColor = textoDesactivado;
+            }
+            else
+            {
+                btnMonedaUSD.BackColor = colorSeleccionado;
+                btnMonedaUSD.ForeColor = textoSeleccionado;
+                btnMonedaDOP.BackColor = colorDesactivado;
+                btnMonedaDOP.ForeColor = textoDesactivado;
+            }
+        }
+
+        private void btnToggleLog_Click(object sender, EventArgs e)
+        {
+            pnlLog.Visible = !pnlLog.Visible;
+            btnToggleLog.BackColor = pnlLog.Visible ? Color.FromArgb(0, 114, 198) : Color.FromArgb(83, 109, 122);
+        }
+
         private void btnRefrescar_Click(object sender, EventArgs e)
         {
             CargarFideicomisos();
@@ -267,6 +329,15 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
 
         private void CmbFideicomisos_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (cmbFideicomisos.SelectedItem != null)
+            {
+                string fideicomiso = cmbFideicomisos.SelectedItem.ToString();
+                string path = Path.Combine(txtDirectorioTrabajo.Text, fideicomiso);
+                string pathBancoDir = Path.Combine(path, "Archivos Banco");
+                string pathContableDir = Path.Combine(path, "Archivos Libro Contable");
+                
+                AutoDetectFiles(pathBancoDir, pathContableDir);
+            }
             ValidarFideicomiso();
         }
 
@@ -284,21 +355,39 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
             string pathBancoDir = Path.Combine(path, "Archivos Banco");
             string pathContableDir = Path.Combine(path, "Archivos Libro Contable");
 
-            // Auto-detect files if textboxes are empty or if we just changed fideicomiso
-            AutoDetectFiles(pathBancoDir, pathContableDir);
-
-            bool bancoOk = !string.IsNullOrEmpty(fullPathBanco) && File.Exists(fullPathBanco);
-            bool contableOk = !string.IsNullOrEmpty(fullPathContable) && File.Exists(fullPathContable);
+            bool bancoOk = !string.IsNullOrEmpty(fullPathBanco) && File.Exists(fullPathBanco) && fullPathBanco.Contains(path);
+            bool contableOk = !string.IsNullOrEmpty(fullPathContable) && File.Exists(fullPathContable) && fullPathContable.Contains(path);
+            bool monedaOk = cmbMoneda.SelectedItem != null;
 
             ActualizarEstado(lblEstadoBanco, bancoOk);
             ActualizarEstado(lblEstadoContable, contableOk);
 
-            btnEjecutar.Enabled = bancoOk && contableOk && File.Exists(scriptPythonPath);
+            btnEjecutar.Enabled = bancoOk && contableOk && monedaOk && File.Exists(scriptPythonPath);
+            
+            // Si algo cambió, resetear el botón de "VER CONCILIACIÓN" a "EJECUTAR"
+            if (btnEjecutar.Text == "VER CONCILIACIÓN")
+            {
+                btnEjecutar.Text = "EJECUTAR";
+                pathUltimoResultado = null;
+            }
+
             btnEjecutar.BackColor = btnEjecutar.Enabled ? ColorPrimario : Color.Gray;
         }
 
         private void AutoDetectFiles(string pathBancoDir, string pathContableDir)
         {
+            // If the current file doesn't belong to the current fideicomiso, clear it
+            if (!string.IsNullOrEmpty(fullPathBanco) && !fullPathBanco.StartsWith(Path.GetDirectoryName(pathBancoDir)))
+            {
+                fullPathBanco = "";
+                txtArchivoBanco.Text = "";
+            }
+            if (!string.IsNullOrEmpty(fullPathContable) && !fullPathContable.StartsWith(Path.GetDirectoryName(pathContableDir)))
+            {
+                fullPathContable = "";
+                txtArchivoContable.Text = "";
+            }
+
             if (Directory.Exists(pathBancoDir))
             {
                 var files = Directory.GetFiles(pathBancoDir, "*.*").Where(IsExcelOrCsv).ToList();
@@ -307,11 +396,17 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
                     fullPathBanco = files[0];
                     txtArchivoBanco.Text = Path.GetFileName(fullPathBanco);
                 }
-                else if (files.Count == 0)
+                else if (files.Count != 1 && !string.IsNullOrEmpty(fullPathBanco) && !fullPathBanco.StartsWith(pathBancoDir))
                 {
+                    // Only clear if it wasn't already a valid path in THIS folder
                     fullPathBanco = "";
                     txtArchivoBanco.Text = "";
                 }
+            }
+            else
+            {
+                fullPathBanco = "";
+                txtArchivoBanco.Text = "";
             }
 
             if (Directory.Exists(pathContableDir))
@@ -322,11 +417,16 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
                     fullPathContable = files[0];
                     txtArchivoContable.Text = Path.GetFileName(fullPathContable);
                 }
-                else if (files.Count == 0)
+                else if (files.Count != 1 && !string.IsNullOrEmpty(fullPathContable) && !fullPathContable.StartsWith(pathContableDir))
                 {
                     fullPathContable = "";
                     txtArchivoContable.Text = "";
                 }
+            }
+            else
+            {
+                fullPathContable = "";
+                txtArchivoContable.Text = "";
             }
         }
 
@@ -344,6 +444,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
                 {
                     fullPathBanco = ofd.FileName;
                     txtArchivoBanco.Text = Path.GetFileName(fullPathBanco);
+                    TryAutoMatchOtherFile(fullPathBanco, true);
                     ValidarFideicomiso();
                 }
             }
@@ -363,6 +464,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
                 {
                     fullPathContable = ofd.FileName;
                     txtArchivoContable.Text = Path.GetFileName(fullPathContable);
+                    TryAutoMatchOtherFile(fullPathContable, false);
                     ValidarFideicomiso();
                 }
             }
@@ -370,8 +472,105 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
 
         private bool IsExcelOrCsv(string f)
         {
+            if (string.IsNullOrEmpty(f)) return false;
             string ext = Path.GetExtension(f).ToLower();
             return ext == ".xlsx" || ext == ".xls" || ext == ".csv";
+        }
+
+        private void TryAutoMatchOtherFile(string selectedFilePath, bool isBankFile)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(selectedFilePath) || !File.Exists(selectedFilePath)) return;
+
+                string fileName = Path.GetFileNameWithoutExtension(selectedFilePath).ToUpper();
+                string fideicomiso = cmbFideicomisos.SelectedItem?.ToString();
+                if (string.IsNullOrEmpty(fideicomiso)) return;
+
+                string targetDirName = isBankFile ? "Archivos Libro Contable" : "Archivos Banco";
+                string targetPath = Path.Combine(txtDirectorioTrabajo.Text, fideicomiso, targetDirName);
+
+                if (!Directory.Exists(targetPath)) return;
+
+                // 1. Extraer palabras clave (Banco, Mes, Año, Números largos)
+                var keywords = ExtractKeywords(fileName);
+                if (keywords.Count == 0) return;
+
+                // 2. Buscar en la carpeta de destino
+                var candidates = Directory.GetFiles(targetPath, "*.*")
+                    .Where(IsExcelOrCsv)
+                    .ToList();
+
+                if (candidates.Count == 0) return;
+
+                string bestMatch = null;
+                int highestScore = 0;
+
+                foreach (var candidate in candidates)
+                {
+                    string candidateName = Path.GetFileNameWithoutExtension(candidate).ToUpper();
+                    int score = CalculateMatchScore(candidateName, keywords);
+
+                    if (score > highestScore)
+                    {
+                        highestScore = score;
+                        bestMatch = candidate;
+                    }
+                }
+
+                // Umbral mínimo de coincidencia (por ejemplo, al menos 2 palabras clave o una muy específica)
+                if (highestScore >= 1)
+                {
+                    if (isBankFile)
+                    {
+                        fullPathContable = bestMatch;
+                        txtArchivoContable.Text = Path.GetFileName(fullPathContable);
+                    }
+                    else
+                    {
+                        fullPathBanco = bestMatch;
+                        txtArchivoBanco.Text = Path.GetFileName(fullPathBanco);
+                    }
+                }
+            }
+            catch { /* Ignorar errores en auto-match */ }
+        }
+
+        private List<string> ExtractKeywords(string text)
+        {
+            List<string> keywords = new List<string>();
+            if (string.IsNullOrEmpty(text)) return keywords;
+
+            // Bancos
+            string[] banks = { "POPULAR", "BPD", "RESERVAS", "BANRESERVAS", "BHD", "BANESCO", "SCOTIA", "PROMERICA", "SANTA CRUZ", "ADEMI", "LOPEZ", "BELL", "APAP" };
+            foreach (var bank in banks)
+                if (text.Contains(bank)) keywords.Add(bank);
+
+            // Meses (ES)
+            string[] monthsES = { "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE" };
+            string[] monthsES_Short = { "ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC" };
+            
+            for (int i = 0; i < monthsES.Length; i++)
+            {
+                if (text.Contains(monthsES[i])) keywords.Add(monthsES[i]);
+                else if (text.Contains(monthsES_Short[i]) && monthsES_Short[i].Length >= 3) keywords.Add(monthsES_Short[i]);
+            }
+
+            // Años (2020-2029)
+            var yearMatch = System.Text.RegularExpressions.Regex.Match(text, @"202\d");
+            if (yearMatch.Success) keywords.Add(yearMatch.Value);
+
+            return keywords;
+        }
+
+        private int CalculateMatchScore(string text, List<string> keywords)
+        {
+            int score = 0;
+            foreach (var kw in keywords)
+            {
+                if (text.Contains(kw)) score++;
+            }
+            return score;
         }
 
         private void ActualizarEstado(Label lbl, bool valido)
@@ -403,6 +602,17 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
 
         private void BtnEjecutar_Click(object sender, EventArgs e)
         {
+            // Verificación redundante de seguridad para modo EJECUTAR
+            // Solo permitimos el clic si el botón está habilitado O si estamos en modo "VER CONCILIACIÓN"
+            if (!btnEjecutar.Enabled && btnEjecutar.Text != "VER CONCILIACIÓN") 
+                return;
+
+            if (btnEjecutar.Text == "VER CONCILIACIÓN" && !string.IsNullOrEmpty(pathUltimoResultado))
+            {
+                formPrincipal.CargarContenidoPanel(new FormVisualizarExcel(formPrincipal, pathUltimoResultado, this));
+                return;
+            }
+
             if (!pythonService.IsPythonInstalled())
             {
                 MessageBox.Show("No se detectó Python en el sistema. Por favor instálalo o agrégalo al PATH.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -446,13 +656,30 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
                     (exitCode) => {
                         this.Invoke(new Action(() => {
                             btnEjecutar.Enabled = true;
-                            btnEjecutar.Text = "EJECUTAR CONCILIACIÓN";
+                            btnEjecutar.Text = "EJECUTAR";
                             btnEjecutar.BackColor = ColorPrimario;
                             
                             if (exitCode == 0)
                             {
                                 AppendLog("PROCESO FINALIZADO CON ÉXITO.");
-                                string resultPath = Path.Combine(fullWorkDir, "Resultado");
+                                string resultPath = Path.Combine(fullWorkDir, "Resultados");
+                                
+                                // Buscar el archivo creado más reciente en la carpeta de resultados
+                                if (Directory.Exists(resultPath))
+                                {
+                                    var resultFiles = Directory.GetFiles(resultPath, "*.xlsx")
+                                        .Select(f => new FileInfo(f))
+                                        .OrderByDescending(f => f.LastWriteTime)
+                                        .ToList();
+
+                                    if (resultFiles.Count > 0)
+                                    {
+                                        pathUltimoResultado = resultFiles[0].FullName;
+                                        btnEjecutar.Text = "VER CONCILIACIÓN";
+                                        btnEjecutar.BackColor = Color.FromArgb(0, 120, 212); // Azul corporativo
+                                    }
+                                }
+
                                 MessageBox.Show($"La conciliación ha finalizado con éxito.\n\nLos resultados se encuentran en:\n{resultPath}", "Proceso Completado", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             }
                             else
@@ -468,7 +695,7 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
             {
                 AppendLog("C# ERROR: " + ex.Message);
                 btnEjecutar.Enabled = true;
-                btnEjecutar.Text = "EJECUTAR CONCILIACIÓN";
+                btnEjecutar.Text = "EJECUTAR";
                 btnEjecutar.BackColor = ColorPrimario;
                 MessageBox.Show($"Error al iniciar la conciliación: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -488,6 +715,14 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
             txtArchivoContable.Clear();
             fullPathBanco = "";
             fullPathContable = "";
+            
+            // Si el botón estaba en modo "VER CONCILIACIÓN", resetearlo
+            if (btnEjecutar.Text == "VER CONCILIACIÓN")
+            {
+                btnEjecutar.Text = "EJECUTAR";
+                pathUltimoResultado = null;
+            }
+
             ValidarFideicomiso();
         }
 
@@ -506,7 +741,31 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
             rtbConsola.ScrollToCaret();
         }
 
+        private void btnAyuda_Click(object sender, EventArgs e)
+        {
+            string mensaje = "ℹ️ AYUDA Y RECOMENDACIONES\n\n" +
+                             "• ¿QUÉ HACE ESTE PROGRAMA?\n" +
+                             "Automatiza la conciliación de movimientos bancarios comparando archivos de banco contra el libro contable.\n\n" +
+                             "• FORMATOS SOPORTADOS\n" +
+                             "Los documentos DEBEN estar en formato .xlsx (Excel) o .csv. Otros formatos no son compatibles.\n\n" +
+                             "• RECOMENDACIÓN DE USO\n" +
+                             "Nombre sus archivos incluyendo el nombre del banco y el mes/año (ej. POPULAR_MARZO_2024). " +
+                             "Esto permite que el sistema detecte y seleccione automáticamente el archivo correspondiente al elegir uno.";
+
+            MessageBox.Show(mensaje, "Información del Sistema", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
         private void lblParamTitulo_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblTituloPrincipal_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void rtbConsola_TextChanged(object sender, EventArgs e)
         {
 
         }

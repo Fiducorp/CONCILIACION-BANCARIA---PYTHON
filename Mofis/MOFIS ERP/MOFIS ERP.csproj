@@ -250,6 +250,12 @@
     <Compile Include="Forms\Contabilidad\Conciliacion\FormConciliacion.Designer.cs">
       <DependentUpon>FormConciliacion.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Contabilidad\Conciliacion\FormVisualizarExcel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Contabilidad\Conciliacion\FormVisualizarExcel.Designer.cs">
+      <DependentUpon>FormVisualizarExcel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FormDashboardCategorias.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -389,7 +395,6 @@
     <Compile Include="FORMULARIOS - LOGIN\FormLogin.Designer.cs">
       <DependentUpon>FormLogin.cs</DependentUpon>
     </Compile>
-    <Compile Include="obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Controls\CardControl.resx">
@@ -400,6 +405,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Contabilidad\Conciliacion\FormConciliacion.resx">
       <DependentUpon>FormConciliacion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Contabilidad\Conciliacion\FormVisualizarExcel.resx">
+      <DependentUpon>FormVisualizarExcel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Contabilidad\CuentasPorPagar\CartasSolicitudes\FormMenuCartasSolicitudes.resx">
       <DependentUpon>FormMenuCartasSolicitudes.cs</DependentUpon>

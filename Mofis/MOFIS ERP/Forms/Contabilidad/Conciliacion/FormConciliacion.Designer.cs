@@ -35,39 +35,44 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
             this.btnVolver = new System.Windows.Forms.Button();
             this.lblTituloPrincipal = new System.Windows.Forms.Label();
             this.pnlMiddle = new System.Windows.Forms.Panel();
-            this.grpDatosGenerales = new System.Windows.Forms.GroupBox();
+            this.pnlLog = new System.Windows.Forms.Panel();
+            this.rtbConsola = new System.Windows.Forms.RichTextBox();
+            this.btnToggleLog = new System.Windows.Forms.Button();
+            this.pnlSectionTop = new System.Windows.Forms.Panel();
+            this.pnlSectionBottom = new System.Windows.Forms.Panel();
             this.lblDir = new System.Windows.Forms.Label();
             this.txtDirectorioTrabajo = new System.Windows.Forms.TextBox();
             this.btnBuscarDir = new System.Windows.Forms.Button();
             this.lblFideicomiso = new System.Windows.Forms.Label();
             this.cmbFideicomisos = new System.Windows.Forms.ComboBox();
             this.btnRefrescar = new System.Windows.Forms.Button();
-            this.grpArchivos = new System.Windows.Forms.GroupBox();
             this.lblArchivoBanco = new System.Windows.Forms.Label();
             this.txtArchivoBanco = new System.Windows.Forms.TextBox();
             this.btnSelBanco = new System.Windows.Forms.Button();
             this.lblEstadoBanco = new System.Windows.Forms.Label();
             this.lblArchivoContable = new System.Windows.Forms.Label();
             this.txtArchivoContable = new System.Windows.Forms.TextBox();
-            this.lblMoneda = new System.Windows.Forms.Label();
-            this.cmbMoneda = new System.Windows.Forms.ComboBox();
             this.btnSelContable = new System.Windows.Forms.Button();
             this.lblEstadoContable = new System.Windows.Forms.Label();
-            this.grpConsola = new System.Windows.Forms.GroupBox();
-            this.rtbConsola = new System.Windows.Forms.RichTextBox();
+            this.lblCuenta = new System.Windows.Forms.Label();
+            this.cmbCuenta = new System.Windows.Forms.ComboBox();
+            this.lblMoneda = new System.Windows.Forms.Label();
+            this.btnMonedaDOP = new System.Windows.Forms.Button();
+            this.btnMonedaUSD = new System.Windows.Forms.Button();
+            this.cmbMoneda = new System.Windows.Forms.ComboBox();
             this.pnlSide = new System.Windows.Forms.Panel();
             this.flowParam = new System.Windows.Forms.FlowLayoutPanel();
             this.lblParamTitulo = new System.Windows.Forms.Label();
             this.pnlBottom = new System.Windows.Forms.Panel();
+            this.btnEjecutar = new System.Windows.Forms.Button();
             this.btnToggleParam = new System.Windows.Forms.Button();
             this.btnAyuda = new System.Windows.Forms.Button();
             this.btnLimpiar = new System.Windows.Forms.Button();
-            this.btnEjecutar = new System.Windows.Forms.Button();
             this.pnlTop.SuspendLayout();
             this.pnlMiddle.SuspendLayout();
-            this.grpDatosGenerales.SuspendLayout();
-            this.grpArchivos.SuspendLayout();
-            this.grpConsola.SuspendLayout();
+            this.pnlLog.SuspendLayout();
+            this.pnlSectionTop.SuspendLayout();
+            this.pnlSectionBottom.SuspendLayout();
             this.pnlSide.SuspendLayout();
             this.pnlBottom.SuspendLayout();
             this.SuspendLayout();
@@ -85,16 +90,15 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
             // 
             // btnVolver
             // 
-            this.btnVolver.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(114)))), ((int)(((byte)(198)))));
-            this.btnVolver.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnVolver.BackColor = System.Drawing.Color.White;
             this.btnVolver.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnVolver.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnVolver.ForeColor = System.Drawing.Color.White;
+            this.btnVolver.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
             this.btnVolver.Location = new System.Drawing.Point(20, 13);
             this.btnVolver.Name = "btnVolver";
             this.btnVolver.Size = new System.Drawing.Size(100, 35);
             this.btnVolver.TabIndex = 1;
-            this.btnVolver.Text = "SALIR";
+            this.btnVolver.Text = "← SALIR";
             this.btnVolver.UseVisualStyleBackColor = false;
             this.btnVolver.Click += new System.EventHandler(this.btnVolver_Click);
             // 
@@ -107,150 +111,258 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
             this.lblTituloPrincipal.Name = "lblTituloPrincipal";
             this.lblTituloPrincipal.Size = new System.Drawing.Size(1920, 60);
             this.lblTituloPrincipal.TabIndex = 0;
-            this.lblTituloPrincipal.Text = "CONCILIACIÓN BANCARIA IQ";
+            this.lblTituloPrincipal.Text = "CONCILIACIÓN BANCARIA";
             this.lblTituloPrincipal.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblTituloPrincipal.Click += new System.EventHandler(this.lblTituloPrincipal_Click);
             // 
             // pnlMiddle
             // 
-            this.pnlMiddle.Controls.Add(this.grpDatosGenerales);
-            this.pnlMiddle.Controls.Add(this.grpArchivos);
-            this.pnlMiddle.Controls.Add(this.grpConsola);
+            this.pnlMiddle.Controls.Add(this.pnlSectionBottom);
+            this.pnlMiddle.Controls.Add(this.pnlSectionTop);
             this.pnlMiddle.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlMiddle.Location = new System.Drawing.Point(0, 0);
+            this.pnlMiddle.Location = new System.Drawing.Point(0, 60);
             this.pnlMiddle.Name = "pnlMiddle";
-            this.pnlMiddle.Padding = new System.Windows.Forms.Padding(20);
-            this.pnlMiddle.Size = new System.Drawing.Size(1920, 1061);
+            this.pnlMiddle.Size = new System.Drawing.Size(1920, 921);
             this.pnlMiddle.TabIndex = 1;
             // 
-            // grpDatosGenerales
+            // pnlSectionTop
             // 
-            this.grpDatosGenerales.Controls.Add(this.lblDir);
-            this.grpDatosGenerales.Controls.Add(this.txtDirectorioTrabajo);
-            this.grpDatosGenerales.Controls.Add(this.btnBuscarDir);
-            this.grpDatosGenerales.Controls.Add(this.lblFideicomiso);
-            this.grpDatosGenerales.Controls.Add(this.cmbFideicomisos);
-            this.grpDatosGenerales.Controls.Add(this.btnRefrescar);
-            this.grpDatosGenerales.Dock = System.Windows.Forms.DockStyle.Top;
-            this.grpDatosGenerales.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.grpDatosGenerales.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(114)))), ((int)(((byte)(198)))));
-            this.grpDatosGenerales.Location = new System.Drawing.Point(20, 20);
-            this.grpDatosGenerales.Name = "grpDatosGenerales";
-            this.grpDatosGenerales.Size = new System.Drawing.Size(1880, 200);
-            this.grpDatosGenerales.TabIndex = 0;
-            this.grpDatosGenerales.TabStop = false;
-            this.grpDatosGenerales.Text = "📊 DATOS GENERALES";
+            this.pnlSectionTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
+            this.pnlSectionTop.Controls.Add(this.lblDir);
+            this.pnlSectionTop.Controls.Add(this.txtDirectorioTrabajo);
+            this.pnlSectionTop.Controls.Add(this.btnBuscarDir);
+            this.pnlSectionTop.Controls.Add(this.btnRefrescar);
+            this.pnlSectionTop.Controls.Add(this.btnToggleLog);
+            this.pnlSectionTop.Controls.Add(this.pnlLog);
+            this.pnlSectionTop.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlSectionTop.Location = new System.Drawing.Point(0, 0);
+            this.pnlSectionTop.Name = "pnlSectionTop";
+            this.pnlSectionTop.Padding = new System.Windows.Forms.Padding(40, 20, 40, 20);
+            this.pnlSectionTop.Size = new System.Drawing.Size(1920, 260);
+            this.pnlSectionTop.TabIndex = 0;
+            // 
+            // pnlSectionBottom
+            // 
+            this.pnlSectionBottom.Controls.Add(this.lblFideicomiso);
+            this.pnlSectionBottom.Controls.Add(this.cmbFideicomisos);
+            this.pnlSectionBottom.Controls.Add(this.lblCuenta);
+            this.pnlSectionBottom.Controls.Add(this.cmbCuenta);
+            this.pnlSectionBottom.Controls.Add(this.lblMoneda);
+            this.pnlSectionBottom.Controls.Add(this.btnMonedaDOP);
+            this.pnlSectionBottom.Controls.Add(this.btnMonedaUSD);
+            this.pnlSectionBottom.Controls.Add(this.lblArchivoBanco);
+            this.pnlSectionBottom.Controls.Add(this.txtArchivoBanco);
+            this.pnlSectionBottom.Controls.Add(this.btnSelBanco);
+            this.pnlSectionBottom.Controls.Add(this.lblEstadoBanco);
+            this.pnlSectionBottom.Controls.Add(this.lblArchivoContable);
+            this.pnlSectionBottom.Controls.Add(this.txtArchivoContable);
+            this.pnlSectionBottom.Controls.Add(this.btnSelContable);
+            this.pnlSectionBottom.Controls.Add(this.lblEstadoContable);
+            this.pnlSectionBottom.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlSectionBottom.Location = new System.Drawing.Point(0, 260);
+            this.pnlSectionBottom.Name = "pnlSectionBottom";
+            this.pnlSectionBottom.Padding = new System.Windows.Forms.Padding(40);
+            this.pnlSectionBottom.Size = new System.Drawing.Size(1920, 661);
+            this.pnlSectionBottom.TabIndex = 1;
+            // 
+            // pnlLog
+            // 
+            this.pnlLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlLog.BackColor = System.Drawing.Color.White;
+            this.pnlLog.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlLog.Controls.Add(this.rtbConsola);
+            this.pnlLog.Location = new System.Drawing.Point(1000, 20);
+            this.pnlLog.Name = "pnlLog";
+            this.pnlLog.Size = new System.Drawing.Size(880, 220);
+            this.pnlLog.TabIndex = 3;
+            this.pnlLog.Visible = false;
+            // 
+            // rtbConsola
+            // 
+            this.rtbConsola.BackColor = System.Drawing.Color.Black;
+            this.rtbConsola.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rtbConsola.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtbConsola.Font = new System.Drawing.Font("Consolas", 9F);
+            this.rtbConsola.ForeColor = System.Drawing.Color.Lime;
+            this.rtbConsola.Location = new System.Drawing.Point(0, 0);
+            this.rtbConsola.Name = "rtbConsola";
+            this.rtbConsola.ReadOnly = true;
+            this.rtbConsola.Size = new System.Drawing.Size(878, 218);
+            this.rtbConsola.TabIndex = 0;
+            this.rtbConsola.Text = "";
+            // 
+            // btnToggleLog
+            // 
+            this.btnToggleLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnToggleLog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(83)))), ((int)(((byte)(109)))), ((int)(((byte)(122)))));
+            this.btnToggleLog.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnToggleLog.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnToggleLog.ForeColor = System.Drawing.Color.White;
+            this.btnToggleLog.Location = new System.Drawing.Point(860, 150);
+            this.btnToggleLog.Name = "btnToggleLog";
+            this.btnToggleLog.Size = new System.Drawing.Size(120, 40);
+            this.btnToggleLog.TabIndex = 2;
+            this.btnToggleLog.Text = "LOG";
+            this.btnToggleLog.UseVisualStyleBackColor = false;
             // 
             // lblDir
             // 
             this.lblDir.AutoSize = true;
-            this.lblDir.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDir.Location = new System.Drawing.Point(17, 66);
+            this.lblDir.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.lblDir.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(114)))), ((int)(((byte)(198)))));
+            this.lblDir.Location = new System.Drawing.Point(40, 40);
             this.lblDir.Name = "lblDir";
-            this.lblDir.Size = new System.Drawing.Size(127, 15);
+            this.lblDir.Size = new System.Drawing.Size(79, 21);
             this.lblDir.TabIndex = 0;
-            this.lblDir.Text = "Directorio de Trabajo:";
+            this.lblDir.Text = "CARPETA";
             // 
             // txtDirectorioTrabajo
             // 
             this.txtDirectorioTrabajo.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.txtDirectorioTrabajo.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.txtDirectorioTrabajo.Location = new System.Drawing.Point(20, 94);
+            this.txtDirectorioTrabajo.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.txtDirectorioTrabajo.Location = new System.Drawing.Point(40, 70);
             this.txtDirectorioTrabajo.Name = "txtDirectorioTrabajo";
             this.txtDirectorioTrabajo.ReadOnly = true;
-            this.txtDirectorioTrabajo.Size = new System.Drawing.Size(550, 23);
-            this.txtDirectorioTrabajo.TabIndex = 1;
+            this.txtDirectorioTrabajo.Size = new System.Drawing.Size(400, 27);
+            this.txtDirectorioTrabajo.TabIndex = 0;
             // 
             // btnBuscarDir
             // 
-            this.btnBuscarDir.Location = new System.Drawing.Point(580, 86);
+            this.btnBuscarDir.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(114)))), ((int)(((byte)(198)))));
+            this.btnBuscarDir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBuscarDir.ForeColor = System.Drawing.Color.White;
+            this.btnBuscarDir.Location = new System.Drawing.Point(446, 68);
             this.btnBuscarDir.Name = "btnBuscarDir";
-            this.btnBuscarDir.Size = new System.Drawing.Size(60, 35);
-            this.btnBuscarDir.TabIndex = 2;
+            this.btnBuscarDir.Size = new System.Drawing.Size(50, 31);
+            this.btnBuscarDir.TabIndex = 1;
             this.btnBuscarDir.Text = "...";
-            this.btnBuscarDir.UseVisualStyleBackColor = true;
+            this.btnBuscarDir.UseVisualStyleBackColor = false;
             this.btnBuscarDir.Click += new System.EventHandler(this.BtnBuscarDir_Click);
-            // 
-            // lblFideicomiso
-            // 
-            this.lblFideicomiso.AutoSize = true;
-            this.lblFideicomiso.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFideicomiso.Location = new System.Drawing.Point(739, 67);
-            this.lblFideicomiso.Name = "lblFideicomiso";
-            this.lblFideicomiso.Size = new System.Drawing.Size(75, 15);
-            this.lblFideicomiso.TabIndex = 3;
-            this.lblFideicomiso.Text = "Fideicomiso:";
-            // 
-            // cmbFideicomisos
-            // 
-            this.cmbFideicomisos.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbFideicomisos.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cmbFideicomisos.Location = new System.Drawing.Point(739, 92);
-            this.cmbFideicomisos.Name = "cmbFideicomisos";
-            this.cmbFideicomisos.Size = new System.Drawing.Size(420, 25);
-            this.cmbFideicomisos.TabIndex = 4;
             // 
             // btnRefrescar
             // 
             this.btnRefrescar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
             this.btnRefrescar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRefrescar.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
-            this.btnRefrescar.Location = new System.Drawing.Point(1169, 86);
+            this.btnRefrescar.Location = new System.Drawing.Point(40, 150);
             this.btnRefrescar.Name = "btnRefrescar";
-            this.btnRefrescar.Size = new System.Drawing.Size(140, 35);
-            this.btnRefrescar.TabIndex = 5;
+            this.btnRefrescar.Size = new System.Drawing.Size(150, 40);
+            this.btnRefrescar.TabIndex = 4;
             this.btnRefrescar.Text = "REESCANEAR";
             this.btnRefrescar.UseVisualStyleBackColor = false;
             this.btnRefrescar.Click += new System.EventHandler(this.btnRefrescar_Click);
             // 
-            // grpArchivos
+            // lblFideicomiso
             // 
-            this.grpArchivos.Controls.Add(this.lblArchivoBanco);
-            this.grpArchivos.Controls.Add(this.txtArchivoBanco);
-            this.grpArchivos.Controls.Add(this.btnSelBanco);
-            this.grpArchivos.Controls.Add(this.lblEstadoBanco);
-            this.grpArchivos.Controls.Add(this.lblArchivoContable);
-            this.grpArchivos.Controls.Add(this.txtArchivoContable);
-            this.grpArchivos.Controls.Add(this.lblMoneda);
-            this.grpArchivos.Controls.Add(this.cmbMoneda);
-            this.grpArchivos.Controls.Add(this.btnSelContable);
-            this.grpArchivos.Controls.Add(this.lblEstadoContable);
-            this.grpArchivos.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.grpArchivos.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(114)))), ((int)(((byte)(198)))));
-            this.grpArchivos.Location = new System.Drawing.Point(20, 240);
-            this.grpArchivos.Name = "grpArchivos";
-            this.grpArchivos.Size = new System.Drawing.Size(1880, 250);
-            this.grpArchivos.TabIndex = 1;
-            this.grpArchivos.TabStop = false;
-            this.grpArchivos.Text = "📂 ARCHIVOS SELECCIONADOS";
+            this.lblFideicomiso.AutoSize = true;
+            this.lblFideicomiso.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.lblFideicomiso.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(114)))), ((int)(((byte)(198)))));
+            this.lblFideicomiso.Location = new System.Drawing.Point(40, 20);
+            this.lblFideicomiso.Name = "lblFideicomiso";
+            this.lblFideicomiso.Size = new System.Drawing.Size(104, 20);
+            this.lblFideicomiso.TabIndex = 0;
+            this.lblFideicomiso.Text = "FIDEICOMISO";
+            // 
+            // cmbFideicomisos
+            // 
+            this.cmbFideicomisos.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbFideicomisos.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.cmbFideicomisos.Location = new System.Drawing.Point(40, 50);
+            this.cmbFideicomisos.Name = "cmbFideicomisos";
+            this.cmbFideicomisos.Size = new System.Drawing.Size(400, 28);
+            this.cmbFideicomisos.TabIndex = 1;
+            // 
+            // lblCuenta
+            // 
+            this.lblCuenta.AutoSize = true;
+            this.lblCuenta.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.lblCuenta.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(114)))), ((int)(((byte)(198)))));
+            this.lblCuenta.Location = new System.Drawing.Point(40, 100);
+            this.lblCuenta.Name = "lblCuenta";
+            this.lblCuenta.Size = new System.Drawing.Size(68, 20);
+            this.lblCuenta.TabIndex = 2;
+            this.lblCuenta.Text = "CUENTA";
+            // 
+            // cmbCuenta
+            // 
+            this.cmbCuenta.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbCuenta.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.cmbCuenta.Items.AddRange(new object[] {
+            "-- NULO --"});
+            this.cmbCuenta.Location = new System.Drawing.Point(40, 130);
+            this.cmbCuenta.Name = "cmbCuenta";
+            this.cmbCuenta.Size = new System.Drawing.Size(200, 28);
+            this.cmbCuenta.TabIndex = 3;
+            // 
+            // lblMoneda
+            // 
+            this.lblMoneda.AutoSize = true;
+            this.lblMoneda.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.lblMoneda.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(114)))), ((int)(((byte)(198)))));
+            this.lblMoneda.Location = new System.Drawing.Point(260, 100);
+            this.lblMoneda.Name = "lblMoneda";
+            this.lblMoneda.Size = new System.Drawing.Size(76, 20);
+            this.lblMoneda.TabIndex = 4;
+            this.lblMoneda.Text = "MONEDA";
+            // 
+            // btnMonedaDOP
+            // 
+            this.btnMonedaDOP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(114)))), ((int)(((byte)(198)))));
+            this.btnMonedaDOP.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnMonedaDOP.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnMonedaDOP.ForeColor = System.Drawing.Color.White;
+            this.btnMonedaDOP.Location = new System.Drawing.Point(260, 130);
+            this.btnMonedaDOP.Name = "btnMonedaDOP";
+            this.btnMonedaDOP.Size = new System.Drawing.Size(80, 40);
+            this.btnMonedaDOP.TabIndex = 5;
+            this.btnMonedaDOP.Text = "DOP";
+            this.btnMonedaDOP.UseVisualStyleBackColor = false;
+            // 
+            // btnMonedaUSD
+            // 
+            this.btnMonedaUSD.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.btnMonedaUSD.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnMonedaUSD.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnMonedaUSD.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.btnMonedaUSD.Location = new System.Drawing.Point(346, 130);
+            this.btnMonedaUSD.Name = "btnMonedaUSD";
+            this.btnMonedaUSD.Size = new System.Drawing.Size(80, 40);
+            this.btnMonedaUSD.TabIndex = 6;
+            this.btnMonedaUSD.Text = "USD";
+            this.btnMonedaUSD.UseVisualStyleBackColor = false;
             // 
             // lblArchivoBanco
             // 
             this.lblArchivoBanco.AutoSize = true;
-            this.lblArchivoBanco.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblArchivoBanco.Location = new System.Drawing.Point(20, 40);
+            this.lblArchivoBanco.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.lblArchivoBanco.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(114)))), ((int)(((byte)(198)))));
+            this.lblArchivoBanco.Location = new System.Drawing.Point(520, 20);
             this.lblArchivoBanco.Name = "lblArchivoBanco";
-            this.lblArchivoBanco.Size = new System.Drawing.Size(87, 15);
-            this.lblArchivoBanco.TabIndex = 0;
-            this.lblArchivoBanco.Text = "Archivo Banco:";
+            this.lblArchivoBanco.Size = new System.Drawing.Size(62, 20);
+            this.lblArchivoBanco.TabIndex = 7;
+            this.lblArchivoBanco.Text = "BANCO";
             // 
             // txtArchivoBanco
             // 
             this.txtArchivoBanco.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.txtArchivoBanco.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.txtArchivoBanco.Location = new System.Drawing.Point(20, 65);
+            this.txtArchivoBanco.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.txtArchivoBanco.Location = new System.Drawing.Point(520, 50);
             this.txtArchivoBanco.Name = "txtArchivoBanco";
             this.txtArchivoBanco.ReadOnly = true;
-            this.txtArchivoBanco.Size = new System.Drawing.Size(550, 23);
-            this.txtArchivoBanco.TabIndex = 1;
+            this.txtArchivoBanco.Size = new System.Drawing.Size(350, 27);
+            this.txtArchivoBanco.TabIndex = 8;
             // 
             // btnSelBanco
             // 
-            this.btnSelBanco.Location = new System.Drawing.Point(580, 59);
+            this.btnSelBanco.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(114)))), ((int)(((byte)(198)))));
+            this.btnSelBanco.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSelBanco.ForeColor = System.Drawing.Color.White;
+            this.btnSelBanco.Location = new System.Drawing.Point(876, 48);
             this.btnSelBanco.Name = "btnSelBanco";
-            this.btnSelBanco.Size = new System.Drawing.Size(60, 35);
-            this.btnSelBanco.TabIndex = 2;
+            this.btnSelBanco.Size = new System.Drawing.Size(50, 31);
+            this.btnSelBanco.TabIndex = 9;
             this.btnSelBanco.Text = "...";
-            this.btnSelBanco.UseVisualStyleBackColor = true;
+            this.btnSelBanco.UseVisualStyleBackColor = false;
             this.btnSelBanco.Click += new System.EventHandler(this.BtnSelBanco_Click);
             // 
             // lblEstadoBanco
@@ -258,62 +370,44 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
             this.lblEstadoBanco.AutoSize = true;
             this.lblEstadoBanco.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.lblEstadoBanco.ForeColor = System.Drawing.Color.Gray;
-            this.lblEstadoBanco.Location = new System.Drawing.Point(437, 105);
+            this.lblEstadoBanco.Location = new System.Drawing.Point(520, 85);
             this.lblEstadoBanco.Name = "lblEstadoBanco";
-            this.lblEstadoBanco.Size = new System.Drawing.Size(133, 15);
-            this.lblEstadoBanco.TabIndex = 3;
-            this.lblEstadoBanco.Text = "⚫ Esperando archivo...";
+            this.lblEstadoBanco.Size = new System.Drawing.Size(20, 15);
+            this.lblEstadoBanco.TabIndex = 10;
+            this.lblEstadoBanco.Text = "⚫";
             // 
             // lblArchivoContable
             // 
             this.lblArchivoContable.AutoSize = true;
-            this.lblArchivoContable.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblArchivoContable.Location = new System.Drawing.Point(660, 40);
+            this.lblArchivoContable.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.lblArchivoContable.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(114)))), ((int)(((byte)(198)))));
+            this.lblArchivoContable.Location = new System.Drawing.Point(950, 20);
             this.lblArchivoContable.Name = "lblArchivoContable";
-            this.lblArchivoContable.Size = new System.Drawing.Size(131, 15);
-            this.lblArchivoContable.TabIndex = 4;
-            this.lblArchivoContable.Text = "Archivo Libro Contable:";
+            this.lblArchivoContable.Size = new System.Drawing.Size(86, 20);
+            this.lblArchivoContable.TabIndex = 11;
+            this.lblArchivoContable.Text = "CONTABLE";
             // 
             // txtArchivoContable
             // 
             this.txtArchivoContable.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.txtArchivoContable.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.txtArchivoContable.Location = new System.Drawing.Point(660, 65);
+            this.txtArchivoContable.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.txtArchivoContable.Location = new System.Drawing.Point(950, 50);
             this.txtArchivoContable.Name = "txtArchivoContable";
             this.txtArchivoContable.ReadOnly = true;
-            this.txtArchivoContable.Size = new System.Drawing.Size(550, 23);
-            this.txtArchivoContable.TabIndex = 5;
-            // 
-            // lblMoneda
-            // 
-            this.lblMoneda.AutoSize = true;
-            this.lblMoneda.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMoneda.Location = new System.Drawing.Point(23, 100);
-            this.lblMoneda.Name = "lblMoneda";
-            this.lblMoneda.Size = new System.Drawing.Size(54, 15);
-            this.lblMoneda.TabIndex = 6;
-            this.lblMoneda.Text = "Moneda:";
-            // 
-            // cmbMoneda
-            // 
-            this.cmbMoneda.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbMoneda.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.cmbMoneda.Items.AddRange(new object[] {
-            "DOP",
-            "USD"});
-            this.cmbMoneda.Location = new System.Drawing.Point(23, 125);
-            this.cmbMoneda.Name = "cmbMoneda";
-            this.cmbMoneda.Size = new System.Drawing.Size(120, 28);
-            this.cmbMoneda.TabIndex = 7;
+            this.txtArchivoContable.Size = new System.Drawing.Size(350, 27);
+            this.txtArchivoContable.TabIndex = 12;
             // 
             // btnSelContable
             // 
-            this.btnSelContable.Location = new System.Drawing.Point(1220, 59);
+            this.btnSelContable.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(114)))), ((int)(((byte)(198)))));
+            this.btnSelContable.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSelContable.ForeColor = System.Drawing.Color.White;
+            this.btnSelContable.Location = new System.Drawing.Point(1306, 48);
             this.btnSelContable.Name = "btnSelContable";
-            this.btnSelContable.Size = new System.Drawing.Size(60, 35);
-            this.btnSelContable.TabIndex = 6;
+            this.btnSelContable.Size = new System.Drawing.Size(50, 31);
+            this.btnSelContable.TabIndex = 13;
             this.btnSelContable.Text = "...";
-            this.btnSelContable.UseVisualStyleBackColor = true;
+            this.btnSelContable.UseVisualStyleBackColor = false;
             this.btnSelContable.Click += new System.EventHandler(this.BtnSelContable_Click);
             // 
             // lblEstadoContable
@@ -321,41 +415,23 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
             this.lblEstadoContable.AutoSize = true;
             this.lblEstadoContable.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.lblEstadoContable.ForeColor = System.Drawing.Color.Gray;
-            this.lblEstadoContable.Location = new System.Drawing.Point(1077, 105);
+            this.lblEstadoContable.Location = new System.Drawing.Point(950, 85);
             this.lblEstadoContable.Name = "lblEstadoContable";
-            this.lblEstadoContable.Size = new System.Drawing.Size(133, 15);
-            this.lblEstadoContable.TabIndex = 7;
-            this.lblEstadoContable.Text = "⚫ Esperando archivo...";
+            this.lblEstadoContable.Size = new System.Drawing.Size(20, 15);
+            this.lblEstadoContable.TabIndex = 14;
+            this.lblEstadoContable.Text = "⚫";
             // 
-            // grpConsola
+            // cmbMoneda
             // 
-            this.grpConsola.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.grpConsola.Controls.Add(this.rtbConsola);
-            this.grpConsola.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.grpConsola.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(114)))), ((int)(((byte)(198)))));
-            this.grpConsola.Location = new System.Drawing.Point(20, 510);
-            this.grpConsola.Name = "grpConsola";
-            this.grpConsola.Padding = new System.Windows.Forms.Padding(10);
-            this.grpConsola.Size = new System.Drawing.Size(1880, 250);
-            this.grpConsola.TabIndex = 2;
-            this.grpConsola.TabStop = false;
-            this.grpConsola.Text = "💻 LOG DE EJECUCIÓN";
-            // 
-            // rtbConsola
-            // 
-            this.rtbConsola.BackColor = System.Drawing.Color.Black;
-            this.rtbConsola.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.rtbConsola.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtbConsola.Font = new System.Drawing.Font("Consolas", 10F);
-            this.rtbConsola.ForeColor = System.Drawing.Color.Lime;
-            this.rtbConsola.Location = new System.Drawing.Point(10, 28);
-            this.rtbConsola.Name = "rtbConsola";
-            this.rtbConsola.ReadOnly = true;
-            this.rtbConsola.Size = new System.Drawing.Size(1860, 212);
-            this.rtbConsola.TabIndex = 0;
-            this.rtbConsola.Text = "";
+            this.cmbMoneda.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbMoneda.Items.AddRange(new object[] {
+            "DOP",
+            "USD"});
+            this.cmbMoneda.Location = new System.Drawing.Point(0, 0);
+            this.cmbMoneda.Name = "cmbMoneda";
+            this.cmbMoneda.Size = new System.Drawing.Size(121, 21);
+            this.cmbMoneda.TabIndex = 100;
+            this.cmbMoneda.Visible = false;
             // 
             // pnlSide
             // 
@@ -398,24 +474,37 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
             // pnlBottom
             // 
             this.pnlBottom.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(32)))), ((int)(((byte)(96)))));
+            this.pnlBottom.Controls.Add(this.btnEjecutar);
             this.pnlBottom.Controls.Add(this.btnToggleParam);
             this.pnlBottom.Controls.Add(this.btnAyuda);
             this.pnlBottom.Controls.Add(this.btnLimpiar);
-            this.pnlBottom.Controls.Add(this.btnEjecutar);
             this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnlBottom.Location = new System.Drawing.Point(0, 981);
             this.pnlBottom.Name = "pnlBottom";
             this.pnlBottom.Size = new System.Drawing.Size(1920, 80);
             this.pnlBottom.TabIndex = 3;
             // 
+            // btnEjecutar
+            // 
+            this.btnEjecutar.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.btnEjecutar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnEjecutar.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.btnEjecutar.ForeColor = System.Drawing.Color.White;
+            this.btnEjecutar.Location = new System.Drawing.Point(1660, 16);
+            this.btnEjecutar.Name = "btnEjecutar";
+            this.btnEjecutar.Size = new System.Drawing.Size(240, 50);
+            this.btnEjecutar.TabIndex = 0;
+            this.btnEjecutar.Text = "EJECUTAR";
+            this.btnEjecutar.UseVisualStyleBackColor = false;
+            this.btnEjecutar.Click += new System.EventHandler(this.BtnEjecutar_Click);
+            // 
             // btnToggleParam
             // 
             this.btnToggleParam.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(16)))), ((int)(((byte)(242)))));
-            this.btnToggleParam.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnToggleParam.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnToggleParam.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnToggleParam.ForeColor = System.Drawing.Color.White;
-            this.btnToggleParam.Location = new System.Drawing.Point(20, 15);
+            this.btnToggleParam.Location = new System.Drawing.Point(30, 15);
             this.btnToggleParam.Name = "btnToggleParam";
             this.btnToggleParam.Size = new System.Drawing.Size(150, 50);
             this.btnToggleParam.TabIndex = 3;
@@ -425,16 +514,17 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
             // 
             // btnAyuda
             // 
-            this.btnAyuda.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(123)))), ((int)(((byte)(255)))));
+            this.btnAyuda.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
             this.btnAyuda.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAyuda.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnAyuda.ForeColor = System.Drawing.Color.White;
-            this.btnAyuda.Location = new System.Drawing.Point(1400, 15);
+            this.btnAyuda.Location = new System.Drawing.Point(1515, 16);
             this.btnAyuda.Name = "btnAyuda";
             this.btnAyuda.Size = new System.Drawing.Size(120, 50);
             this.btnAyuda.TabIndex = 2;
             this.btnAyuda.Text = "❔ AYUDA";
             this.btnAyuda.UseVisualStyleBackColor = false;
+            this.btnAyuda.Click += new System.EventHandler(this.btnAyuda_Click);
             // 
             // btnLimpiar
             // 
@@ -442,28 +532,13 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
             this.btnLimpiar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnLimpiar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnLimpiar.ForeColor = System.Drawing.Color.White;
-            this.btnLimpiar.Location = new System.Drawing.Point(1530, 15);
+            this.btnLimpiar.Location = new System.Drawing.Point(202, 15);
             this.btnLimpiar.Name = "btnLimpiar";
             this.btnLimpiar.Size = new System.Drawing.Size(120, 50);
             this.btnLimpiar.TabIndex = 1;
             this.btnLimpiar.Text = "🧹 LIMPIAR";
             this.btnLimpiar.UseVisualStyleBackColor = false;
             this.btnLimpiar.Click += new System.EventHandler(this.btnLimpiar_Click);
-            // 
-            // btnEjecutar
-            // 
-            this.btnEjecutar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
-            this.btnEjecutar.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnEjecutar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnEjecutar.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.btnEjecutar.ForeColor = System.Drawing.Color.White;
-            this.btnEjecutar.Location = new System.Drawing.Point(1660, 15);
-            this.btnEjecutar.Name = "btnEjecutar";
-            this.btnEjecutar.Size = new System.Drawing.Size(240, 50);
-            this.btnEjecutar.TabIndex = 0;
-            this.btnEjecutar.Text = "🚀 EJECUTAR";
-            this.btnEjecutar.UseVisualStyleBackColor = false;
-            this.btnEjecutar.Click += new System.EventHandler(this.BtnEjecutar_Click);
             // 
             // FormConciliacion
             // 
@@ -480,11 +555,11 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
             this.Text = "Conciliación Bancaria - ERP Interface";
             this.pnlTop.ResumeLayout(false);
             this.pnlMiddle.ResumeLayout(false);
-            this.grpDatosGenerales.ResumeLayout(false);
-            this.grpDatosGenerales.PerformLayout();
-            this.grpArchivos.ResumeLayout(false);
-            this.grpArchivos.PerformLayout();
-            this.grpConsola.ResumeLayout(false);
+            this.pnlLog.ResumeLayout(false);
+            this.pnlSectionTop.ResumeLayout(false);
+            this.pnlSectionTop.PerformLayout();
+            this.pnlSectionBottom.ResumeLayout(false);
+            this.pnlSectionBottom.PerformLayout();
             this.pnlSide.ResumeLayout(false);
             this.pnlBottom.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -493,11 +568,12 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
 
         #endregion
 
+        private System.Windows.Forms.Panel pnlSectionTop;
+        private System.Windows.Forms.Panel pnlSectionBottom;
         private System.Windows.Forms.Panel pnlTop;
         private System.Windows.Forms.Label lblTituloPrincipal;
         private System.Windows.Forms.Button btnVolver;
         private System.Windows.Forms.Panel pnlMiddle;
-        private System.Windows.Forms.GroupBox grpDatosGenerales;
         private System.Windows.Forms.Label lblDir;
         private System.Windows.Forms.TextBox txtDirectorioTrabajo;
         private System.Windows.Forms.Button btnBuscarDir;
@@ -505,8 +581,13 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
         private System.Windows.Forms.ComboBox cmbFideicomisos;
         private System.Windows.Forms.Button btnRefrescar;
         private System.Windows.Forms.Label lblMoneda;
-        private System.Windows.Forms.ComboBox cmbMoneda;
-        private System.Windows.Forms.GroupBox grpArchivos;
+        private System.Windows.Forms.Button btnMonedaDOP;
+        private System.Windows.Forms.Button btnMonedaUSD;
+        private System.Windows.Forms.ComboBox cmbMoneda; // Keep hidden/used for logic
+        private System.Windows.Forms.Label lblCuenta;
+        private System.Windows.Forms.ComboBox cmbCuenta;
+        private System.Windows.Forms.Button btnToggleLog;
+        private System.Windows.Forms.Panel pnlLog;
         private System.Windows.Forms.Label lblArchivoBanco;
         private System.Windows.Forms.TextBox txtArchivoBanco;
         private System.Windows.Forms.Button btnSelBanco;
@@ -515,7 +596,6 @@ namespace MOFIS_ERP.Forms.Contabilidad.ConciliacionBancaria
         private System.Windows.Forms.TextBox txtArchivoContable;
         private System.Windows.Forms.Button btnSelContable;
         private System.Windows.Forms.Label lblEstadoContable;
-        private System.Windows.Forms.GroupBox grpConsola;
         private System.Windows.Forms.RichTextBox rtbConsola;
         private System.Windows.Forms.Panel pnlSide;
         private System.Windows.Forms.Label lblParamTitulo;
